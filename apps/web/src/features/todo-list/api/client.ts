@@ -1,7 +1,7 @@
 import type { AppType } from "@api/index";
 import { hc } from "hono/client";
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 /**
  * TODO: SECURITY - This is a DEVELOPMENT-ONLY token!

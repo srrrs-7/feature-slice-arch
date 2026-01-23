@@ -12,6 +12,8 @@
     "dev": "bun run dev:api & bun run dev:web",
     "dev:api": "cd apps/api && bun run dev",
     "dev:web": "cd apps/web && bun run dev",
+    "build:api": "cd apps/api && bun run build",
+    "build:web": "cd apps/web && bun run build",
     "test:run": "cd apps/api && bun run test",
     "db:migrate:dev": "cd apps/api && bun run db:migrate:dev",
     "db:migrate:reset": "cd apps/api && bun run db:migrate:reset",

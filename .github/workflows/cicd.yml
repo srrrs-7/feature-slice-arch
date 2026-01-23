@@ -80,7 +80,7 @@ jobs:
           cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
           push: always
           runCmd: |
-            bun ci
+            bun install --frozen-lockfile
             bun run db:generate
             bun run db:migrate:deploy
             bun run check
@@ -155,15 +155,14 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: bun ci
+        run: bun install --frozen-lockfile
 
       - name: Build frontend
         run: bun run build:web
         env:
-          BUN_PUBLIC_API_URL: ${{ vars.API_URL }}
-          BUN_PUBLIC_COGNITO_USER_POOL_ID: ${{ vars.COGNITO_USER_POOL_ID }}
-          BUN_PUBLIC_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
-          BUN_PUBLIC_COGNITO_DOMAIN: ${{ vars.COGNITO_DOMAIN }}
+          VITE_API_URL: ${{ vars.API_URL }}
+          VITE_AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          VITE_TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Tokyo' }}
 
       - name: Deploy frontend to S3
         run: |
@@ -201,7 +200,7 @@ jobs:
           echo "- **CloudFront**: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" >> $GITHUB_STEP_SUMMARY
 
   # =============================================================================
-  # DB Migration - Parameterized by environment
+  # DB Migration - Build migration image and run as ECS task
   # Dependency: ci -> setup -> db-migrate
   # =============================================================================
   db-migrate:
@@ -215,24 +214,51 @@ jobs:
       contents: read
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push migration image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: migration-${{ github.sha }}
+        run: |
+          echo "Building migration image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:migration \
+            -f apps/api/src/lib/db/.image/Dockerfile \
+            .
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:migration
+
+          echo "migration_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
       - name: Run database migration via ECS task
         id: run-migration
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY_NAME }}
         run: |
           echo "Running migration on cluster: ${{ vars.ECS_CLUSTER_NAME }}"
-          echo "Using task definition: ${{ vars.ECS_TASK_DEFINITION }}"
+          echo "Using task definition: ${{ vars.ECS_MIGRATION_TASK_DEFINITION }}"
 
           TASK_ARN=$(aws ecs run-task \
             --cluster ${{ vars.ECS_CLUSTER_NAME }} \
-            --task-definition ${{ vars.ECS_TASK_DEFINITION }} \
+            --task-definition ${{ vars.ECS_MIGRATION_TASK_DEFINITION }} \
             --launch-type FARGATE \
             --network-configuration "awsvpcConfiguration={subnets=${{ vars.PRIVATE_SUBNET_IDS }},securityGroups=[${{ vars.ECS_SECURITY_GROUP_ID }}],assignPublicIp=DISABLED}" \
-            --overrides '{"containerOverrides":[{"name":"api","command":["bun","run","db:migrate:deploy"]}]}' \
             --query 'tasks[0].taskArn' \
             --output text)
 
@@ -309,7 +335,7 @@ jobs:
 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -f apps/api/.images/Dockerfile \
+            -f apps/api/.image/Dockerfile \
             .
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
