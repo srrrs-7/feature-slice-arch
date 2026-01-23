@@ -1,7 +1,8 @@
 version: "0.2"
 ignorePaths:
   - .git
-  - .gitignore
+  - "**/.gitignore"
+  - bun.lock
   - bun.lockb
   - "**/generated"
   - "**/prisma/migrations"
@@ -9,6 +10,13 @@ dictionaryDefinitions: []
 dictionaries: []
 words:
   - anthropics
+  - dbname
+  - dotenv
+  - ntvs
+  - oneline
+  - pkey
+  - wada
+  - wireframes
   - apigatewayv
   - auggie
   - Auggie

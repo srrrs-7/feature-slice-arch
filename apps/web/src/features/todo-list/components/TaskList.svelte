@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { filteredTasks, isLoading, tasks } from "../stores";
-  import TaskCard from "./TaskCard.svelte";
+import { filteredTasks, isLoading, tasks } from "../stores";
+import TaskCard from "./TaskCard.svelte";
 
-  export let navigateToDetail: ((id: string) => void) | undefined = undefined;
+export let navigateToDetail: ((id: string) => void) | undefined = undefined;
 </script>
 
 {#if $isLoading && $tasks.length === 0}

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import CreateTaskDialog from "../components/CreateTaskDialog.svelte";
-  import TaskFilterBar from "../components/TaskFilterBar.svelte";
-  import TaskList from "../components/TaskList.svelte";
-  import TodoListHeader from "../components/TodoListHeader.svelte";
-  import { error, tasksStore } from "../stores";
+import { onMount } from "svelte";
+import CreateTaskDialog from "../components/CreateTaskDialog.svelte";
+import TaskFilterBar from "../components/TaskFilterBar.svelte";
+import TaskList from "../components/TaskList.svelte";
+import TodoListHeader from "../components/TodoListHeader.svelte";
+import { error, tasksStore } from "../stores";
 
-  export let navigateToDetail: ((id: string) => void) | undefined = undefined;
+export let navigateToDetail: ((id: string) => void) | undefined = undefined;
 
-  onMount(() => {
-    void tasksStore.fetchAll();
-  });
+onMount(() => {
+  void tasksStore.fetchAll();
+});
 </script>
 
 <div class="container mx-auto py-8 px-4 max-w-6xl">

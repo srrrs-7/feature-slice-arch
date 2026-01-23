@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
-  import { tasksStore } from "../stores";
-  import type { Task, TaskStatus } from "../types";
-  import TaskStatusBadge from "./TaskStatusBadge.svelte";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { tasksStore } from "../stores";
+import type { Task, TaskStatus } from "../types";
+import TaskStatusBadge from "./TaskStatusBadge.svelte";
+import { formatDateCompact } from "$lib/utils/date";
 
-  export let task: Task;
-  export let navigateToDetail: ((id: string) => void) | undefined = undefined;
+export let task: Task;
+export let navigateToDetail: ((id: string) => void) | undefined = undefined;
 
 const statusCycle: Record<TaskStatus, TaskStatus> = {
   pending: "in_progress",
@@ -38,16 +39,6 @@ function handleCardClick() {
     navigateToDetail(task.id);
   }
 }
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 </script>
 
 <Card.Root class="cursor-pointer hover:shadow-md transition-shadow" onclick={handleCardClick}>
@@ -70,7 +61,7 @@ function formatDate(dateString: string) {
   </Card.Header>
   <Card.Footer class="flex justify-between items-center">
     <span class="text-xs text-muted-foreground">
-      {formatDate(task.createdAt)}
+      {formatDateCompact(task.createdAt)}
     </span>
     <div class="flex gap-2">
       <Button variant="outline" size="sm" onclick={handleDelete}>

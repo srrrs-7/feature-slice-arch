@@ -45,6 +45,20 @@ export const responseUnexpectedError = (c: Context, _error: unknown = {}) =>
     500,
   );
 
+export const responseUnauthorized = (
+  c: Context,
+  error: { message?: string } = {},
+) =>
+  c.json(
+    { error: "UNAUTHORIZED", message: error.message ?? "Unauthorized" },
+    401,
+  );
+
+export const responseForbidden = (
+  c: Context,
+  error: { message?: string } = {},
+) => c.json({ error: "FORBIDDEN", message: error.message ?? "Forbidden" }, 403);
+
 // Helper to format zod issues into readable message
 const formatZodIssues = (issues: z.ZodIssue[]): string =>
   issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ");

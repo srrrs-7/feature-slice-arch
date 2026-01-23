@@ -1,74 +1,74 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button";
-  import TaskStatusBadge from "../../todo-list/components/TaskStatusBadge.svelte";
-  import { currentTask, taskDetailStore } from "../stores";
-  import type { TaskStatus } from "../types";
+import { Button } from "$lib/components/ui/button";
+import TaskStatusBadge from "../../todo-list/components/TaskStatusBadge.svelte";
+import { currentTask, taskDetailStore } from "../stores";
+import type { TaskStatus } from "../types";
 
-  export let onBack: () => void;
-  export let onDelete: () => void;
+export let onBack: () => void;
+export let onDelete: () => void;
 
-  let isEditingTitle = false;
-  let editTitle = "";
+let isEditingTitle = false;
+let editTitle = "";
 
-  function startEditTitle() {
-    if (!$currentTask) return;
-    editTitle = $currentTask.title;
-    isEditingTitle = true;
+function startEditTitle() {
+  if (!$currentTask) return;
+  editTitle = $currentTask.title;
+  isEditingTitle = true;
+}
+
+function cancelEditTitle() {
+  isEditingTitle = false;
+  editTitle = "";
+}
+
+async function saveTitle() {
+  if (!$currentTask || !editTitle.trim()) {
+    cancelEditTitle();
+    return;
   }
 
-  function cancelEditTitle() {
+  try {
+    await taskDetailStore.updateTitle($currentTask.id, editTitle.trim());
     isEditingTitle = false;
-    editTitle = "";
+  } catch (err) {
+    console.error("Failed to update title:", err);
   }
+}
 
-  async function saveTitle() {
-    if (!$currentTask || !editTitle.trim()) {
-      cancelEditTitle();
-      return;
-    }
-
-    try {
-      await taskDetailStore.updateTitle($currentTask.id, editTitle.trim());
-      isEditingTitle = false;
-    } catch (err) {
-      console.error("Failed to update title:", err);
-    }
+function handleTitleKeydown(e: KeyboardEvent) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    void saveTitle();
+  } else if (e.key === "Escape") {
+    cancelEditTitle();
   }
+}
 
-  function handleTitleKeydown(e: KeyboardEvent) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      saveTitle();
-    } else if (e.key === "Escape") {
-      cancelEditTitle();
-    }
+async function handleStatusClick() {
+  if (!$currentTask) return;
+
+  const statusCycle: Record<TaskStatus, TaskStatus> = {
+    pending: "in_progress",
+    in_progress: "completed",
+    completed: "pending",
+  };
+
+  const newStatus = statusCycle[$currentTask.status];
+  try {
+    await taskDetailStore.updateStatus($currentTask.id, newStatus);
+  } catch (err) {
+    console.error("Failed to update status:", err);
   }
-
-  async function handleStatusClick() {
-    if (!$currentTask) return;
-
-    const statusCycle: Record<TaskStatus, TaskStatus> = {
-      pending: "in_progress",
-      in_progress: "completed",
-      completed: "pending",
-    };
-
-    const newStatus = statusCycle[$currentTask.status];
-    try {
-      await taskDetailStore.updateStatus($currentTask.id, newStatus);
-    } catch (err) {
-      console.error("Failed to update status:", err);
-    }
-  }
+}
 </script>
 
 {#if $currentTask}
   <div class="mb-6">
     <div class="flex items-center justify-between mb-4">
-      <Button variant="ghost" size="sm" on:click={onBack}>
+      <Button variant="ghost" size="sm" onclick={onBack}>
         ← Back to List
       </Button>
-      <Button variant="destructive" size="sm" on:click={onDelete}>
+      <Button variant="destructive" size="sm" onclick={onDelete}>
         Delete
       </Button>
     </div>

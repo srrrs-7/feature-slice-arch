@@ -1,22 +1,22 @@
 <script lang="ts">
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Button } from "$lib/components/ui/button";
-  import { currentTask, taskDetailStore } from "../stores";
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { currentTask, taskDetailStore } from "../stores";
 
-  export let open = false;
-  export let onConfirm: () => void;
-  export let onCancel: () => void;
+export let open = false;
+export let onConfirm: () => void;
+export let onCancel: () => void;
 
-  async function handleConfirm() {
-    if (!$currentTask) return;
+async function handleConfirm() {
+  if (!$currentTask) return;
 
-    try {
-      await taskDetailStore.deleteTask($currentTask.id);
-      onConfirm();
-    } catch (err) {
-      console.error("Failed to delete task:", err);
-    }
+  try {
+    await taskDetailStore.deleteTask($currentTask.id);
+    onConfirm();
+  } catch (err) {
+    console.error("Failed to delete task:", err);
   }
+}
 </script>
 
 <Dialog.Root {open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
@@ -38,8 +38,8 @@
     {/if}
 
     <Dialog.Footer>
-      <Button variant="outline" on:click={onCancel}>Cancel</Button>
-      <Button variant="destructive" on:click={handleConfirm}>
+      <Button variant="outline" onclick={onCancel}>Cancel</Button>
+      <Button variant="destructive" onclick={handleConfirm}>
         Delete
       </Button>
     </Dialog.Footer>

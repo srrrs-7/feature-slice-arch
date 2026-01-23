@@ -1,43 +1,43 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
-  import { currentTask, isLoading, error, taskDetailStore } from "../stores";
-  import TaskDetailHeader from "../components/TaskDetailHeader.svelte";
-  import TaskDetailDescription from "../components/TaskDetailDescription.svelte";
-  import TaskDetailMetadata from "../components/TaskDetailMetadata.svelte";
-  import DeleteConfirmDialog from "../components/DeleteConfirmDialog.svelte";
+import { onDestroy, onMount } from "svelte";
+import DeleteConfirmDialog from "../components/DeleteConfirmDialog.svelte";
+import TaskDetailDescription from "../components/TaskDetailDescription.svelte";
+import TaskDetailHeader from "../components/TaskDetailHeader.svelte";
+import TaskDetailMetadata from "../components/TaskDetailMetadata.svelte";
+import { currentTask, error, isLoading, taskDetailStore } from "../stores";
 
-  export let taskId: string;
-  export let onNavigateBack: () => void;
+export let taskId: string;
+export let onNavigateBack: () => void;
 
-  let showDeleteDialog = false;
+let showDeleteDialog = false;
 
-  onMount(() => {
-    if (taskId) {
-      taskDetailStore.fetchById(taskId);
-    }
-  });
-
-  onDestroy(() => {
-    taskDetailStore.clear();
-  });
-
-  function handleBack() {
-    onNavigateBack();
+onMount(() => {
+  if (taskId) {
+    void taskDetailStore.fetchById(taskId);
   }
+});
 
-  function handleDeleteClick() {
-    showDeleteDialog = true;
-  }
+onDestroy(() => {
+  taskDetailStore.clear();
+});
 
-  function handleDeleteConfirm() {
-    showDeleteDialog = false;
-    // Navigate back after successful deletion
-    onNavigateBack();
-  }
+function handleBack() {
+  onNavigateBack();
+}
 
-  function handleDeleteCancel() {
-    showDeleteDialog = false;
-  }
+function handleDeleteClick() {
+  showDeleteDialog = true;
+}
+
+function handleDeleteConfirm() {
+  showDeleteDialog = false;
+  // Navigate back after successful deletion
+  onNavigateBack();
+}
+
+function handleDeleteCancel() {
+  showDeleteDialog = false;
+}
 </script>
 
 <div class="container mx-auto py-8 px-4 max-w-4xl">

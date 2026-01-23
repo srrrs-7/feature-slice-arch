@@ -1,6 +1,6 @@
 export {
   currentTask,
-  isLoading,
   error,
+  isLoading,
   taskDetailStore,
 } from "./task-detail";

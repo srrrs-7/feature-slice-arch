@@ -1,17 +1,7 @@
 <script lang="ts">
-  import * as Card from "$lib/components/ui/card";
-  import { currentTask } from "../stores";
-
-  function formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  }
+import * as Card from "$lib/components/ui/card";
+import { currentTask } from "../stores";
+import { formatDateLocale } from "$lib/utils/date";
 </script>
 
 {#if $currentTask}
@@ -23,11 +13,11 @@
       <dl class="space-y-2 text-sm">
         <div class="flex justify-between">
           <dt class="font-medium text-muted-foreground">Created:</dt>
-          <dd class="text-foreground">{formatDate($currentTask.createdAt)}</dd>
+          <dd class="text-foreground">{formatDateLocale($currentTask.createdAt)}</dd>
         </div>
         <div class="flex justify-between">
           <dt class="font-medium text-muted-foreground">Updated:</dt>
-          <dd class="text-foreground">{formatDate($currentTask.updatedAt)}</dd>
+          <dd class="text-foreground">{formatDateLocale($currentTask.updatedAt)}</dd>
         </div>
         <div class="flex justify-between">
           <dt class="font-medium text-muted-foreground">ID:</dt>

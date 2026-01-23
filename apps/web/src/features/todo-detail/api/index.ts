@@ -1,6 +1,6 @@
 // Re-export API functions from todo-list
 export {
+  deleteTask,
   getTaskById,
   updateTask,
-  deleteTask,
 } from "../../todo-list/api";

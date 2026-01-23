@@ -1,44 +1,44 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import TodoListPage from "./features/todo-list/pages/TodoListPage.svelte";
-  import TaskDetailPage from "./features/todo-detail/pages/TaskDetailPage.svelte";
+import { onMount } from "svelte";
+import TaskDetailPage from "./features/todo-detail/pages/TaskDetailPage.svelte";
+import TodoListPage from "./features/todo-list/pages/TodoListPage.svelte";
 
-  let currentRoute: "list" | "detail" = "list";
-  let taskId: string | null = null;
+let currentRoute: "list" | "detail" = "list";
+let taskId: string | null = null;
 
-  function updateRoute() {
-    const path = window.location.pathname;
-    const match = path.match(/^\/tasks\/([a-f0-9-]+)$/);
+function updateRoute() {
+  const path = window.location.pathname;
+  const match = path.match(/^\/tasks\/([a-f0-9-]+)$/);
 
-    if (match) {
-      currentRoute = "detail";
-      taskId = match[1];
-    } else {
-      currentRoute = "list";
-      taskId = null;
-    }
+  if (match) {
+    currentRoute = "detail";
+    taskId = match[1];
+  } else {
+    currentRoute = "list";
+    taskId = null;
   }
+}
 
-  function navigateToList() {
-    window.history.pushState({}, "", "/");
-    updateRoute();
-  }
+function navigateToList() {
+  window.history.pushState({}, "", "/");
+  updateRoute();
+}
 
-  function navigateToDetail(id: string) {
-    window.history.pushState({}, "", `/tasks/${id}`);
-    updateRoute();
-  }
+function navigateToDetail(id: string) {
+  window.history.pushState({}, "", `/tasks/${id}`);
+  updateRoute();
+}
 
-  onMount(() => {
-    updateRoute();
+onMount(() => {
+  updateRoute();
 
-    // Handle browser back/forward buttons
-    window.addEventListener("popstate", updateRoute);
+  // Handle browser back/forward buttons
+  window.addEventListener("popstate", updateRoute);
 
-    return () => {
-      window.removeEventListener("popstate", updateRoute);
-    };
-  });
+  return () => {
+    window.removeEventListener("popstate", updateRoute);
+  };
+});
 </script>
 
 <main class="min-h-screen bg-background">

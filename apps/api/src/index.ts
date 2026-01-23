@@ -1,29 +1,29 @@
 import { Hono } from "hono";
 import { taskRoutes } from "./features/tasks/index.ts";
+import { logger } from "./lib/logger/index.ts";
+import { bearerAuthMiddleware } from "./middleware/bearer.ts";
+import { corsMiddleware } from "./middleware/cors.ts";
 
-const app = new Hono();
-
-// Health check
-app.get("/health", (c) => c.json({ status: "ok" }));
-
-// Task routes
-app.route("/api/tasks", taskRoutes);
-
-// 404 handler
-app.notFound((c) => c.json({ error: "Not Found" }, 404));
-
-// Error handler
-app.onError((err, c) => {
-  console.error("Server error:", err);
-  return c.json({ error: "Internal Server Error" }, 500);
-});
+const app = new Hono()
+  .use("*", corsMiddleware)
+  .use("/api/*", bearerAuthMiddleware)
+  .get("/health", (c) => c.json({ status: "ok" }))
+  .route("/api/tasks", taskRoutes)
+  .notFound((c) => c.json({ error: "Not Found" }, 404))
+  .onError((err, c) => {
+    logger.error({ err }, "Server error");
+    return c.json({ error: "Internal Server Error" }, 500);
+  });
 
 // Start server
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env.PORT) || 8080;
 
 export default {
   port,
   fetch: app.fetch,
 };
 
-console.log(`Server running at http://localhost:${port}`);
+// Export AppType for Hono RPC client
+export type AppType = typeof app;
+
+logger.info({ port }, "Server running");

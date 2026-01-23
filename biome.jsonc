@@ -30,6 +30,21 @@
   },
   "overrides": [
     {
+      "includes": ["**/*.svelte"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          },
+          "style": {
+            "useConst": "off",
+            "useImportType": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/storybook/**/*.stories.tsx"],
       "linter": {
         "rules": {

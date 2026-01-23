@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
-import type { Task, TaskStatus, UpdateTaskInput } from "../types";
 import * as api from "../api";
+import type { Task, TaskStatus } from "../types";
 
 export const currentTask = writable<Task | null>(null);
 export const isLoading = writable<boolean>(false);
@@ -45,7 +45,7 @@ export const taskDetailStore = {
 
   async updateDescription(
     id: string,
-    description: string | null
+    description: string | null,
   ): Promise<void> {
     // Optimistic update
     let original: Task | null = null;
@@ -64,7 +64,7 @@ export const taskDetailStore = {
         currentTask.set(original);
       }
       error.set(
-        err instanceof Error ? err.message : "Failed to update description"
+        err instanceof Error ? err.message : "Failed to update description",
       );
       throw err;
     }

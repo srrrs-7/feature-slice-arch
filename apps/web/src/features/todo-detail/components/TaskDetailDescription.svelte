@@ -1,36 +1,36 @@
 <script lang="ts">
-  import * as Card from "$lib/components/ui/card";
-  import { Textarea } from "$lib/components/ui/textarea";
-  import { Button } from "$lib/components/ui/button";
-  import { currentTask, taskDetailStore } from "../stores";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
+import { Textarea } from "$lib/components/ui/textarea";
+import { currentTask, taskDetailStore } from "../stores";
 
-  let isEditing = false;
-  let editDescription = "";
+let isEditing = false;
+let editDescription = "";
 
-  function startEdit() {
-    if (!$currentTask) return;
-    editDescription = $currentTask.description || "";
-    isEditing = true;
-  }
+function startEdit() {
+  if (!$currentTask) return;
+  editDescription = $currentTask.description || "";
+  isEditing = true;
+}
 
-  function cancelEdit() {
+function cancelEdit() {
+  isEditing = false;
+  editDescription = "";
+}
+
+async function saveDescription() {
+  if (!$currentTask) return;
+
+  const trimmed = editDescription.trim();
+  const value = trimmed.length === 0 ? null : trimmed;
+
+  try {
+    await taskDetailStore.updateDescription($currentTask.id, value);
     isEditing = false;
-    editDescription = "";
+  } catch (err) {
+    console.error("Failed to update description:", err);
   }
-
-  async function saveDescription() {
-    if (!$currentTask) return;
-
-    const trimmed = editDescription.trim();
-    const value = trimmed.length === 0 ? null : trimmed;
-
-    try {
-      await taskDetailStore.updateDescription($currentTask.id, value);
-      isEditing = false;
-    } catch (err) {
-      console.error("Failed to update description:", err);
-    }
-  }
+}
 </script>
 
 {#if $currentTask}
@@ -49,8 +49,8 @@
             class="resize-none"
           />
           <div class="flex gap-2">
-            <Button size="sm" on:click={saveDescription}>Save</Button>
-            <Button size="sm" variant="outline" on:click={cancelEdit}>
+            <Button size="sm" onclick={saveDescription}>Save</Button>
+            <Button size="sm" variant="outline" onclick={cancelEdit}>
               Cancel
             </Button>
           </div>
