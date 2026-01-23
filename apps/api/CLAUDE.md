@@ -51,11 +51,14 @@ src/
 │       │   └── repository.ts   # Data access with Prisma
 │       ├── handler.ts      # HTTP handlers (Hono routes)
 │       └── validator.ts    # Zod validation schemas
+├── middleware/         # Hono middleware
+│   ├── cors.ts         # CORS configuration
+│   └── bearer.ts       # Bearer token authentication
 ├── lib/                # Shared workspace (@api/lib)
 │   ├── db/             # Database configuration
 │   ├── error/          # Common error types
 │   ├── http/           # HTTP response helpers
-│   ├── logger/         # Pino logger
+│   ├── logger/         # Pino logger (with redaction)
 │   ├── time/           # Time utilities
 │   └── types/          # Shared types
 └── index.ts            # Entry point - Hono app setup
@@ -223,6 +226,40 @@ DB_DBNAME=mydb
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
 ```
+
+## Middleware
+
+### CORS (`middleware/cors.ts`)
+
+Configured for local development:
+- Allowed origins: `http://localhost:3000`, `http://localhost:5173`
+- Allowed methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+- Credentials: enabled
+
+### Bearer Authentication (`middleware/bearer.ts`)
+
+Simple Bearer token authentication:
+- Validates `Authorization: Bearer <token>` header
+- Returns 401 for missing/invalid authorization
+- Applied to `/api/*` routes
+
+## Logger
+
+Uses **pino** with automatic redaction of sensitive fields:
+
+```typescript
+import { logger, createLogger } from "@api/lib/logger";
+
+// Basic usage
+logger.info({ port }, "Server running");
+logger.error({ err }, "Server error");
+
+// Child logger for specific module
+const log = createLogger("taskService");
+log.debug({ taskId }, "Fetching task");
+```
+
+**Redacted fields**: password, secret, token, authorization, apiKey, creditCard, ssn
 
 ## Bun-Specific Notes
 

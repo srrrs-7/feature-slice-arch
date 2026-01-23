@@ -4,18 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Web Application
 
-Bun-native frontend using `Bun.serve()` with HTML imports.
+Svelte 5 SPA with Vite, Tailwind CSS 4, and shadcn-svelte UI components.
 
 ## Commands
 
 ```bash
 # Development
-bun run dev              # Start web server with HMR (hot module reload)
-bun run start            # Start web server (production)
+bun run dev              # Start dev server with HMR (port 3000)
 
 # Build & Type Check
-bun run build            # Build web application
-bun run check:type       # Type check with tsgo
+bun run build            # Build for production
+bun run check:type       # Type check with svelte-check
+
+# Preview
+bun run preview          # Preview production build
 
 # Clean
 bun run clean            # Remove dist and node_modules
@@ -23,128 +25,196 @@ bun run clean            # Remove dist and node_modules
 
 ## Architecture
 
-Simple Bun-native frontend with HTML imports:
+Feature-Sliced Architecture:
 
 ```
 src/
-├── index.ts            # Entry point - Bun.serve() configuration
-└── ...                 # Additional source files
+├── features/           # Feature modules
+│   └── {feature}/
+│       ├── .docs/          # Feature documentation
+│       │   └── design.md
+│       ├── pages/          # Page components
+│       ├── components/     # UI components
+│       ├── api/            # Hono RPC client
+│       │   ├── client.ts   # API client setup
+│       │   └── index.ts    # API wrapper functions
+│       ├── stores/         # Svelte stores
+│       │   └── index.ts
+│       └── types/          # Type definitions
+│           └── index.ts
+├── lib/
+│   ├── components/ui/  # shadcn-svelte components
+│   └── utils/          # Utility functions
+│       ├── index.ts    # cn() helper, types
+│       └── date.ts     # Date formatting
+├── App.svelte          # Root component
+├── app.css             # Global styles (Tailwind)
+└── main.ts             # Entry point
 ```
 
-## Bun.serve() with HTML Imports
+## Tech Stack
 
-This project uses Bun's native HTML import feature instead of traditional bundlers like Vite or Webpack.
+- **Framework**: Svelte 5.48 with runes (`$props()`, `$state()`, `$derived()`)
+- **Build**: Vite 7
+- **Styling**: Tailwind CSS 4 with `@tailwindcss/postcss`
+- **UI Components**: shadcn-svelte (bits-ui based)
+- **API Client**: Hono RPC Client (type-safe)
+- **State Management**: Svelte stores (writable, derived)
 
-### Key Features
+## Svelte 5 Patterns
 
-- **HTML imports** - Import `.html` files directly in TypeScript
-- **Automatic bundling** - Bun bundles `.tsx`, `.jsx`, `.js` automatically
-- **CSS support** - `<link>` tags work with Bun's CSS bundler
-- **Hot Module Reload (HMR)** - Built-in with `bun --hot`
-- **No separate bundler needed** - Bun handles everything
+### Component Props
 
-### Server Setup
+```svelte
+<script lang="ts">
+  // Use $props() for component props (Svelte 5 runes)
+  let {
+    ref = $bindable(null),
+    class: className,
+    children,
+    ...restProps
+  } = $props();
+</script>
+```
+
+### Event Handlers
+
+```svelte
+<!-- Use onclick instead of on:click for Svelte 5 -->
+<Button onclick={handleClick}>Click me</Button>
+
+<!-- Native elements still use on:click -->
+<button on:click={handleClick}>Click</button>
+```
+
+### Stores
+
+```svelte
+<script lang="ts">
+  import { tasks, isLoading, tasksStore } from "../stores";
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    void tasksStore.fetchAll();
+  });
+</script>
+
+<!-- Use $ prefix for store values -->
+{#if $isLoading}
+  <p>Loading...</p>
+{:else}
+  {#each $tasks as task (task.id)}
+    <div>{task.title}</div>
+  {/each}
+{/if}
+```
+
+## API Integration
+
+### Hono RPC Client
 
 ```typescript
-import index from "./index.html"
+// api/client.ts
+import { hc } from "hono/client";
+import type { AppType } from "@api/index";
 
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // Optional WebSocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,      // Hot Module Reload
-    console: true,  // Browser console support
-  }
-})
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+export const client = hc<AppType>(apiUrl);
+export const tasksApi = client.api.tasks;
 ```
 
-### HTML Files
+### API Wrapper Functions
 
-HTML files can directly import TypeScript/JavaScript:
-
-```html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
-```
-
-### Frontend Code
-
-React and CSS imports work seamlessly:
-
-```tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// Import CSS files directly
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
+```typescript
+// api/index.ts
+export async function getTasks(): Promise<{ tasks: Task[] }> {
+  const res = await tasksApi.$get();
+  if (!res.ok) throw new Error(`Failed: ${res.statusText}`);
+  return await res.json();
 }
-
-root.render(<Frontend />);
 ```
 
-## Bun-Specific Guidelines
+## Styling
 
-### Use Bun APIs Instead of Node.js
+### Tailwind CSS 4
 
-- `Bun.serve()` for HTTP servers (NOT Express)
-- `Bun.file()` for file operations (NOT `node:fs`)
-- `WebSocket` built-in (NOT `ws` package)
-- `Bun.$` for shell commands (NOT `execa`)
-- `bun:sqlite` for SQLite (NOT `better-sqlite3`)
-- `Bun.redis` for Redis (NOT `ioredis`)
-- `Bun.sql` for Postgres (NOT `pg` or `postgres.js`)
+```css
+/* app.css */
+@import "tailwindcss";
 
-### No Need for Dotenv
+@theme {
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.145 0 0);
+  /* ... */
+}
+```
 
-Bun automatically loads `.env` files - no need for `dotenv` package.
+### shadcn-svelte Components
 
-### Commands
+```svelte
+<script lang="ts">
+  import { Button } from "$lib/components/ui/button";
+  import * as Dialog from "$lib/components/ui/dialog";
+  import { cn } from "$lib/utils";
+</script>
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file>` instead of `webpack` or `esbuild`
-- Use `bun run <script>` instead of `npm run <script>`
-- Use `bunx <package>` instead of `npx <package>`
+<Button variant="destructive" size="sm" onclick={handleDelete}>
+  Delete
+</Button>
+```
 
-## Testing
-
-Use `bun:test` for testing:
+## Import Aliases
 
 ```typescript
-import { test, expect } from "bun:test";
+// App components
+import Component from "@/features/todo-list/Component.svelte";
 
-test("hello world", () => {
-  expect(1).toBe(1);
-});
+// API types (from API workspace)
+import type { AppType } from "@api/index";
+import type { Task } from "@api/features/tasks/domain/task";
+
+// shadcn-svelte components
+import { Button } from "$lib/components/ui/button";
+import { cn } from "$lib/utils";
 ```
 
-## Additional Resources
+## Environment Variables
 
-For more information about Bun APIs, see `node_modules/bun-types/docs/**.mdx`.
+```bash
+VITE_API_URL=http://localhost:8080
+```
+
+## Timezone Handling
+
+- API returns timestamps in UTC (ISO 8601)
+- Convert to local timezone for display:
+
+```typescript
+const createdAtLocal = new Date(task.createdAt).toLocaleString();
+```
+
+## Best Practices
+
+1. **Floating Promises**: Use `void` operator for fire-and-forget async calls
+   ```typescript
+   onMount(() => {
+     void tasksStore.fetchAll();
+   });
+   ```
+
+2. **Optimistic Updates**: Update UI immediately, rollback on error
+   ```typescript
+   // Store method with optimistic update
+   let original: Task | null = null;
+   tasks.update((items) => {
+     original = items.find((t) => t.id === id);
+     return items.map((t) => (t.id === id ? { ...t, ...input } : t));
+   });
+   ```
+
+3. **Error Handling**: Set error state in stores
+   ```typescript
+   catch (err) {
+     error.set(err instanceof Error ? err.message : "Unknown error");
+   }
+   ```

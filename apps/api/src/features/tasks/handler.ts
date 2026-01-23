@@ -49,15 +49,12 @@ export default new Hono()
           switch (error.type) {
             case "NOT_FOUND":
               return responseNotFound(c, {
-                message: `Task not found: ${error.taskId}`,
+                message: "Task not found",
               });
             case "VALIDATION_ERROR":
               return responseBadRequest(c, error.message);
             case "ALREADY_EXISTS":
-              return responseBadRequest(
-                c,
-                `Task already exists: ${error.taskId}`,
-              );
+              return responseBadRequest(c, "Task already exists");
             case "DATABASE_ERROR":
               return responseDBAccessError(c);
           }
@@ -84,15 +81,12 @@ export default new Hono()
           switch (error.type) {
             case "NOT_FOUND":
               return responseNotFound(c, {
-                message: `Task not found: ${error.taskId}`,
+                message: "Task not found",
               });
             case "VALIDATION_ERROR":
               return responseBadRequest(c, error.message);
             case "ALREADY_EXISTS":
-              return responseBadRequest(
-                c,
-                `Task already exists: ${error.taskId}`,
-              );
+              return responseBadRequest(c, "Task already exists");
             case "DATABASE_ERROR":
               return responseDBAccessError(c);
           }
@@ -126,15 +120,12 @@ export default new Hono()
           switch (error.type) {
             case "NOT_FOUND":
               return responseNotFound(c, {
-                message: `Task not found: ${error.taskId}`,
+                message: "Task not found",
               });
             case "VALIDATION_ERROR":
               return responseBadRequest(c, error.message);
             case "ALREADY_EXISTS":
-              return responseBadRequest(
-                c,
-                `Task already exists: ${error.taskId}`,
-              );
+              return responseBadRequest(c, "Task already exists");
             case "DATABASE_ERROR":
               return responseDBAccessError(c);
           }
@@ -161,15 +152,12 @@ export default new Hono()
           switch (error.type) {
             case "NOT_FOUND":
               return responseNotFound(c, {
-                message: `Task not found: ${error.taskId}`,
+                message: "Task not found",
               });
             case "VALIDATION_ERROR":
               return responseBadRequest(c, error.message);
             case "ALREADY_EXISTS":
-              return responseBadRequest(
-                c,
-                `Task already exists: ${error.taskId}`,
-              );
+              return responseBadRequest(c, "Task already exists");
             case "DATABASE_ERROR":
               return responseDBAccessError(c);
           }

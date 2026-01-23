@@ -6,6 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Bun monorepo with Feature-Sliced Architecture for the API. Uses Bun workspaces with `apps/*` and `packages/*`.
 
+```
+apps/
+├── api/     # Hono + Prisma REST API
+├── web/     # Svelte 5 + Vite SPA
+└── iac/     # Terraform AWS Infrastructure
+```
+
 ## Commands
 
 ```bash
@@ -70,7 +77,26 @@ New features should follow `.example/` as a template.
 
 ### Web (`apps/web`)
 
-Bun-native frontend using `Bun.serve()` with HTML imports.
+Svelte 5 SPA with Vite, Tailwind CSS 4, and shadcn-svelte UI components.
+
+```
+apps/web/
+├── src/
+│   ├── features/           # Feature modules
+│   │   └── {feature}/
+│   │       ├── pages/          # Page components
+│   │       ├── components/     # UI components
+│   │       ├── api/            # Hono RPC client
+│   │       ├── stores/         # Svelte stores
+│   │       └── types/          # Type definitions
+│   ├── lib/
+│   │   ├── components/ui/  # shadcn-svelte components
+│   │   └── utils/          # Utility functions
+│   ├── App.svelte          # Root component
+│   └── main.ts             # Entry point
+├── index.html
+└── vite.config.ts
+```
 
 ## Bun-Specific Guidelines
 
@@ -174,3 +200,18 @@ console.log(date.toLocaleString()); // "2025/1/23 17:00:00" (JST)
 const localDate = new Date("2025-01-23T17:00:00"); // User's local time
 const utcDate = localDate.toISOString(); // "2025-01-23T08:00:00.000Z"
 ```
+
+## Infrastructure (`apps/iac`)
+
+Terraform-based AWS infrastructure with modular architecture.
+
+```bash
+# From apps/iac directory
+make plan ENV=dev      # Terraform plan
+make apply ENV=dev     # Terraform apply
+make validate ENV=dev  # Validate configuration
+```
+
+**Architecture**: CloudFront → ALB → ECS Fargate → Aurora Serverless v2
+
+See `apps/iac/CLAUDE.md` for detailed infrastructure documentation.

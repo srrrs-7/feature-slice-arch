@@ -12,13 +12,19 @@ datasource db {
   provider = "postgresql"
 }
 
+enum TaskStatus {
+  pending
+  in_progress
+  completed
+}
+
 model Task {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   description String?
-  status      String   @default("pending") // "pending" | "in_progress" | "completed"
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      TaskStatus @default(pending)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@map("tasks")
 }

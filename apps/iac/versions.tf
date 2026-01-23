@@ -1,0 +1,21 @@
+# =============================================================================
+# Terraform and Provider Versions
+# =============================================================================
+# This file defines the required Terraform version and provider configurations.
+# Following HashiCorp best practices for version constraints.
+# =============================================================================
+
+terraform {
+  required_version = ">= 1.9.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+# =============================================================================
+# ECS Module Outputs
+# =============================================================================
+
+output "cluster_id" {
+  description = "ECS cluster ID"
+  value       = aws_ecs_cluster.main.id
+}
+
+output "cluster_arn" {
+  description = "ECS cluster ARN"
+  value       = aws_ecs_cluster.main.arn
+}
+
+output "cluster_name" {
+  description = "ECS cluster name"
+  value       = aws_ecs_cluster.main.name
+}
+
+output "service_id" {
+  description = "ECS service ID"
+  value       = aws_ecs_service.api.id
+}
+
+output "service_name" {
+  description = "ECS service name"
+  value       = aws_ecs_service.api.name
+}
+
+output "task_definition_arn" {
+  description = "Task definition ARN"
+  value       = aws_ecs_task_definition.api.arn
+}
+
+output "task_definition_family" {
+  description = "Task definition family"
+  value       = aws_ecs_task_definition.api.family
+}
