@@ -1,19 +1,32 @@
 {
   "name": "web",
-  "module": "src/index.ts",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot ./src//index.ts",
-    "start": "bun ./src//index.ts",
-    "build": "bun build ./src//index.ts --outdir ./dist",
-    "clean": "rm -rf dist node_modules",
-    "check:type": "tsgo --noEmit"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:type": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "hono": "^4.11.4",
+    "svelte": "^5.48.0",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "@internationalized/date": "^3.10.0",
+    "@lucide/svelte": "^0.561.0",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tsconfig/svelte": "^5.0.6",
+    "autoprefixer": "^10.4.23",
+    "bits-ui": "^2.14.4",
+    "postcss": "^8.5.6",
+    "svelte-check": "^4.3.5",
+    "tailwind-variants": "^3.2.2",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   }
 }
