@@ -415,6 +415,7 @@ bd         # bun run dev
 bda        # bun run dev:api
 bdw        # bun run dev:web
 bt         # bun run test:run
+btc        # bun run test:coverage (カバレッジ付きテスト)
 btw        # bun run test:watch
 bc         # bun run check
 bf         # bun run format
@@ -451,6 +452,98 @@ gds        # git diff --staged
 grb        # git rebase
 grbc       # git rebase --continue
 grba       # git rebase --abort
+```
+
+#### GitHub CLIショートカット
+```bash
+ghpr       # gh pr create (PR作成)
+ghprl      # gh pr list (PR一覧)
+ghprv      # gh pr view (PR表示)
+ghprc      # gh pr checkout (PRチェックアウト)
+ghprm      # gh pr merge (PRマージ)
+ghprs      # gh pr status (PRステータス)
+ghis       # gh issue create (Issue作成)
+ghisl      # gh issue list (Issue一覧)
+ghisv      # gh issue view (Issue表示)
+ghrv       # gh repo view (リポジトリ表示)
+ghrw       # gh repo view --web (ブラウザで開く)
+ghas       # gh auth status (認証状態)
+ghal       # gh auth login (認証)
+```
+
+#### AWSショートカット (apps/iacインフラ用)
+```bash
+# 基本
+awswho     # aws sts get-caller-identity (現在のID確認)
+awsprofile # export AWS_PROFILE= (プロファイル切り替え)
+
+# ECS (APIコンテナ)
+ecsls      # aws ecs list-clusters (クラスタ一覧)
+ecssvc     # aws ecs list-services --cluster (サービス一覧)
+ecstask    # aws ecs list-tasks --cluster (タスク一覧)
+ecsdesc    # aws ecs describe-tasks --cluster (タスク詳細)
+ecsrun     # aws ecs run-task --cluster (タスク実行)
+ecsstop    # aws ecs stop-task --cluster (タスク停止)
+
+# ECR (コンテナレジストリ)
+ecrls      # aws ecr describe-repositories (リポジトリ一覧)
+ecrimg     # aws ecr describe-images --repository-name (イメージ一覧)
+ecrlogin   # aws ecr get-login-password | docker login (ECRログイン)
+
+# RDS/Aurora (データベース)
+rdsls      # aws rds describe-db-clusters (クラスタ一覧)
+rdsinst    # aws rds describe-db-instances (インスタンス一覧)
+rdssnap    # aws rds describe-db-cluster-snapshots (スナップショット一覧)
+rdsstart   # aws rds start-db-cluster --db-cluster-identifier (起動)
+rdsstop    # aws rds stop-db-cluster --db-cluster-identifier (停止)
+
+# CloudFront (CDN)
+cflist     # aws cloudfront list-distributions (ディストリビューション一覧)
+cfinval    # aws cloudfront create-invalidation --distribution-id (キャッシュ削除)
+cfget      # aws cloudfront get-distribution --id (ディストリビューション詳細)
+
+# S3 (静的ホスティング)
+s3ls       # aws s3 ls (バケット一覧)
+s3sync     # aws s3 sync (同期)
+s3cp       # aws s3 cp (コピー)
+s3rm       # aws s3 rm (削除)
+
+# CloudWatch Logs (ログ管理)
+logtail    # aws logs tail --follow (ログ監視)
+loggrp     # aws logs describe-log-groups (ロググループ一覧)
+logstream  # aws logs describe-log-streams --log-group-name (ログストリーム一覧)
+
+# Secrets Manager (機密情報)
+secget     # aws secretsmanager get-secret-value --secret-id (シークレット取得)
+secls      # aws secretsmanager list-secrets (シークレット一覧)
+
+# ALB (Application Load Balancer)
+albls      # aws elbv2 describe-load-balancers (ALB一覧)
+albtg      # aws elbv2 describe-target-groups (ターゲットグループ一覧)
+albhealth  # aws elbv2 describe-target-health --target-group-arn (ヘルスチェック)
+
+# VPC (ネットワーク)
+vpcls      # aws ec2 describe-vpcs (VPC一覧)
+subnetls   # aws ec2 describe-subnets (サブネット一覧)
+sgls       # aws ec2 describe-security-groups (セキュリティグループ一覧)
+```
+
+#### Terraformショートカット
+```bash
+tf         # terraform
+tfi        # terraform init
+tfp        # terraform plan
+tfa        # terraform apply
+tfd        # terraform destroy
+tfv        # terraform validate
+tff        # terraform fmt -recursive
+tfw        # terraform workspace
+tfwl       # terraform workspace list
+tfws       # terraform workspace select
+tfo        # terraform output
+tfs        # terraform show
+tfsl       # terraform state list
+tfss       # terraform state show
 ```
 
 #### ユーティリティ

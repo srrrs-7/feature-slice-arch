@@ -68,6 +68,7 @@ bd         # bun run dev (API + Web)
 bda        # bun run dev:api
 bdw        # bun run dev:web
 bt         # bun run test:run
+btc        # bun run test:coverage
 btw        # bun run test:watch
 bc         # bun run check
 bf         # bun run format
@@ -101,6 +102,42 @@ grb        # git rebase
 grbc       # git rebase --continue
 grba       # git rebase --abort
 
+# GitHub CLI shortcuts
+ghpr       # gh pr create
+ghprl      # gh pr list
+ghprv      # gh pr view
+ghprc      # gh pr checkout
+ghprm      # gh pr merge
+ghprs      # gh pr status
+ghis       # gh issue create
+ghisl      # gh issue list
+ghisv      # gh issue view
+ghrv       # gh repo view
+ghrw       # gh repo view --web
+ghas       # gh auth status
+ghal       # gh auth login
+
+# AWS CLI shortcuts (for apps/iac infrastructure)
+awswho     # aws sts get-caller-identity
+ecsls      # aws ecs list-clusters
+ecssvc     # aws ecs list-services --cluster
+rdsls      # aws rds describe-db-clusters
+cflist     # aws cloudfront list-distributions
+s3ls       # aws s3 ls
+logtail    # aws logs tail --follow
+secget     # aws secretsmanager get-secret-value --secret-id
+albls      # aws elbv2 describe-load-balancers
+
+# Terraform shortcuts
+tf         # terraform
+tfi        # terraform init
+tfp        # terraform plan
+tfa        # terraform apply
+tfd        # terraform destroy
+tfv        # terraform validate
+tff        # terraform fmt -recursive
+tfo        # terraform output
+
 # Utilities
 reload     # source ~/.bashrc (reload aliases)
 path       # echo $PATH (display PATH nicely)
@@ -113,6 +150,7 @@ ports      # lsof -i -P -n | grep LISTEN (show listening ports)
 bd                    # Start both API and Web servers
 bda                   # Start API only
 bt                    # Run tests
+btc                   # Run tests with coverage
 
 # Database operations
 dbm                   # Run migrations
@@ -125,6 +163,25 @@ gcb feat/new-feature  # Create and checkout new branch
 gaa                   # Stage all changes
 gcm "feat: add user auth"  # Commit with message
 gp                    # Push to remote
+
+# GitHub workflow
+ghpr                  # Create a PR
+ghprl                 # List PRs
+ghprm                 # Merge PR
+
+# AWS operations (for apps/iac)
+awswho                # Check current AWS identity
+ecsls                 # List ECS clusters
+ecssvc my-cluster     # List services in cluster
+logtail /aws/ecs/my-log-group  # Tail logs
+cflist                # List CloudFront distributions
+s3ls s3://my-bucket   # List S3 bucket contents
+
+# Terraform workflow (from apps/iac)
+tfi                   # Initialize Terraform
+tfp                   # Plan changes
+tfa                   # Apply changes
+tfo                   # Show outputs
 
 # Utilities
 reload                # Reload aliases after editing .bashrc
