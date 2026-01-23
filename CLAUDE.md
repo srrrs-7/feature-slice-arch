@@ -30,6 +30,13 @@ bun run check        # Run spell check, type check, and biome
 # Linting & Formatting
 bun run format       # Format with Biome
 bun run check:biome  # Lint and fix with Biome
+
+# Database (Prisma)
+bun run db:generate       # Generate Prisma client
+bun run db:migrate:dev    # Run migrations in dev
+bun run db:migrate:deploy # Deploy migrations to prod
+bun run db:migrate:reset  # Reset database
+bun run db:seed           # Seed database
 ```
 
 ## Architecture
@@ -45,13 +52,18 @@ apps/api/
 │       ├── index.ts        # Public API (exports)
 │       ├── domain/         # Domain types and entities
 │       ├── service/        # Business logic
-│       └── repository/     # Data access layer
-├── shared/             # Shared utilities
-│   ├── db/
-│   ├── logger/
-│   └── time/
-├── index.ts            # Entry point
-└── routes.ts           # Route definitions
+│       ├── repository/     # Data access layer
+│       ├── handler.ts      # HTTP route handlers (Hono)
+│       └── validator.ts    # Zod schemas for validation
+├── lib/                # Shared utilities (workspace: @api/lib)
+│   ├── db/             # Prisma client, schema, migrations
+│   ├── error/          # Common error types
+│   ├── http/           # HTTP response helpers
+│   ├── logger/         # Pino logger
+│   ├── time/           # Time utilities
+│   └── types/          # Shared types (Result wrappers)
+├── index.ts            # Entry point (Hono app)
+└── package.json
 ```
 
 New features should follow `.example/` as a template.
@@ -67,3 +79,98 @@ Bun-native frontend using `Bun.serve()` with HTML imports.
 - Use `Bun.file` for file operations (not node:fs)
 - Bun auto-loads `.env` files (no dotenv needed)
 - Use `bun:sqlite` for SQLite, `Bun.sql` for Postgres, `Bun.redis` for Redis
+
+## Key Architectural Patterns
+
+### Error Handling with neverthrow
+
+The API uses functional error handling with the `neverthrow` library:
+
+- All service/repository functions return `Result<T, E>` or `ResultAsync<T, E>`
+- Error types are defined in `domain/` and `lib/error/`
+- Use `.match()` to handle success/error cases in handlers
+- Common error types: `DatabaseError`, `ValidationError`, `NotFoundError`
+
+Example:
+```typescript
+taskService.getById(id).match(
+  (task) => responseOk(c, { task }),
+  (error) => {
+    switch (error.type) {
+      case "NOT_FOUND": return responseNotFound(c);
+      case "DATABASE_ERROR": return responseDBAccessError(c);
+    }
+  }
+);
+```
+
+### Domain Layer
+
+- All domain types are **immutable** (use `readonly`)
+- Use branded types for IDs (e.g., `TaskId = string & { readonly _brand: unique symbol }`)
+- Smart constructors create domain entities (e.g., `createTask()`, `createTaskId()`)
+- Domain-specific errors defined alongside entities
+
+### Service Layer
+
+- Validates input using Zod schemas
+- Orchestrates business logic
+- Returns `ResultAsync<T, Error>` for all operations
+- Uses functional composition with `.andThen()`, `.map()`, `.mapErr()`
+
+### Repository Layer
+
+- Direct Prisma access
+- Returns `ResultAsync` with typed errors
+- Uses `wrapAsync()` or `wrapAsyncWithLog()` helpers from `@api/lib/db`
+
+### Handler Layer (HTTP)
+
+- Uses Hono for routing
+- Validates with `@hono/zod-validator`
+- Maps service results to HTTP responses using helpers from `@api/lib/http`
+- Exports as default Hono app
+
+## Database (Prisma)
+
+- PostgreSQL with Prisma adapter (`@prisma/adapter-pg`)
+- Schema: `apps/api/src/lib/db/prisma/schema.prisma`
+- Generated client: `apps/api/src/lib/db/generated/client/`
+- Test factories: `@quramy/prisma-fabbrica` in `generated/fabbrica/`
+
+## Timezone Handling
+
+**Critical: All timestamps must use UTC throughout the system.**
+
+### Backend (API)
+- **Database**: Store all timestamps in UTC (PostgreSQL default with `TIMESTAMP` or `TIMESTAMP WITH TIME ZONE`)
+- **API Responses**: Return all timestamps in UTC (ISO 8601 format: `YYYY-MM-DDTHH:mm:ss.sssZ`)
+- **No timezone conversion** in backend - keep everything in UTC
+
+### Frontend (Web)
+- **Display**: Convert UTC timestamps to user's local timezone for display
+- **Input**: Convert user's local date/time inputs to UTC before sending to API
+- **Requests**: Always send date/time values in UTC format to the backend
+
+### Benefits
+- Eliminates timezone-related bugs
+- Consistent data storage and retrieval
+- Easy to support users in different timezones
+- Simplifies backend logic (no timezone conversions needed)
+
+### Example
+```typescript
+// Backend response (UTC)
+{
+  "createdAt": "2025-01-23T08:00:00.000Z",  // Always UTC
+  "updatedAt": "2025-01-23T09:30:00.000Z"   // Always UTC
+}
+
+// Frontend display (converts to user's timezone)
+const date = new Date("2025-01-23T08:00:00.000Z");
+console.log(date.toLocaleString()); // "2025/1/23 17:00:00" (JST)
+
+// Frontend request (converts back to UTC)
+const localDate = new Date("2025-01-23T17:00:00"); // User's local time
+const utcDate = localDate.toISOString(); // "2025-01-23T08:00:00.000Z"
+```

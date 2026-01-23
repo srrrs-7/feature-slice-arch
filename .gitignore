@@ -110,6 +110,4 @@ settings.local.json
 # Prisma
 # ===================
 # Generated Prisma Client (regenerated on build)
-**/generated/client/
-**/prisma/dev.db
-**/prisma/dev.db-journal
+**/generated

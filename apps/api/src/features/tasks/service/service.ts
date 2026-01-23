@@ -40,6 +40,15 @@ const descriptionSchema = z
   .optional()
   .transform((val) => val ?? null);
 
+// For update operations, don't convert undefined to null
+const updateDescriptionSchema = z
+  .string()
+  .trim()
+  .max(1000, "Description must be 1000 characters or less")
+  .transform((val) => (val.length === 0 ? null : val))
+  .nullable()
+  .optional();
+
 const taskStatusSchema = z.enum(["pending", "in_progress", "completed"]);
 
 const createTaskInputSchema = z.object({
@@ -49,7 +58,7 @@ const createTaskInputSchema = z.object({
 
 const updateTaskInputSchema = z.object({
   title: titleSchema.optional(),
-  description: descriptionSchema,
+  description: updateDescriptionSchema,
   status: taskStatusSchema.optional(),
 });
 

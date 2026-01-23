@@ -264,7 +264,6 @@ describe("taskService.update", () => {
 
     expect(result.isOk()).toBe(true);
     expect(mockRepository.update).toHaveBeenCalledWith(expect.anything(), {
-      description: null,
       status: "completed",
     });
   });

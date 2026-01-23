@@ -1,5 +1,5 @@
 import type { Task as PrismaTask } from "@api/lib/db";
-import { prisma, wrapAsync } from "@api/lib/db";
+import { prisma, wrapAsyncWithLog } from "@api/lib/db";
 import { isDatabaseNotFound } from "@api/lib/error";
 import { err, ok, type ResultAsync } from "neverthrow";
 import {
@@ -24,25 +24,31 @@ const toDomain = (prismaTask: PrismaTask): Task =>
   });
 
 // Repository functions returning ResultAsync types
-export const findAll = (): ResultAsync<readonly Task[], TaskError> =>
-  wrapAsync(
+const findAll = (): ResultAsync<readonly Task[], TaskError> =>
+  wrapAsyncWithLog(
+    "taskRepository.findAll",
+    {},
     () => prisma.task.findMany({ orderBy: { createdAt: "desc" } }),
     TaskErrors.database,
   ).map((tasks) => Object.freeze(tasks.map(toDomain)));
 
-export const findById = (id: TaskId): ResultAsync<Task, TaskError> =>
-  wrapAsync(
+const findById = (id: TaskId): ResultAsync<Task, TaskError> =>
+  wrapAsyncWithLog(
+    "taskRepository.findById",
+    { id },
     () => prisma.task.findUnique({ where: { id: id as string } }),
     TaskErrors.database,
   ).andThen((task) =>
     task ? ok(toDomain(task)) : err(TaskErrors.notFound(id)),
   );
 
-export const create = (params: {
+const create = (params: {
   readonly title: string;
   readonly description: string | null;
 }): ResultAsync<Task, TaskError> =>
-  wrapAsync(
+  wrapAsyncWithLog(
+    "taskRepository.create",
+    { title: params.title },
     () =>
       prisma.task.create({
         data: {
@@ -54,7 +60,7 @@ export const create = (params: {
     TaskErrors.database,
   ).map(toDomain);
 
-export const update = (
+const update = (
   id: TaskId,
   params: {
     readonly title?: string;
@@ -62,7 +68,9 @@ export const update = (
     readonly status?: TaskStatus;
   },
 ): ResultAsync<Task, TaskError> =>
-  wrapAsync(
+  wrapAsyncWithLog(
+    "taskRepository.update",
+    { id, ...params },
     () =>
       prisma.task.update({
         where: { id: id as string },
@@ -81,8 +89,10 @@ export const update = (
       isDatabaseNotFound(error) ? TaskErrors.notFound(id) : error,
     );
 
-export const remove = (id: TaskId): ResultAsync<TaskId, TaskError> =>
-  wrapAsync(
+const remove = (id: TaskId): ResultAsync<TaskId, TaskError> =>
+  wrapAsyncWithLog(
+    "taskRepository.remove",
+    { id },
     () => prisma.task.delete({ where: { id: id as string } }),
     TaskErrors.database,
   )

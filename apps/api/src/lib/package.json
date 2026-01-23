@@ -4,15 +4,19 @@
   "type": "module",
   "exports": {
     "./db": "./db/index.ts",
+    "./db/factory": "./db/factory.ts",
     "./domain": "./domain/index.ts",
     "./error": "./error/index.ts",
+    "./http": "./http/index.ts",
     "./logger": "./logger/index.ts",
     "./time": "./time/index.ts",
     "./types/result/db": "./types/result/db.ts"
   },
   "dependencies": {
     "@prisma/client": "^7.2.0",
-    "neverthrow": "^8.2.0"
+    "hono": "^4.11.4",
+    "neverthrow": "^8.2.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "prisma": "^7.2.0"

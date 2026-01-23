@@ -31,9 +31,11 @@ export const prisma =
   new PrismaClient({
     adapter,
     log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
+      process.env.NODE_ENV === "test"
+        ? []
+        : process.env.NODE_ENV === "development"
+          ? ["query", "error", "warn"]
+          : ["error"],
   });
 
 if (process.env.NODE_ENV !== "production") {
@@ -41,5 +43,5 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export { PrismaClient };
-export { wrapAsync } from "../types/result/db.ts";
+export { wrapAsync, wrapAsyncWithLog } from "../types/result/db.ts";
 export * from "./generated/client";

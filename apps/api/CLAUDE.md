@@ -1,106 +1,232 @@
+# CLAUDE.md
 
-Default to using Bun instead of Node.js.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use dotenv.
+## API Application
 
-## APIs
+REST API built with Hono and Feature-Sliced Architecture, using Prisma with PostgreSQL.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+## Commands
+
+```bash
+# Development
+bun run dev              # Start API server with HMR (hot module reload)
+bun run start            # Start API server (production)
+
+# Testing
+bun run test             # Run tests with vitest
+bun run test:watch       # Run tests in watch mode
+
+# Build & Type Check
+bun run build            # Build API
+bun run check:type       # Type check with tsgo
+
+# Database (Prisma)
+bun run db:generate       # Generate Prisma client
+bun run db:migrate:dev    # Run migrations in development
+bun run db:migrate:deploy # Deploy migrations (production)
+bun run db:migrate:reset  # Reset database (drop all data)
+bun run db:studio         # Open Prisma Studio
+bun run db:seed           # Seed database with initial data
+
+# Clean
+bun run clean            # Remove dist and node_modules
+```
+
+## Architecture
+
+Feature-Sliced Architecture with strict layering:
+
+```
+src/
+├── features/           # Feature modules (domains)
+│   └── {feature}/
+│       ├── index.ts        # Public API - exports types and routes
+│       ├── domain/         # Domain layer
+│       │   └── {name}.ts       # Domain types, entities, errors
+│       ├── service/        # Service layer
+│       │   ├── service.ts      # Business logic
+│       │   └── service.test.ts # Service tests
+│       ├── repository/     # Repository layer
+│       │   └── repository.ts   # Data access with Prisma
+│       ├── handler.ts      # HTTP handlers (Hono routes)
+│       └── validator.ts    # Zod validation schemas
+├── lib/                # Shared workspace (@api/lib)
+│   ├── db/             # Database configuration
+│   ├── error/          # Common error types
+│   ├── http/           # HTTP response helpers
+│   ├── logger/         # Pino logger
+│   ├── time/           # Time utilities
+│   └── types/          # Shared types
+└── index.ts            # Entry point - Hono app setup
+```
+
+## Layer Responsibilities
+
+### Domain Layer (`domain/`)
+
+**Purpose:** Define domain entities, types, and business rules.
+
+- **Immutable types** - All properties are `readonly`
+- **Branded types for IDs** - e.g., `type TaskId = string & { readonly _brand: unique symbol }`
+- **Smart constructors** - Functions like `createTask()`, `createTaskId()` that create valid entities
+- **Domain-specific errors** - e.g., `TaskNotFoundError`, `TaskAlreadyExistsError`
+- **Error constructors** - Factory functions for creating errors (e.g., `TaskErrors.notFound()`)
+
+Example:
+```typescript
+export type TaskId = string & { readonly _brand: unique symbol };
+
+export interface Task {
+  readonly id: TaskId;
+  readonly title: string;
+  readonly status: TaskStatus;
+}
+
+export const createTaskId = (id: string): TaskId => id as TaskId;
+```
+
+### Service Layer (`service/`)
+
+**Purpose:** Business logic and validation.
+
+- Validate inputs using Zod schemas
+- Orchestrate calls to repositories
+- Return `ResultAsync<T, Error>` for all operations
+- Use functional composition: `.andThen()`, `.map()`, `.mapErr()`
+- No direct HTTP concerns (handlers do that)
+
+Example:
+```typescript
+export const getTaskById = (id: string): ResultAsync<Task, TaskError> =>
+  liftAsync(parseWith(taskIdSchema, id))
+    .andThen(taskRepository.findById);
+```
+
+### Repository Layer (`repository/`)
+
+**Purpose:** Data access with Prisma.
+
+- Direct Prisma client access
+- Return `ResultAsync<T, Error>` wrapped results
+- Use `wrapAsync()` or `wrapAsyncWithLog()` helpers
+- Map Prisma types to domain types
+- Handle Prisma errors (e.g., P2025 for not found)
+
+Example:
+```typescript
+export const findById = (id: TaskId): ResultAsync<Task, TaskError> =>
+  wrapAsyncWithLog(
+    "taskRepository.findById",
+    { id },
+    () => prisma.task.findUniqueOrThrow({ where: { id } }),
+    TaskErrors.database
+  ).andThen(/* map to domain type */);
+```
+
+### Handler Layer (`handler.ts`)
+
+**Purpose:** HTTP request/response handling.
+
+- Define Hono routes
+- Validate with `@hono/zod-validator`
+- Call service functions
+- Use `.match()` to handle `Result` types
+- Map errors to HTTP responses using `@api/lib/http` helpers
+- Export default Hono app
+
+Example:
+```typescript
+export default new Hono()
+  .get("/:id", zValidator("param", idParamSchema), async (c) => {
+    const { id } = c.req.valid("param");
+    return taskService.getById(id).match(
+      (task) => responseOk(c, { task }),
+      (error) => {
+        switch (error.type) {
+          case "NOT_FOUND": return responseNotFound(c);
+          case "DATABASE_ERROR": return responseDBAccessError(c);
+        }
+      }
+    );
+  });
+```
+
+### Public API (`index.ts`)
+
+**Purpose:** Export public interface of the feature.
+
+- Export domain types (not implementations)
+- Export route handler
+- This is what other features can import
+
+Example:
+```typescript
+export type { Task, TaskId, TaskError } from "./domain/task.ts";
+export { default as taskRoutes } from "./handler.ts";
+```
+
+## Error Handling Pattern
+
+Uses **neverthrow** for functional error handling:
+
+1. **Define errors** in domain layer
+2. **Return `Result<T, E>` or `ResultAsync<T, E>`** from all operations
+3. **Compose with `.andThen()`** for sequential operations
+4. **Handle with `.match()`** at the HTTP boundary
+
+Common error types (from `@api/lib/error`):
+- `DatabaseError` - Database access errors
+- `ValidationError` - Input validation failures
+- `NotFoundError` - Resource not found
+- `UnauthorizedError` - Authentication required
+- `ForbiddenError` - Authorization failed
 
 ## Testing
 
-Use `bun test` to run tests.
+Uses **vitest** (not `bun:test`):
 
-```ts#index.test.ts
-import { test, expect } from "bun:test";
+```typescript
+import { describe, it, expect, beforeEach } from "vitest";
 
-test("hello world", () => {
-  expect(1).toBe(1);
+describe("TaskService", () => {
+  it("should create a task", async () => {
+    const result = await createTask({ title: "Test" });
+    expect(result.isOk()).toBe(true);
+  });
 });
 ```
 
-## Frontend
+Test factories with `@quramy/prisma-fabbrica`:
+```typescript
+import { defineTaskFactory } from "@api/lib/db/factory";
 
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
+const TaskFactory = defineTaskFactory();
+const task = await TaskFactory.create();
 ```
 
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
+## Database
 
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
+- **PostgreSQL** with Prisma 7
+- **Adapter**: `@prisma/adapter-pg` with `pg` connection pool
+- **Schema**: `src/lib/db/prisma/schema.prisma`
+- **Generated client**: `src/lib/db/generated/client/`
+- **Migrations**: `src/lib/db/prisma/migrations/`
+
+Environment variables for database connection:
+```bash
+DATABASE_URL="postgresql://user:pass@host:5432/dbname"
+# Or individual variables:
+DB_HOST=localhost
+DB_PORT=5432
+DB_DBNAME=mydb
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
 ```
 
-With the following `frontend.tsx`:
+## Bun-Specific Notes
 
-```tsx#frontend.tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// import .css files directly and it works
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
+- Bun auto-loads `.env` (no dotenv needed)
+- Use `bun --hot` for HMR in development
+- The API uses `pg` with Prisma adapter (not `Bun.sql` yet)
+- Tests use vitest (better Prisma support than `bun:test`)

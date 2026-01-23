@@ -7,6 +7,8 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       BUN_PUBLIC_API_URL: http://localhost:8080
+      NODE_ENV: development
+      LOG_LEVEL: debug  # silent, error, warn, info, debug
   db:
     environment:
       POSTGRES_DB: mydb

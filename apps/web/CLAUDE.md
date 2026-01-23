@@ -1,43 +1,51 @@
+# CLAUDE.md
 
-Default to using Bun instead of Node.js.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use dotenv.
+## Web Application
 
-## APIs
+Bun-native frontend using `Bun.serve()` with HTML imports.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+## Commands
 
-## Testing
+```bash
+# Development
+bun run dev              # Start web server with HMR (hot module reload)
+bun run start            # Start web server (production)
 
-Use `bun test` to run tests.
+# Build & Type Check
+bun run build            # Build web application
+bun run check:type       # Type check with tsgo
 
-```ts#index.test.ts
-import { test, expect } from "bun:test";
-
-test("hello world", () => {
-  expect(1).toBe(1);
-});
+# Clean
+bun run clean            # Remove dist and node_modules
 ```
 
-## Frontend
+## Architecture
 
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
+Simple Bun-native frontend with HTML imports:
 
-Server:
+```
+src/
+├── index.ts            # Entry point - Bun.serve() configuration
+└── ...                 # Additional source files
+```
 
-```ts#index.ts
+## Bun.serve() with HTML Imports
+
+This project uses Bun's native HTML import feature instead of traditional bundlers like Vite or Webpack.
+
+### Key Features
+
+- **HTML imports** - Import `.html` files directly in TypeScript
+- **Automatic bundling** - Bun bundles `.tsx`, `.jsx`, `.js` automatically
+- **CSS support** - `<link>` tags work with Bun's CSS bundler
+- **Hot Module Reload (HMR)** - Built-in with `bun --hot`
+- **No separate bundler needed** - Bun handles everything
+
+### Server Setup
+
+```typescript
 import index from "./index.html"
 
 Bun.serve({
@@ -49,7 +57,7 @@ Bun.serve({
       },
     },
   },
-  // optional websocket support
+  // Optional WebSocket support
   websocket: {
     open: (ws) => {
       ws.send("Hello, world!");
@@ -62,15 +70,17 @@ Bun.serve({
     }
   },
   development: {
-    hmr: true,
-    console: true,
+    hmr: true,      // Hot Module Reload
+    console: true,  // Browser console support
   }
 })
 ```
 
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
+### HTML Files
 
-```html#index.html
+HTML files can directly import TypeScript/JavaScript:
+
+```html
 <html>
   <body>
     <h1>Hello, world!</h1>
@@ -79,13 +89,15 @@ HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will tr
 </html>
 ```
 
-With the following `frontend.tsx`:
+### Frontend Code
 
-```tsx#frontend.tsx
+React and CSS imports work seamlessly:
+
+```tsx
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-// import .css files directly and it works
+// Import CSS files directly
 import './index.css';
 
 const root = createRoot(document.body);
@@ -97,10 +109,42 @@ export default function Frontend() {
 root.render(<Frontend />);
 ```
 
-Then, run index.ts
+## Bun-Specific Guidelines
 
-```sh
-bun --hot ./index.ts
+### Use Bun APIs Instead of Node.js
+
+- `Bun.serve()` for HTTP servers (NOT Express)
+- `Bun.file()` for file operations (NOT `node:fs`)
+- `WebSocket` built-in (NOT `ws` package)
+- `Bun.$` for shell commands (NOT `execa`)
+- `bun:sqlite` for SQLite (NOT `better-sqlite3`)
+- `Bun.redis` for Redis (NOT `ioredis`)
+- `Bun.sql` for Postgres (NOT `pg` or `postgres.js`)
+
+### No Need for Dotenv
+
+Bun automatically loads `.env` files - no need for `dotenv` package.
+
+### Commands
+
+- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
+- Use `bun test` instead of `jest` or `vitest`
+- Use `bun build <file>` instead of `webpack` or `esbuild`
+- Use `bun run <script>` instead of `npm run <script>`
+- Use `bunx <package>` instead of `npx <package>`
+
+## Testing
+
+Use `bun:test` for testing:
+
+```typescript
+import { test, expect } from "bun:test";
+
+test("hello world", () => {
+  expect(1).toBe(1);
+});
 ```
 
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
+## Additional Resources
+
+For more information about Bun APIs, see `node_modules/bun-types/docs/**.mdx`.
