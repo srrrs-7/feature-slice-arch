@@ -1,12 +1,12 @@
 {
   "name": "web",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot ./index.ts",
-    "start": "bun ./index.ts",
-    "build": "bun build ./index.ts --outdir ./dist",
+    "dev": "bun --hot ./src//index.ts",
+    "start": "bun ./src//index.ts",
+    "build": "bun build ./src//index.ts --outdir ./dist",
     "clean": "rm -rf dist node_modules",
     "check:type": "tsgo --noEmit"
   },
