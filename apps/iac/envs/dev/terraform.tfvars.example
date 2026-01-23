@@ -1,0 +1,63 @@
+#------------------------------------------------------------------------------
+# Development Environment Configuration
+#------------------------------------------------------------------------------
+# This file contains environment-specific values for the dev environment.
+# DO NOT commit sensitive values. Use terraform.tfvars.local for secrets.
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General
+#------------------------------------------------------------------------------
+project_name = "todo-app"
+environment  = "dev"
+aws_region   = "ap-northeast-1"
+
+#------------------------------------------------------------------------------
+# Network
+#------------------------------------------------------------------------------
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["ap-northeast-1a", "ap-northeast-1c"]
+single_nat_gateway = true  # Cost savings for dev
+
+#------------------------------------------------------------------------------
+# ECR
+#------------------------------------------------------------------------------
+ecr_image_retention_count = 10
+
+#------------------------------------------------------------------------------
+# Database
+#------------------------------------------------------------------------------
+db_name                        = "todoapp"
+db_username                    = "postgres"
+aurora_min_capacity            = 0.5   # Minimum for dev
+aurora_max_capacity            = 1.0   # Keep costs low
+aurora_backup_retention_period = 7
+enable_performance_insights    = false  # Disable for dev
+enable_rds_monitoring          = false  # Disable for dev
+
+#------------------------------------------------------------------------------
+# ECS
+#------------------------------------------------------------------------------
+ecs_task_cpu      = 256   # 0.25 vCPU
+ecs_task_memory   = 512   # 512 MB
+ecs_desired_count = 1     # Single task for dev
+ecs_min_count     = 1
+ecs_max_count     = 2     # Allow scaling to 2 for testing
+container_port    = 8080
+
+#------------------------------------------------------------------------------
+# CloudFront
+#------------------------------------------------------------------------------
+cloudfront_price_class = "PriceClass_200"  # USA, Europe, Asia
+cloudfront_default_ttl = 86400             # 1 day
+cloudfront_max_ttl     = 604800            # 7 days
+
+#------------------------------------------------------------------------------
+# Monitoring
+#------------------------------------------------------------------------------
+log_retention_days        = 14    # 2 weeks for dev
+alarm_evaluation_periods  = 2
+cpu_alarm_threshold       = 80
+memory_alarm_threshold    = 80
+error_alarm_threshold     = 10
+response_time_alarm_threshold = 3.0

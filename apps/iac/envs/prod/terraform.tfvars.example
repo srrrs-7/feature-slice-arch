@@ -1,0 +1,63 @@
+#------------------------------------------------------------------------------
+# Production Environment Configuration
+#------------------------------------------------------------------------------
+# This file contains environment-specific values for the production environment.
+# DO NOT commit sensitive values. Use terraform.tfvars.local for secrets.
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General
+#------------------------------------------------------------------------------
+project_name = "todo-app"
+environment  = "prod"
+aws_region   = "ap-northeast-1"
+
+#------------------------------------------------------------------------------
+# Network
+#------------------------------------------------------------------------------
+vpc_cidr           = "10.1.0.0/16"  # Different from dev to avoid conflicts
+availability_zones = ["ap-northeast-1a", "ap-northeast-1c"]
+single_nat_gateway = false  # Multi-AZ for high availability
+
+#------------------------------------------------------------------------------
+# ECR
+#------------------------------------------------------------------------------
+ecr_image_retention_count = 20  # Keep more images for rollback
+
+#------------------------------------------------------------------------------
+# Database
+#------------------------------------------------------------------------------
+db_name                        = "todoapp"
+db_username                    = "postgres"
+aurora_min_capacity            = 0.5   # Scale down when idle
+aurora_max_capacity            = 4.0   # Scale up for traffic
+aurora_backup_retention_period = 35    # 5 weeks for compliance
+enable_performance_insights    = true  # Enable for troubleshooting
+enable_rds_monitoring          = true  # Enable enhanced monitoring
+
+#------------------------------------------------------------------------------
+# ECS
+#------------------------------------------------------------------------------
+ecs_task_cpu      = 512   # 0.5 vCPU
+ecs_task_memory   = 1024  # 1 GB
+ecs_desired_count = 2     # Minimum 2 for HA
+ecs_min_count     = 2     # Never go below 2
+ecs_max_count     = 4     # Allow scaling for traffic
+container_port    = 8080
+
+#------------------------------------------------------------------------------
+# CloudFront
+#------------------------------------------------------------------------------
+cloudfront_price_class = "PriceClass_200"  # USA, Europe, Asia
+cloudfront_default_ttl = 86400             # 1 day
+cloudfront_max_ttl     = 604800            # 7 days
+
+#------------------------------------------------------------------------------
+# Monitoring
+#------------------------------------------------------------------------------
+log_retention_days        = 90    # 3 months for compliance
+alarm_evaluation_periods  = 3     # More data points before alerting
+cpu_alarm_threshold       = 70    # Alert earlier
+memory_alarm_threshold    = 70    # Alert earlier
+error_alarm_threshold     = 5     # Stricter error threshold
+response_time_alarm_threshold = 2.0  # Stricter latency threshold
