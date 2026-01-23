@@ -46,6 +46,91 @@ bun run db:migrate:reset  # Reset database
 bun run db:seed           # Seed database
 ```
 
+## Shell Aliases
+
+For faster development workflow, the following aliases are available in the devcontainer (configured in `.devcontainer/setup.personal.sh`):
+
+```bash
+# Basic shortcuts
+b          # bun
+g          # git
+ll         # ls -la (detailed list)
+la         # ls -A (show hidden files)
+l          # ls -CF
+c          # clear
+h          # history
+..         # cd ..
+...        # cd ../..
+
+# Bun shortcuts
+bi         # bun install
+bd         # bun run dev (API + Web)
+bda        # bun run dev:api
+bdw        # bun run dev:web
+bt         # bun run test:run
+btw        # bun run test:watch
+bc         # bun run check
+bf         # bun run format
+bb         # bun run build:api
+
+# Database shortcuts
+dbg        # bun run db:generate
+dbm        # bun run db:migrate:dev
+dbd        # bun run db:migrate:deploy
+dbs        # bun run db:studio
+dbseed     # bun run db:seed
+dbr        # bun run db:migrate:reset
+
+# Git shortcuts
+gs         # git status
+gc         # git commit
+gp         # git push
+gl         # git log --oneline --graph --decorate
+gco        # git checkout
+gcb        # git checkout -b (create new branch)
+gaa        # git add --all
+gcm        # git commit -m
+gca        # git commit --amend
+gst        # git stash
+gstp       # git stash pop
+gpl        # git pull
+gpf        # git push --force-with-lease
+gd         # git diff
+gds        # git diff --staged
+grb        # git rebase
+grbc       # git rebase --continue
+grba       # git rebase --abort
+
+# Utilities
+reload     # source ~/.bashrc (reload aliases)
+path       # echo $PATH (display PATH nicely)
+ports      # lsof -i -P -n | grep LISTEN (show listening ports)
+```
+
+**Usage examples:**
+```bash
+# Quick development
+bd                    # Start both API and Web servers
+bda                   # Start API only
+bt                    # Run tests
+
+# Database operations
+dbm                   # Run migrations
+dbs                   # Open Prisma Studio
+dbg                   # Generate Prisma client
+
+# Git workflow
+gs                    # Check status
+gcb feat/new-feature  # Create and checkout new branch
+gaa                   # Stage all changes
+gcm "feat: add user auth"  # Commit with message
+gp                    # Push to remote
+
+# Utilities
+reload                # Reload aliases after editing .bashrc
+ports                 # Check which ports are in use
+```
+
 ## Architecture
 
 ### API (`apps/api`)
