@@ -20,10 +20,15 @@
   },
   "dependencies": {
     "@api/lib": "workspace:*",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "@prisma/client-runtime-utils": "^7.3.0",
+    "pg": "^8.17.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/pg": "^8.16.0",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
