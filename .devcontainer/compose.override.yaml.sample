@@ -7,9 +7,6 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       BUN_PUBLIC_API_URL: http://localhost:8080
-      SKIP_AUTH: "true"  # Skip authentication in development mode
-      DEV_USER_ID: dev-user-id  # Mock user ID for development
-      ENABLE_FIREWALL: "true"  # Set to "true" to enable network firewall (restricts outbound to allowlisted domains)
   db:
     environment:
       POSTGRES_DB: mydb

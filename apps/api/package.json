@@ -4,16 +4,27 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot ./src//index.ts",
-    "start": "bun ./src//index.ts",
-    "build": "bun build ./src//index.ts --outdir ./dist",
-    "test": "bun test",
-    "test:watch": "bun test --watch",
+    "dev": "bun --hot ./src/index.ts",
+    "start": "bun ./src/index.ts",
+    "build": "bun build ./src/index.ts --outdir ./dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "clean": "rm -rf dist node_modules",
-    "check:type": "tsgo --noEmit"
+    "check:type": "tsgo --noEmit",
+    "db:generate": "cd src/lib && bun run db:generate",
+    "db:migrate:dev": "cd src/lib && bun run db:migrate:dev",
+    "db:migrate:deploy": "cd src/lib && bun run db:migrate:deploy",
+    "db:migrate:reset": "cd src/lib && bun run db:migrate:reset",
+    "db:studio": "cd src/lib && bun run db:studio",
+    "db:seed": "cd src/lib && bun run db:seed"
+  },
+  "dependencies": {
+    "@api/lib": "workspace:*",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "typescript": "^5"

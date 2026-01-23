@@ -1,0 +1,29 @@
+{
+  "name": "@api/lib",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./db": "./db/index.ts",
+    "./domain": "./domain/index.ts",
+    "./error": "./error/index.ts",
+    "./logger": "./logger/index.ts",
+    "./time": "./time/index.ts",
+    "./types/result/db": "./types/result/db.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.2.0",
+    "neverthrow": "^8.2.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.2.0"
+  },
+  "scripts": {
+    "check:type": "tsgo --noEmit",
+    "db:generate": "cd db && bunx prisma generate",
+    "db:migrate:dev": "cd db && bunx prisma migrate dev",
+    "db:migrate:deploy": "cd db && bunx prisma migrate deploy",
+    "db:migrate:reset": "cd db && bunx prisma migrate reset",
+    "db:studio": "cd db && bunx prisma studio",
+    "db:seed": "bun run db/seed.ts"
+  }
+}

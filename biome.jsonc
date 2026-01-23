@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/src/generated", "!**/prisma/migrations"],
+    "includes": ["**", "!**/generated", "!**/prisma/migrations"],
     "ignoreUnknown": false
   },
   "css": {
