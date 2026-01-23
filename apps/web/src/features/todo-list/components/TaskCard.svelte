@@ -1,10 +1,10 @@
 <script lang="ts">
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
+import { formatDateCompact } from "$lib/utils/date";
 import { tasksStore } from "../stores";
 import type { Task, TaskStatus } from "../types";
 import TaskStatusBadge from "./TaskStatusBadge.svelte";
-import { formatDateCompact } from "$lib/utils/date";
 
 export let task: Task;
 export let navigateToDetail: ((id: string) => void) | undefined = undefined;
@@ -54,6 +54,7 @@ function handleCardClick() {
           {/if}
         </Card.Description>
       </div>
+      <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
       <div on:click={(e) => e.stopPropagation()}>
         <TaskStatusBadge status={task.status} clickable onClick={handleStatusToggle} />
       </div>

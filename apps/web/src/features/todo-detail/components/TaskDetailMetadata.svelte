@@ -1,7 +1,7 @@
 <script lang="ts">
 import * as Card from "$lib/components/ui/card";
-import { currentTask } from "../stores";
 import { formatDateLocale } from "$lib/utils/date";
+import { currentTask } from "../stores";
 </script>
 
 {#if $currentTask}

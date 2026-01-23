@@ -76,6 +76,7 @@ async function handleStatusClick() {
     <div class="flex items-start justify-between gap-4">
       <div class="flex-1 min-w-0">
         {#if isEditingTitle}
+          <!-- svelte-ignore a11y_autofocus -->
           <input
             type="text"
             bind:value={editTitle}
@@ -86,15 +87,13 @@ async function handleStatusClick() {
             autofocus
           />
         {:else}
-          <h1
-            class="text-3xl font-bold cursor-pointer hover:text-primary transition-colors"
+          <button
+            type="button"
+            class="text-3xl font-bold cursor-pointer hover:text-primary transition-colors text-left w-full bg-transparent border-none p-0"
             on:click={startEditTitle}
-            role="button"
-            tabindex="0"
-            on:keydown={(e) => e.key === "Enter" && startEditTitle()}
           >
             {$currentTask.title}
-          </h1>
+          </button>
         {/if}
       </div>
 
