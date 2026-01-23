@@ -9,6 +9,7 @@
     "build": "bun build ./src/index.ts --outdir ./dist",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "clean": "rm -rf dist node_modules",
     "check:type": "tsgo --noEmit",
     "db:generate": "cd src/lib && bun run db:generate",
@@ -35,6 +36,7 @@
     "@quramy/prisma-fabbrica": "^2.3.3",
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
