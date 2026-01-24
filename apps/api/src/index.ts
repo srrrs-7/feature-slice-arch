@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { attendanceRoutes } from "./features/attendance/index.ts";
 import { stampRoutes } from "./features/stamp/index.ts";
 import { taskRoutes } from "./features/tasks/index.ts";
 import { logger } from "./lib/logger/index.ts";
@@ -11,6 +12,7 @@ const app = new Hono()
   .get("/health", (c) => c.json({ status: "ok" }))
   .route("/api/tasks", taskRoutes)
   .route("/api/stamps", stampRoutes)
+  .route("/api/attendance", attendanceRoutes)
   .notFound((c) => c.json({ error: "Not Found" }, 404))
   .onError((err, c) => {
     logger.error({ err }, "Server error");

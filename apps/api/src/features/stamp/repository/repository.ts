@@ -98,9 +98,30 @@ const updateBreakEnd = (
     StampErrors.database,
   ).map(toDomain);
 
+const findByDateRange = (
+  from: string,
+  to: string,
+): ResultAsync<readonly Stamp[], StampError> =>
+  wrapAsyncWithLog(
+    "stampRepository.findByDateRange",
+    { from, to },
+    () =>
+      prisma.stamp.findMany({
+        where: {
+          date: {
+            gte: from,
+            lte: to,
+          },
+        },
+        orderBy: { date: "asc" },
+      }),
+    StampErrors.database,
+  ).map((stamps) => stamps.map(toDomain));
+
 // Repository as a namespace
 export const stampRepository = {
   findByDate,
+  findByDateRange,
   create,
   updateClockOut,
   updateBreakStart,

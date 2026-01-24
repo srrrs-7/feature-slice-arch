@@ -24,7 +24,8 @@ export const en: Translations = {
   nav: {
     home: "Home",
     tasks: "Tasks",
-    stamp: "Attendance",
+    stamp: "Clock In/Out",
+    attendance: "Attendance",
     settings: "Settings",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -123,5 +124,47 @@ export const en: Translations = {
     currentPage: "Current page",
     externalLink: "External link",
     required: "Required",
+  },
+
+  // Attendance
+  attendance: {
+    title: "Attendance",
+    subtitle: "View attendance records",
+    list: "Attendance List",
+    detail: "Attendance Detail",
+    backToList: "Back to list",
+    // Date/Period
+    date: "Date",
+    month: "Month",
+    today: "Today",
+    thisMonth: "This Month",
+    // Time labels
+    clockIn: "Clock In",
+    clockOut: "Clock Out",
+    breakStart: "Break Start",
+    breakEnd: "Break End",
+    // Time types
+    workTime: "Work Time",
+    breakTime: "Break Time",
+    overtimeMinutes: "Overtime",
+    lateNightMinutes: "Late Night",
+    statutoryOvertimeMinutes: "Statutory OT",
+    // Summary
+    summary: "Period Summary",
+    workDays: "Work Days",
+    totalWorkTime: "Total Work",
+    totalOvertime: "Total Overtime",
+    totalLateNight: "Total Late Night",
+    totalStatutoryOvertime: "Total Statutory OT",
+    // Status
+    noRecord: "No records for this period",
+    holiday: "Holiday",
+    // Units
+    hours: "hours",
+    minutes: "min",
+    days: "days",
+    // Timeline
+    timeline: "Timeline",
+    workBreakdown: "Work Breakdown",
   },
 };

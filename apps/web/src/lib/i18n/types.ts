@@ -31,6 +31,7 @@ export interface Translations {
     home: string;
     tasks: string;
     stamp: string;
+    attendance: string;
     settings: string;
     openMenu: string;
     closeMenu: string;
@@ -128,6 +129,48 @@ export interface Translations {
     currentPage: string;
     externalLink: string;
     required: string;
+  };
+
+  // Attendance (出勤簿)
+  attendance: {
+    title: string;
+    subtitle: string;
+    list: string;
+    detail: string;
+    backToList: string;
+    // Date/Period
+    date: string;
+    month: string;
+    today: string;
+    thisMonth: string;
+    // Time labels
+    clockIn: string;
+    clockOut: string;
+    breakStart: string;
+    breakEnd: string;
+    // Time types
+    workTime: string;
+    breakTime: string;
+    overtimeMinutes: string;
+    lateNightMinutes: string;
+    statutoryOvertimeMinutes: string;
+    // Summary
+    summary: string;
+    workDays: string;
+    totalWorkTime: string;
+    totalOvertime: string;
+    totalLateNight: string;
+    totalStatutoryOvertime: string;
+    // Status
+    noRecord: string;
+    holiday: string;
+    // Units
+    hours: string;
+    minutes: string;
+    days: string;
+    // Timeline
+    timeline: string;
+    workBreakdown: string;
   };
 }
 

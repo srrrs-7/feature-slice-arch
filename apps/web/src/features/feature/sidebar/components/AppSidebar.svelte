@@ -45,7 +45,7 @@ function isActive(href: string): boolean {
  * Get translated label for navigation item
  */
 function getNavLabel(
-  labelKey: "home" | "tasks" | "stamp" | "settings",
+  labelKey: "home" | "tasks" | "stamp" | "attendance" | "settings",
 ): string {
   return $t.nav[labelKey];
 }

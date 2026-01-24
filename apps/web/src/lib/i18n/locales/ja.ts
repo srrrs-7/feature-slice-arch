@@ -25,6 +25,7 @@ export const ja: Translations = {
     home: "ホーム",
     tasks: "タスク",
     stamp: "打刻",
+    attendance: "出勤簿",
     settings: "設定",
     openMenu: "メニューを開く",
     closeMenu: "メニューを閉じる",
@@ -123,5 +124,47 @@ export const ja: Translations = {
     currentPage: "現在のページ",
     externalLink: "外部リンク",
     required: "必須",
+  },
+
+  // Attendance (出勤簿)
+  attendance: {
+    title: "出勤簿",
+    subtitle: "勤怠記録の確認",
+    list: "出勤簿一覧",
+    detail: "出勤詳細",
+    backToList: "一覧に戻る",
+    // Date/Period
+    date: "日付",
+    month: "月",
+    today: "今日",
+    thisMonth: "今月",
+    // Time labels
+    clockIn: "出勤時刻",
+    clockOut: "退勤時刻",
+    breakStart: "休憩開始",
+    breakEnd: "休憩終了",
+    // Time types
+    workTime: "実労働時間",
+    breakTime: "休憩時間",
+    overtimeMinutes: "残業時間",
+    lateNightMinutes: "深夜残業",
+    statutoryOvertimeMinutes: "法定外残業",
+    // Summary
+    summary: "期間サマリー",
+    workDays: "勤務日数",
+    totalWorkTime: "総労働時間",
+    totalOvertime: "総残業時間",
+    totalLateNight: "総深夜残業",
+    totalStatutoryOvertime: "総法定外残業",
+    // Status
+    noRecord: "この期間の記録はありません",
+    holiday: "休日",
+    // Units
+    hours: "時間",
+    minutes: "分",
+    days: "日",
+    // Timeline
+    timeline: "出退勤タイムライン",
+    workBreakdown: "勤務時間の内訳",
   },
 };

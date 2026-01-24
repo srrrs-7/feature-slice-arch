@@ -2,13 +2,24 @@
 import { onMount } from "svelte";
 import { MainLayout } from "$lib/components/layouts";
 import { t } from "$lib/i18n";
+import {
+  AttendanceDetailPage,
+  AttendancePage,
+} from "./features/attendance/pages";
 import HomePage from "./features/home/pages/HomePage.svelte";
 import StampPage from "./features/stamp/pages/StampPage.svelte";
 import TaskDetailPage from "./features/todo-detail/pages/TaskDetailPage.svelte";
 import TodoListPage from "./features/todo-list/pages/TodoListPage.svelte";
 
-let currentRoute: "home" | "tasks" | "detail" | "stamp" = $state("home");
+let currentRoute:
+  | "home"
+  | "tasks"
+  | "detail"
+  | "stamp"
+  | "attendance"
+  | "attendance-detail" = $state("home");
 let taskId: string | null = $state(null);
+let attendanceDate: string | null = $state(null);
 let currentPath: string = $state("/");
 
 // Get page title based on current route
@@ -22,6 +33,9 @@ const pageTitle = $derived.by(() => {
       return $t.taskDetail.title;
     case "stamp":
       return $t.stamp.title;
+    case "attendance":
+    case "attendance-detail":
+      return $t.attendance.title;
     default:
       return "";
   }
@@ -49,6 +63,24 @@ function updateRoute() {
   if (path === "/stamp") {
     currentRoute = "stamp";
     taskId = null;
+    attendanceDate = null;
+    return;
+  }
+
+  // Check for attendance list route
+  if (path === "/attendance") {
+    currentRoute = "attendance";
+    taskId = null;
+    attendanceDate = null;
+    return;
+  }
+
+  // Check for attendance detail route
+  const attendanceMatch = path.match(/^\/attendance\/(\d{4}-\d{2}-\d{2})$/);
+  if (attendanceMatch) {
+    currentRoute = "attendance-detail";
+    taskId = null;
+    attendanceDate = attendanceMatch[1];
     return;
   }
 
@@ -57,12 +89,14 @@ function updateRoute() {
   if (match) {
     currentRoute = "detail";
     taskId = match[1];
+    attendanceDate = null;
     return;
   }
 
   // Default to home
   currentRoute = "home";
   taskId = null;
+  attendanceDate = null;
 }
 
 function navigateToHome() {
@@ -77,6 +111,16 @@ function navigateToTasks() {
 
 function navigateToDetail(id: string) {
   window.history.pushState({}, "", `/tasks/${id}`);
+  updateRoute();
+}
+
+function navigateToAttendance() {
+  window.history.pushState({}, "", "/attendance");
+  updateRoute();
+}
+
+function navigateToAttendanceDetail(date: string) {
+  window.history.pushState({}, "", `/attendance/${date}`);
   updateRoute();
 }
 
@@ -101,6 +145,10 @@ onMount(() => {
     <TaskDetailPage {taskId} onNavigateBack={navigateToTasks} />
   {:else if currentRoute === "stamp"}
     <StampPage />
+  {:else if currentRoute === "attendance"}
+    <AttendancePage onNavigateToDetail={navigateToAttendanceDetail} />
+  {:else if currentRoute === "attendance-detail" && attendanceDate}
+    <AttendanceDetailPage date={attendanceDate} onBack={navigateToAttendance} />
   {:else}
     <div class="container mx-auto py-8 px-4">
       <p>Page not found</p>
