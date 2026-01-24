@@ -1,13 +1,16 @@
 <script lang="ts">
 import { onMount } from "svelte";
+import { MainLayout } from "$lib/components/layouts";
 import TaskDetailPage from "./features/todo-detail/pages/TaskDetailPage.svelte";
 import TodoListPage from "./features/todo-list/pages/TodoListPage.svelte";
 
-let currentRoute: "list" | "detail" = "list";
-let taskId: string | null = null;
+let currentRoute: "list" | "detail" = $state("list");
+let taskId: string | null = $state(null);
+let currentPath: string = $state("/");
 
 function updateRoute() {
   const path = window.location.pathname;
+  currentPath = path;
   const match = path.match(/^\/tasks\/([a-f0-9-]+)$/);
 
   if (match) {
@@ -41,7 +44,7 @@ onMount(() => {
 });
 </script>
 
-<main class="min-h-screen bg-background">
+<MainLayout {currentPath}>
   {#if currentRoute === "list"}
     <TodoListPage {navigateToDetail} />
   {:else if currentRoute === "detail" && taskId}
@@ -49,9 +52,9 @@ onMount(() => {
   {:else}
     <div class="container mx-auto py-8 px-4">
       <p>Page not found</p>
-      <button on:click={navigateToList} class="text-primary hover:underline">
+      <button onclick={navigateToList} class="text-primary hover:underline">
         ← Back to List
       </button>
     </div>
   {/if}
-</main>
+</MainLayout>

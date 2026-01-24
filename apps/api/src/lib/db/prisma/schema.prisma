@@ -28,3 +28,17 @@ model Task {
 
   @@map("tasks")
 }
+
+model Stamp {
+  id           String    @id @default(uuid())
+  date         String    // YYYY-MM-DD format (work date)
+  clockInAt    DateTime
+  clockOutAt   DateTime?
+  breakStartAt DateTime?
+  breakEndAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([date])
+  @@map("stamps")
+}
