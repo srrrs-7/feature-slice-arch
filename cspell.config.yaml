@@ -11,6 +11,7 @@ dictionaries: []
 words:
   - addgroup
   - adduser
+  - albls
   - anthropics
   - apigatewayv
   - auggie
@@ -24,25 +25,52 @@ words:
   - biomejs
   - Bluch
   - bunx
+  - cflist
   - chax-at
   - CICD
   - clippy
   - dbname
   - DBNAME
+  - dbseed
   - Dockerfiles
   - dotenv
   - dotenvx
   - dport
+  - ecrimg
+  - ecrls
+  - ecsls
+  - ecsstop
+  - ecssvc
+  - ecstask
   - elif
+  - elbv
   - émojis
   - Entra
   - esac
   - Español
   - evenodd
   - fabbrica
+  - Fabbrica
   - fdisk
+  - fgrep
   - gdisk
+  - ghal
+  - ghas
+  - ghis
+  - ghisl
+  - ghisv
+  - ghpr
+  - ghprc
+  - ghprl
+  - ghprm
+  - ghprs
+  - ghprv
+  - ghrv
+  - ghrw
+  - grba
+  - grbc
   - Groot
+  - gstp
   - hono
   - hostnames
   - ichiro
@@ -58,6 +86,7 @@ words:
   - Mcpjson
   - Msal
   - msie
+  - myapp
   - mydb
   - NACLs
   - ncat
@@ -74,24 +103,38 @@ words:
   - PKCE
   - pkey
   - pkill
+  - popstate
   - POSTROUTING
+  - psql
   - pycache
   - quramy
   - qwen
   - Qwen
   - QWEN
+  - rdsls
+  - rdsstart
+  - rgba
   - sato
   - Sato
   - schemaname
+  - secget
+  - secls
   - serverlessv
+  - sgls
   - socketsecurity
   - sqli
   - statsig
+  - subnetls
   - tablename
   - tanaka
   - Tanaka
+  - tappable
+  - tfsl
+  - tfss
   - tfstate
   - tfvars
+  - tfwl
+  - tfws
   - trixie
   - tsgo
   - TXXX
@@ -99,7 +142,9 @@ words:
   - venv
   - VITE
   - vitest
+  - vpcls
   - wada
+  - WCAG
   - wireframes
   - worktree
   - worktrees

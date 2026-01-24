@@ -1,5 +1,5 @@
 import { formatInTimezone, nowUTC } from "@api/lib/time";
-import { errAsync, okAsync, type ResultAsync } from "neverthrow";
+import { errAsync, type ResultAsync } from "neverthrow";
 import {
   type CurrentStatusResponse,
   getWorkStatus,
