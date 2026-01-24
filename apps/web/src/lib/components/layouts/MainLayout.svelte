@@ -12,19 +12,27 @@ let { currentPath = "/", children }: Props = $props();
 
 // Sidebar state
 let sidebarOpen = $state(false);
+let sidebarCollapsed = $state(false);
 
 /**
- * Toggle sidebar open/closed
+ * Toggle sidebar open/closed (mobile)
  */
 function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
 }
 
 /**
- * Close sidebar
+ * Close sidebar (mobile)
  */
 function closeSidebar() {
   sidebarOpen = false;
+}
+
+/**
+ * Toggle sidebar collapsed state (desktop)
+ */
+function toggleCollapse() {
+  sidebarCollapsed = !sidebarCollapsed;
 }
 </script>
 
@@ -81,10 +89,20 @@ function closeSidebar() {
   </header>
 
   <!-- Sidebar -->
-  <AppSidebar {currentPath} open={sidebarOpen} onClose={closeSidebar} />
+  <AppSidebar
+    {currentPath}
+    open={sidebarOpen}
+    collapsed={sidebarCollapsed}
+    onClose={closeSidebar}
+    onToggleCollapse={toggleCollapse}
+  />
 
   <!-- Main Content (offset for desktop sidebar) -->
-  <main class="lg:pl-64 min-h-screen">
+  <main
+    class="min-h-screen transition-all duration-300 {sidebarCollapsed
+      ? 'lg:pl-16'
+      : 'lg:pl-64'}"
+  >
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {#if children}
         {@render children()}

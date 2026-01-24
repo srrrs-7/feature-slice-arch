@@ -1,13 +1,14 @@
 import {
   responseBadRequest,
-  responseCreated,
   responseDBAccessError,
   responseOk,
 } from "@api/lib/http";
+import { zValidator } from "@hono/zod-validator";
 import type { Context } from "hono";
 import { Hono } from "hono";
 import type { StampError } from "./domain/stamp.ts";
 import { stampService } from "./service/service.ts";
+import { stampActionSchema } from "./validator.ts";
 
 // Helper to handle stamp errors
 const handleStampError = (error: StampError, c: Context) => {
@@ -39,42 +40,37 @@ const handleStampError = (error: StampError, c: Context) => {
 };
 
 export default new Hono()
-  // GET /api/stamps/current - Get current work status
-  .get("/current", async (c) => {
-    return stampService.getCurrentStatus().match(
+  // GET /api/stamps/status - Get current work status
+  .get("/status", async (c) => {
+    return stampService.getStatus().match(
       (result) => responseOk(c, result),
       (error) => handleStampError(error, c),
     );
   })
 
-  // POST /api/stamps/clock-in - Clock in
-  .post("/clock-in", async (c) => {
-    return stampService.clockIn().match(
-      (stamp) => responseCreated(c, { stamp }),
-      (error) => handleStampError(error, c),
-    );
-  })
+  // POST /api/stamps - Record a stamp action
+  .post(
+    "/",
+    zValidator("json", stampActionSchema, (result, c) => {
+      if (!result.success) {
+        const message =
+          result.error.issues[0]?.message ?? "Invalid action type";
+        return responseBadRequest(c, message);
+      }
+    }),
+    async (c) => {
+      const { action } = c.req.valid("json");
 
-  // PUT /api/stamps/clock-out - Clock out
-  .put("/clock-out", async (c) => {
-    return stampService.clockOut().match(
-      (stamp) => responseOk(c, { stamp }),
-      (error) => handleStampError(error, c),
-    );
-  })
+      const serviceMethod = {
+        clock_in: stampService.clockIn,
+        clock_out: stampService.clockOut,
+        break_start: stampService.breakStart,
+        break_end: stampService.breakEnd,
+      }[action];
 
-  // PUT /api/stamps/break-start - Start break
-  .put("/break-start", async (c) => {
-    return stampService.breakStart().match(
-      (stamp) => responseOk(c, { stamp }),
-      (error) => handleStampError(error, c),
-    );
-  })
-
-  // PUT /api/stamps/break-end - End break
-  .put("/break-end", async (c) => {
-    return stampService.breakEnd().match(
-      (stamp) => responseOk(c, { stamp }),
-      (error) => handleStampError(error, c),
-    );
-  });
+      return serviceMethod().match(
+        (stamp) => responseOk(c, { stamp }),
+        (error) => handleStampError(error, c),
+      );
+    },
+  );

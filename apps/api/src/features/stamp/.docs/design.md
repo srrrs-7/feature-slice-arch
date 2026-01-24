@@ -45,10 +45,10 @@ type WorkStatus =
   | "clocked_out"; // 退勤済み
 ```
 
-### StampType (打刻種別)
+### StampAction (打刻アクション)
 
 ```typescript
-type StampType =
+type StampAction =
   | "clock_in"     // 出勤
   | "clock_out"    // 退勤
   | "break_start"  // 休憩開始
@@ -57,7 +57,7 @@ type StampType =
 
 ## API Endpoints
 
-### GET /api/stamps/current
+### GET /api/stamps/status
 現在の勤務状況を取得
 
 **Response (200)**:
@@ -85,10 +85,17 @@ type StampType =
 }
 ```
 
-### POST /api/stamps/clock-in
-出勤打刻
+### POST /api/stamps
+打刻を記録（出勤・退勤・休憩開始・休憩終了）
 
-**Response (201)**:
+**Request Body**:
+```json
+{
+  "action": "clock_in" | "clock_out" | "break_start" | "break_end"
+}
+```
+
+**Response (200)**:
 ```json
 {
   "stamp": {
@@ -104,43 +111,11 @@ type StampType =
 }
 ```
 
-**Error (400)**: すでに出勤済み
-
-### PUT /api/stamps/clock-out
-退勤打刻
-
-**Response (200)**:
-```json
-{
-  "stamp": { ... }
-}
-```
-
-**Error (400)**: 未出勤 or すでに退勤済み
-
-### PUT /api/stamps/break-start
-休憩開始打刻
-
-**Response (200)**:
-```json
-{
-  "stamp": { ... }
-}
-```
-
-**Error (400)**: 未出勤 or 退勤済み or すでに休憩中
-
-### PUT /api/stamps/break-end
-休憩終了打刻
-
-**Response (200)**:
-```json
-{
-  "stamp": { ... }
-}
-```
-
-**Error (400)**: 休憩中でない
+**Error (400)**:
+- `action: "clock_in"`: すでに出勤済み
+- `action: "clock_out"`: 未出勤 / すでに退勤済み / まだ休憩中
+- `action: "break_start"`: 未出勤 / 退勤済み / すでに休憩中
+- `action: "break_end"`: 休憩中でない
 
 ## Business Rules
 
@@ -198,53 +173,117 @@ model Stamp {
 }
 ```
 
-## Implementation Order
+## Implementation Status
 
 ### Phase 1: Foundation
 1. [x] Prismaスキーマ作成・マイグレーション
-2. [ ] Domain層実装 (types, errors, constructors)
-3. [ ] Prisma Fabbricaファクトリー作成
+2. [x] Domain層実装 (types, errors, constructors)
+3. [x] Prisma Fabbricaファクトリー作成
 
 ### Phase 2: Core Logic
-4. [ ] Repository層実装
-5. [ ] Service層実装
-6. [ ] Validator実装
+4. [x] Repository層実装
+5. [x] Service層実装
+6. [x] Validator実装
 
 ### Phase 3: HTTP Layer
-7. [ ] Handler層実装
-8. [ ] 公開APIエクスポート (index.ts)
-9. [ ] メインアプリにルート追加
+7. [x] Handler層実装
+8. [x] 公開APIエクスポート (index.ts)
+9. [x] メインアプリにルート追加
 
 ### Phase 4: Testing
-10. [ ] Service unit tests
-11. [ ] Handler E2E tests
-12. [ ] すべてのテストがパス
+10. [x] Service unit tests (26 tests)
+11. [x] Handler E2E tests (22 tests)
+12. [x] すべてのテストがパス
 
 ## Test Cases
 
-### Service Tests (Unit)
-- [ ] getCurrentStatus returns "not_working" when no stamp exists
-- [ ] getCurrentStatus returns "working" when clocked in
-- [ ] getCurrentStatus returns "on_break" when on break
-- [ ] getCurrentStatus returns "clocked_out" when clocked out
-- [ ] clockIn creates new stamp
-- [ ] clockIn returns error when already clocked in
-- [ ] clockOut updates stamp with clock out time
-- [ ] clockOut returns error when not clocked in
-- [ ] clockOut returns error when already clocked out
-- [ ] clockOut returns error when still on break
-- [ ] breakStart updates stamp with break start time
-- [ ] breakStart returns error when not clocked in
-- [ ] breakStart returns error when already on break
-- [ ] breakEnd updates stamp with break end time
-- [ ] breakEnd returns error when not on break
+### Service Tests (Unit) - 26 tests
+- [x] getStatus returns "not_working" when no stamp exists
+- [x] getStatus returns "working" when clocked in
+- [x] getStatus returns "on_break" when on break
+- [x] getStatus returns "clocked_out" when clocked out
+- [x] getStatus returns database error on repository failure
+- [x] clockIn creates new stamp
+- [x] clockIn returns ALREADY_CLOCKED_IN when stamp exists
+- [x] clockIn returns database error on repository failure
+- [x] clockOut updates stamp with clock out time
+- [x] clockOut returns NOT_CLOCKED_IN when no stamp exists
+- [x] clockOut returns ALREADY_CLOCKED_OUT when already clocked out
+- [x] clockOut returns STILL_ON_BREAK when on break
+- [x] breakStart updates stamp with break start time
+- [x] breakStart returns NOT_CLOCKED_IN when no stamp exists
+- [x] breakStart returns ALREADY_CLOCKED_OUT when already clocked out
+- [x] breakStart returns ALREADY_ON_BREAK when already on break
+- [x] breakStart allows starting break after previous break ended
+- [x] breakEnd updates stamp with break end time
+- [x] breakEnd returns NOT_CLOCKED_IN when no stamp exists
+- [x] breakEnd returns NOT_ON_BREAK when not on break (no break started)
+- [x] breakEnd returns NOT_ON_BREAK when break already ended
+- [x] getWorkStatus returns not_working for null stamp
+- [x] getWorkStatus returns working for clocked in stamp
+- [x] getWorkStatus returns on_break for stamp on break
+- [x] getWorkStatus returns clocked_out for clocked out stamp
+- [x] getWorkStatus returns working for stamp with completed break
 
-### Handler Tests (E2E)
-- [ ] GET /api/stamps/current returns 200 with not_working status
-- [ ] GET /api/stamps/current returns 200 with working status
-- [ ] POST /api/stamps/clock-in returns 201 with new stamp
-- [ ] POST /api/stamps/clock-in returns 400 when already clocked in
-- [ ] PUT /api/stamps/clock-out returns 200 with updated stamp
-- [ ] PUT /api/stamps/clock-out returns 400 when not clocked in
-- [ ] PUT /api/stamps/break-start returns 200 with updated stamp
-- [ ] PUT /api/stamps/break-end returns 200 with updated stamp
+### Handler Tests (E2E) - 22 tests
+
+#### GET /api/stamps/status (5 tests)
+- [x] returns not_working status when no stamp exists
+- [x] returns working status when clocked in
+- [x] returns on_break status when on break
+- [x] returns clocked_out status when clocked out
+- [x] returns working status after break ended
+
+#### POST /api/stamps - clock_in (2 tests)
+- [x] creates stamp with clock-in time
+- [x] returns 400 when already clocked in today
+
+#### POST /api/stamps - clock_out (5 tests)
+- [x] updates stamp with clock-out time
+- [x] allows clock-out after break ended
+- [x] returns 400 when not clocked in
+- [x] returns 400 when already clocked out
+- [x] returns 400 when still on break
+
+#### POST /api/stamps - break_start (4 tests)
+- [x] updates stamp with break-start time
+- [x] returns 400 when not clocked in
+- [x] returns 400 when already clocked out
+- [x] returns 400 when already on break
+
+#### POST /api/stamps - break_end (4 tests)
+- [x] updates stamp with break-end time
+- [x] returns 400 when not clocked in
+- [x] returns 400 when not on break (no break started)
+- [x] returns 400 when break already ended
+
+#### Validation (2 tests)
+- [x] returns 400 for missing action
+- [x] returns 400 for invalid action type
+
+## Usage Examples
+
+```bash
+# ステータス取得
+curl http://localhost:3000/api/stamps/status
+
+# 出勤
+curl -X POST http://localhost:3000/api/stamps \
+  -H "Content-Type: application/json" \
+  -d '{"action": "clock_in"}'
+
+# 休憩開始
+curl -X POST http://localhost:3000/api/stamps \
+  -H "Content-Type: application/json" \
+  -d '{"action": "break_start"}'
+
+# 休憩終了
+curl -X POST http://localhost:3000/api/stamps \
+  -H "Content-Type: application/json" \
+  -d '{"action": "break_end"}'
+
+# 退勤
+curl -X POST http://localhost:3000/api/stamps \
+  -H "Content-Type: application/json" \
+  -d '{"action": "clock_out"}'
+```

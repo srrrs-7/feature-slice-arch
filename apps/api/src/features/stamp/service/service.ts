@@ -14,10 +14,7 @@ const getTodayDateString = (): string =>
   formatInTimezone(new Date(), "YYYY-MM-DD");
 
 // Get current work status for today
-export const getCurrentStatus = (): ResultAsync<
-  CurrentStatusResponse,
-  StampError
-> => {
+export const getStatus = (): ResultAsync<CurrentStatusResponse, StampError> => {
   const today = getTodayDateString();
   return stampRepository.findByDate(today).map((stamp) => ({
     status: getWorkStatus(stamp),
@@ -96,7 +93,7 @@ export const breakEnd = (): ResultAsync<Stamp, StampError> => {
 
 // Service as a namespace
 export const stampService = {
-  getCurrentStatus,
+  getStatus,
   clockIn,
   clockOut,
   breakStart,

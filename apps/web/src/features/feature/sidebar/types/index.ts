@@ -22,8 +22,12 @@ export interface AppSidebarProps {
   currentPath?: string;
   /** Whether mobile drawer is open (controlled by parent) */
   open?: boolean;
+  /** Whether desktop sidebar is collapsed (icon-only mode) */
+  collapsed?: boolean;
   /** Callback when sidebar should close */
   onClose?: () => void;
+  /** Callback when collapse state should toggle */
+  onToggleCollapse?: () => void;
 }
 
 /**

@@ -5,7 +5,13 @@ import type { AppSidebarProps } from "../types";
 import { navigationItems } from "./navigation-items";
 
 // Props (Svelte 5 runes)
-let { currentPath = "/", open = false, onClose }: AppSidebarProps = $props();
+let {
+  currentPath = "/",
+  open = false,
+  collapsed = false,
+  onClose,
+  onToggleCollapse,
+}: AppSidebarProps = $props();
 
 /**
  * Handle navigation item click - closes mobile drawer
@@ -36,42 +42,77 @@ function isActive(href: string): boolean {
 
 <svelte:window on:keydown={handleKeydown} />
 
-<!-- Desktop Sidebar: Standard Drawer (always visible on lg+) -->
+<!-- Desktop Sidebar: Collapsible Drawer -->
 <aside
-  class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 bg-background border-r border-border"
+  class="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 bg-background border-r border-border transition-all duration-300
+         {collapsed ? 'lg:w-16' : 'lg:w-64'}"
 >
   <!-- Header -->
-  <div class="flex items-center h-16 px-6 border-b border-border">
-    <a
-      href="/"
-      class="flex items-center gap-2 text-lg font-semibold text-foreground hover:text-primary transition-colors"
-    >
-      <svg
-        class="w-6 h-6 text-primary"
-        fill="currentColor"
-        viewBox="0 0 20 20"
+  <div
+    class="flex items-center h-16 border-b border-border {collapsed
+      ? 'justify-center px-2'
+      : 'justify-between px-4'}"
+  >
+    {#if !collapsed}
+      <a
+        href="/"
+        class="flex items-center gap-2 text-lg font-semibold text-foreground hover:text-primary transition-colors"
       >
-        <path
-          fill-rule="evenodd"
-          d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 5a1 1 0 112 0v4a1 1 0 11-2 0V5zm1 8a1 1 0 100 2 1 1 0 000-2z"
-          clip-rule="evenodd"
-        />
+        <svg
+          class="w-6 h-6 text-primary flex-shrink-0"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 5a1 1 0 112 0v4a1 1 0 11-2 0V5zm1 8a1 1 0 100 2 1 1 0 000-2z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>Todo App</span>
+      </a>
+    {/if}
+    <!-- Collapse Toggle Button -->
+    <button
+      onclick={onToggleCollapse}
+      aria-label={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+      class="min-h-[40px] min-w-[40px] p-2 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {#if collapsed}
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 5l7 7-7 7M5 5l7 7-7 7"
+          />
+        {:else}
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 19l-7-7 7-7M19 19l-7-7 7-7"
+          />
+        {/if}
       </svg>
-      <span>Todo App</span>
-    </a>
+    </button>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto p-4" aria-label="サイドナビゲーション">
+  <nav
+    class="flex-1 overflow-y-auto {collapsed ? 'p-2' : 'p-4'}"
+    aria-label="サイドナビゲーション"
+  >
     <div class="space-y-1">
       {#each navigationItems as item (item.href)}
         <a
           href={item.href}
-          class="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium min-h-[44px]
+          title={collapsed ? item.label : undefined}
+          class="flex items-center rounded-md text-sm font-medium min-h-[44px] transition-colors
+                 {collapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'}
                  {isActive(item.href)
             ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
-                 transition-colors"
+            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}"
         >
           <svg
             class="w-5 h-5 flex-shrink-0"
@@ -84,26 +125,31 @@ function isActive(href: string): boolean {
               clip-rule="evenodd"
             />
           </svg>
-          <span>{item.label}</span>
+          {#if !collapsed}
+            <span>{item.label}</span>
+          {/if}
         </a>
       {/each}
     </div>
   </nav>
 
   <!-- Footer -->
-  <div class="p-4 border-t border-border">
+  <div class="border-t border-border {collapsed ? 'p-2' : 'p-4'}">
     <div
-      class="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-accent transition-colors cursor-pointer"
+      class="flex items-center rounded-md hover:bg-accent transition-colors cursor-pointer
+             {collapsed ? 'justify-center p-2' : 'gap-3 px-4 py-3'}"
     >
       <div
-        class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm"
+        class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm flex-shrink-0"
       >
         U
       </div>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium text-foreground truncate">User</p>
-        <p class="text-xs text-muted-foreground truncate">user@example.com</p>
-      </div>
+      {#if !collapsed}
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-foreground truncate">User</p>
+          <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+        </div>
+      {/if}
     </div>
   </div>
 </aside>

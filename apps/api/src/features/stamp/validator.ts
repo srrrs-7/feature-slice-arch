@@ -1,8 +1,12 @@
 import { z } from "zod";
 
-// This feature doesn't require body validation since all endpoints
-// use the current date automatically.
-// Keeping this file for consistency with the Feature-Sliced Architecture pattern.
+// Stamp action type enum
+export const stampActionSchema = z.object({
+  action: z.enum(["clock_in", "clock_out", "break_start", "break_end"], {
+    message:
+      "Action must be one of: clock_in, clock_out, break_start, break_end",
+  }),
+});
 
 // Date param schema (for future use if we need to get stamps by date)
 export const dateParamSchema = z.object({
