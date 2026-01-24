@@ -975,5 +975,5 @@ docker compose --profile full up
 
 ---
 
-**最終更新:** 2026-01-23
+**最終更新:** 2026-01-24
 **メンテナー:** Development Team

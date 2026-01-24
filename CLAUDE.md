@@ -164,9 +164,16 @@ make apply ENV=dev     # Terraform apply
 
 See `apps/iac/CLAUDE.md` for detailed documentation.
 
-## Additional Guidelines
+## Additional Documentation
 
-Detailed coding rules, TDD practices, and PR templates are in `.claude/rules/`:
+### App-Specific Documentation
+- `apps/api/CLAUDE.md` - API layer responsibilities, neverthrow patterns
+- `apps/web/CLAUDE.md` - Svelte 5 runes, i18n, shadcn-svelte
+- `apps/iac/CLAUDE.md` - Terraform modules, AWS architecture
+- `.github/workflows/CLAUDE.md` - CI/CD pipeline configuration
+- `.devcontainer/CLAUDE.md` - Development environment setup
+
+### Coding Guidelines (`.claude/rules/`)
 - `coding-rules.md` - TypeScript, API, and Web conventions
 - `testing.md` - Test patterns with vitest and Prisma Fabbrica
 - `tdd.md` - Test-Driven Development practices

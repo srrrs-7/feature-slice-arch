@@ -2,15 +2,24 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Web Application
+## Overview
 
 Svelte 5 SPA with Vite, Tailwind CSS 4, and shadcn-svelte UI components.
+
+| Technology | Version |
+|------------|---------|
+| Runtime | Bun 1.3.5 |
+| Framework | Svelte 5.48 |
+| Build | Vite 7 |
+| Styling | Tailwind CSS 4 |
+| UI Components | shadcn-svelte (bits-ui) |
+| API Client | Hono RPC |
 
 ## Commands
 
 ```bash
 # Development
-bun run dev              # Start dev server with HMR (port 3000)
+bun run dev              # Start dev server with HMR (port 5173)
 
 # Build & Type Check
 bun run build            # Build for production
@@ -18,9 +27,6 @@ bun run check:type       # Type check with svelte-check
 
 # Preview
 bun run preview          # Preview production build
-
-# Clean
-bun run clean            # Remove dist and node_modules
 ```
 
 ## Architecture
@@ -44,50 +50,60 @@ src/
 │           └── index.ts
 ├── lib/
 │   ├── components/ui/  # shadcn-svelte components
+│   ├── i18n/           # Internationalization
+│   │   ├── index.ts    # i18n store and helpers
+│   │   ├── types.ts    # Type definitions
+│   │   └── locales/    # Translation files (ja.ts, en.ts)
 │   └── utils/          # Utility functions
-│       ├── index.ts    # cn() helper, types
+│       ├── index.ts    # cn() helper
 │       └── date.ts     # Date formatting
-├── App.svelte          # Root component
+├── App.svelte          # Root component with routing
 ├── app.css             # Global styles (Tailwind)
 └── main.ts             # Entry point
 ```
 
-## Tech Stack
-
-- **Framework**: Svelte 5.48 with runes (`$props()`, `$state()`, `$derived()`)
-- **Build**: Vite 7
-- **Styling**: Tailwind CSS 4 with `@tailwindcss/postcss`
-- **UI Components**: shadcn-svelte (bits-ui based)
-- **API Client**: Hono RPC Client (type-safe)
-- **State Management**: Svelte stores (writable, derived)
-
 ## Svelte 5 Patterns
 
-### Component Props
+### Runes
 
 ```svelte
 <script lang="ts">
-  // Use $props() for component props (Svelte 5 runes)
+  // Props with $props()
   let {
     ref = $bindable(null),
+    task,
+    onEdit,
     class: className,
     children,
     ...restProps
   } = $props();
+
+  // Reactive state with $state()
+  let count = $state(0);
+  let items = $state<string[]>([]);
+
+  // Derived values with $derived()
+  let doubled = $derived(count * 2);
+  let total = $derived(items.length);
+
+  // Effects with $effect()
+  $effect(() => {
+    console.log("Count changed:", count);
+  });
 </script>
 ```
 
 ### Event Handlers
 
 ```svelte
-<!-- Use onclick instead of on:click for Svelte 5 -->
+<!-- Svelte 5: use onclick (not on:click) for components -->
 <Button onclick={handleClick}>Click me</Button>
 
 <!-- Native elements still use on:click -->
 <button on:click={handleClick}>Click</button>
 ```
 
-### Stores
+### Store Usage
 
 ```svelte
 <script lang="ts">
@@ -111,7 +127,7 @@ src/
 
 ## API Integration
 
-### Hono RPC Client
+### Hono RPC Client (Type-Safe)
 
 ```typescript
 // api/client.ts
@@ -127,11 +143,124 @@ export const tasksApi = client.api.tasks;
 
 ```typescript
 // api/index.ts
+import type { Task, CreateTaskInput } from "../types";
+
 export async function getTasks(): Promise<{ tasks: Task[] }> {
   const res = await tasksApi.$get();
   if (!res.ok) throw new Error(`Failed: ${res.statusText}`);
   return await res.json();
 }
+
+export async function createTask(input: CreateTaskInput): Promise<{ task: Task }> {
+  const res = await tasksApi.$post({ json: input });
+  if (!res.ok) throw new Error(`Failed: ${res.statusText}`);
+  return await res.json();
+}
+```
+
+### Store with Optimistic Updates
+
+```typescript
+// stores/index.ts
+import { writable, derived, get } from "svelte/store";
+import type { Task } from "../types";
+import * as api from "../api";
+
+export const tasks = writable<Task[]>([]);
+export const isLoading = writable(false);
+export const error = writable<string | null>(null);
+
+// Derived store
+export const completedTasks = derived(tasks, ($tasks) =>
+  $tasks.filter((t) => t.status === "completed")
+);
+
+export const tasksStore = {
+  async fetchAll() {
+    isLoading.set(true);
+    error.set(null);
+    try {
+      const data = await api.getTasks();
+      tasks.set(data.tasks);
+    } catch (err) {
+      error.set(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      isLoading.set(false);
+    }
+  },
+
+  async update(id: string, input: UpdateTaskInput) {
+    // Optimistic update
+    let original: Task | undefined;
+    tasks.update((items) => {
+      original = items.find((t) => t.id === id);
+      return items.map((t) => (t.id === id ? { ...t, ...input } : t));
+    });
+
+    try {
+      const data = await api.updateTask(id, input);
+      tasks.update((items) => items.map((t) => (t.id === id ? data.task : t)));
+    } catch (err) {
+      // Rollback on error
+      if (original) {
+        tasks.update((items) => items.map((t) => (t.id === id ? original! : t)));
+      }
+      throw err;
+    }
+  },
+};
+```
+
+## Internationalization (i18n)
+
+Store-based i18n system without external libraries.
+
+### Usage
+
+```svelte
+<script lang="ts">
+  import { t, locale, formatDate, formatTime, setLocale } from "$lib/i18n";
+</script>
+
+<!-- Translations -->
+<h1>{$t.home.title}</h1>
+<button>{$t.common.save}</button>
+
+<!-- Date/Time formatting (locale-aware) -->
+<time>{formatDate(task.createdAt)}</time>
+<time>{formatTime(new Date())}</time>
+
+<!-- Change locale -->
+<button onclick={() => setLocale("en")}>English</button>
+<button onclick={() => setLocale("ja")}>日本語</button>
+```
+
+### Adding Translations
+
+```typescript
+// lib/i18n/locales/ja.ts
+export const ja: Translations = {
+  common: {
+    save: "保存",
+    cancel: "キャンセル",
+  },
+  tasks: {
+    title: "タスク一覧",
+    createTask: "タスクを作成",
+  },
+};
+
+// lib/i18n/locales/en.ts
+export const en: Translations = {
+  common: {
+    save: "Save",
+    cancel: "Cancel",
+  },
+  tasks: {
+    title: "Task List",
+    createTask: "Create Task",
+  },
+};
 ```
 
 ## Styling
@@ -145,7 +274,7 @@ export async function getTasks(): Promise<{ tasks: Task[] }> {
 @theme {
   --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.145 0 0);
-  /* ... */
+  --color-primary: oklch(0.205 0.155 254.128);
 }
 ```
 
@@ -155,12 +284,48 @@ export async function getTasks(): Promise<{ tasks: Task[] }> {
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
+  import * as Card from "$lib/components/ui/card";
   import { cn } from "$lib/utils";
 </script>
 
 <Button variant="destructive" size="sm" onclick={handleDelete}>
   Delete
 </Button>
+
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Title</Card.Title>
+  </Card.Header>
+  <Card.Content>Content</Card.Content>
+</Card.Root>
+```
+
+### Responsive Design (Mobile First)
+
+```svelte
+<!-- Mobile first: base → sm → md → lg → xl -->
+<div class="
+  px-4 py-6
+  sm:px-6 sm:py-8
+  lg:px-8 lg:py-12
+  max-w-screen-2xl mx-auto
+">
+  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold">
+    Title
+  </h1>
+</div>
+
+<!-- Touch targets: minimum 44×44px (48×48px recommended) -->
+<button class="min-h-[48px] min-w-[48px] px-6 py-3">
+  Action
+</button>
+
+<!-- Responsive grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {#each items as item}
+    <Card>{item.title}</Card>
+  {/each}
+</div>
 ```
 
 ## Import Aliases
@@ -176,6 +341,9 @@ import type { Task } from "@api/features/tasks/domain/task";
 // shadcn-svelte components
 import { Button } from "$lib/components/ui/button";
 import { cn } from "$lib/utils";
+
+// i18n
+import { t, locale, formatDate } from "$lib/i18n";
 ```
 
 ## Environment Variables
@@ -184,37 +352,56 @@ import { cn } from "$lib/utils";
 VITE_API_URL=http://localhost:8080
 ```
 
-## Timezone Handling
+## Best Practices
 
-- API returns timestamps in UTC (ISO 8601)
-- Convert to local timezone for display:
+### Floating Promises
+
+Use `void` operator for fire-and-forget async calls:
+
+```typescript
+onMount(() => {
+  void tasksStore.fetchAll();
+});
+```
+
+### Timezone Handling
+
+API returns UTC timestamps. Convert to local timezone for display:
 
 ```typescript
 const createdAtLocal = new Date(task.createdAt).toLocaleString();
+// Or use i18n formatDate
+const formatted = formatDate(task.createdAt);
 ```
 
-## Best Practices
+### Accessibility
 
-1. **Floating Promises**: Use `void` operator for fire-and-forget async calls
-   ```typescript
-   onMount(() => {
-     void tasksStore.fetchAll();
-   });
-   ```
+```svelte
+<!-- Semantic HTML -->
+<main>
+  <article>
+    <h1>Title</h1>
+  </article>
+</main>
 
-2. **Optimistic Updates**: Update UI immediately, rollback on error
-   ```typescript
-   // Store method with optimistic update
-   let original: Task | null = null;
-   tasks.update((items) => {
-     original = items.find((t) => t.id === id);
-     return items.map((t) => (t.id === id ? { ...t, ...input } : t));
-   });
-   ```
+<!-- ARIA labels -->
+<button aria-label={$t.a11y.deleteTask}>
+  <TrashIcon />
+</button>
 
-3. **Error Handling**: Set error state in stores
-   ```typescript
-   catch (err) {
-     error.set(err instanceof Error ? err.message : "Unknown error");
-   }
-   ```
+<!-- Keyboard navigation -->
+<div
+  role="button"
+  tabindex="0"
+  on:click={handleClick}
+  on:keydown={(e) => e.key === "Enter" && handleClick()}
+>
+  Clickable
+</div>
+```
+
+## Related Documentation
+
+- [Root CLAUDE.md](/workspace/main/CLAUDE.md) - Project overview
+- [.claude/rules/design-guide.md](/workspace/main/.claude/rules/design-guide.md) - UI/UX design guidelines
+- [.claude/rules/coding-rules.md](/workspace/main/.claude/rules/coding-rules.md) - Coding rules

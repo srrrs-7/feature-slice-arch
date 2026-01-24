@@ -4,7 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with CI
 
 ## Overview
 
-GitHub Actions CI/CD pipeline for the Todo List application. Supports automated testing, building, and deployment to AWS infrastructure.
+GitHub Actions CI/CD pipeline for the WorkFlow application. Supports automated testing, building, and deployment to AWS infrastructure.
+
+| Component | Purpose |
+|-----------|---------|
+| CI Job | Install, type check, lint, test |
+| Deploy Frontend | Build Svelte app → S3 → CloudFront invalidation |
+| DB Migration | Build migration image → ECR → ECS task |
+| Deploy Backend | Build API image → ECR → ECS service update |
 
 ## Workflow Architecture
 

@@ -4,7 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Terraform-based AWS infrastructure for the Todo List application. Uses a modular architecture with a shared `base-infrastructure` module and separate environments (dev/prod).
+Terraform-based AWS infrastructure for the WorkFlow application. Uses a modular architecture with a shared `base-infrastructure` module and separate environments (dev/prod).
+
+| Technology | Purpose |
+|------------|---------|
+| Terraform | Infrastructure as Code |
+| AWS CloudFront | CDN + HTTPS |
+| AWS ECS Fargate | Container orchestration |
+| AWS Aurora Serverless v2 | PostgreSQL database |
+| AWS S3 | Static web hosting |
 
 ## Architecture
 
