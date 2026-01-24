@@ -403,8 +403,8 @@ touch apps/web/src/lib/components/layouts/MainLayout.svelte
 
 ```svelte
 <script lang="ts">
-import AppHeader from '@/features/feature/header/components/AppHeader.svelte';
-import AppSidebar from '@/features/feature/sidebar/components/AppSidebar.svelte';
+import AppHeader from '@/features/common/header/components/AppHeader.svelte';
+import AppSidebar from '@/features/common/sidebar/components/AppSidebar.svelte';
 
 interface Props {
   currentPath?: string;

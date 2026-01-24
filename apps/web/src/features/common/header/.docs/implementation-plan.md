@@ -546,7 +546,7 @@ describe('AppHeader Accessibility', () => {
 ```svelte
 <!-- App.svelte or Layout component -->
 <script lang="ts">
-import { AppHeader } from '@/features/feature/header';
+import { AppHeader } from '@/features/common/header';
 
 let currentPath = $state(window.location.pathname);
 </script>

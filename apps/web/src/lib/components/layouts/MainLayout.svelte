@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AppSidebar } from "@/features/feature/sidebar";
+import { AppSidebar } from "@/features/common/sidebar";
 import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
 import { t } from "$lib/i18n";
 

@@ -540,8 +540,8 @@ describe('AppSidebar Accessibility', () => {
 
 ```svelte
 <script lang="ts">
-import { AppHeader } from '@/features/feature/header';
-import { AppSidebar } from '@/features/feature/sidebar';
+import { AppHeader } from '@/features/common/header';
+import { AppSidebar } from '@/features/common/sidebar';
 
 interface Props {
   currentPath?: string;
