@@ -41,6 +41,7 @@ export const en: Translations = {
     quickActions: "Quick Actions",
     viewTasks: "View Tasks",
     recordAttendance: "Clock In",
+    viewAttendance: "View Attendance",
     recentActivity: "Recent Activity",
   },
 
