@@ -10,6 +10,16 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Project Rules Reference
+
+**CRITICAL**: Before executing this command, load and apply the following project rules:
+
+| Rule File | Purpose | Required |
+|-----------|---------|----------|
+| `/workspace/main/.claude/rules/guideline.md` | Project guidelines and architecture | ✅ |
+
+**Loading Instructions**: Read the guideline file to understand project context and architecture when asking clarification questions about specifications.
+
 ## Outline
 
 Goal: Detect and reduce ambiguity or missing decision points in the active feature specification and record the clarifications directly in the spec file.

@@ -10,6 +10,18 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Project Rules Reference
+
+**CRITICAL**: Before executing this command, load and apply the following project rules:
+
+| Rule File | Purpose | Required |
+|-----------|---------|----------|
+| `/workspace/main/.claude/rules/guideline.md` | Project guidelines and architecture | ✅ |
+| `/workspace/main/.claude/rules/coding-rules.md` | Coding standards and patterns | ✅ |
+| `/workspace/main/.claude/rules/testing.md` | Testing patterns and strategies | ✅ |
+
+**Loading Instructions**: Read these rule files to validate that specifications align with project architecture, coding standards, and testing requirements during analysis.
+
 ## Goal
 
 Identify inconsistencies, duplications, ambiguities, and underspecified items across the three core artifacts (`spec.md`, `plan.md`, `tasks.md`) before implementation. This command MUST run only after `/tasks` has successfully produced a complete `tasks.md`.

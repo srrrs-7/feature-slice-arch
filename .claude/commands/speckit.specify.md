@@ -10,6 +10,16 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Project Rules Reference
+
+**CRITICAL**: Before executing this command, load and apply the following project rules:
+
+| Rule File | Purpose | Required |
+|-----------|---------|----------|
+| `/workspace/main/.claude/rules/guideline.md` | Project guidelines and architecture | ✅ |
+
+**Loading Instructions**: Read the guideline file to understand project context, architecture patterns, and domain conventions when creating specifications.
+
 ## Outline
 
 The text the user typed after `/speckit.specify` in the triggering message **is** the feature description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.

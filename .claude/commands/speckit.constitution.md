@@ -10,6 +10,16 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Project Rules Reference
+
+**CRITICAL**: Before executing this command, load and apply the following project rules:
+
+| Rule File | Purpose | Required |
+|-----------|---------|----------|
+| `/workspace/main/.claude/rules/guideline.md` | Project guidelines and architecture | ✅ |
+
+**Loading Instructions**: Read the guideline file to ensure constitution principles align with project architecture and established patterns.
+
 ## Outline
 
 You are updating the project constitution at `.specify/memory/constitution.md`. This file is a TEMPLATE containing placeholder tokens in square brackets (e.g. `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`). Your job is to (a) collect/derive concrete values, (b) fill the template precisely, and (c) propagate any amendments across dependent artifacts.

@@ -10,6 +10,19 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Project Rules Reference
+
+**CRITICAL**: Before executing this command, load and apply the following project rules:
+
+| Rule File | Purpose | Required |
+|-----------|---------|----------|
+| `/workspace/main/.claude/rules/guideline.md` | Project guidelines and architecture | ✅ |
+| `/workspace/main/.claude/rules/coding-rules.md` | Coding standards and patterns | ✅ |
+| `/workspace/main/.claude/rules/tdd.md` | Test-Driven Development methodology | ✅ |
+| `/workspace/main/.claude/rules/testing.md` | Testing patterns and strategies | ✅ |
+
+**Loading Instructions**: Read these rule files at the start of execution. Apply coding standards during implementation, follow TDD methodology for test creation, and ensure all code adheres to project architecture patterns.
+
 ## Outline
 
 1. Run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").

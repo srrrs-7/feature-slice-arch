@@ -29,6 +29,18 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Project Rules Reference
+
+**CRITICAL**: Before executing this command, load and apply the following project rules:
+
+| Rule File | Purpose | Required |
+|-----------|---------|----------|
+| `/workspace/main/.claude/rules/guideline.md` | Project guidelines and architecture | ✅ |
+| `/workspace/main/.claude/rules/testing.md` | Testing patterns and strategies | ✅ |
+| `/workspace/main/.claude/rules/design-guide.md` | Design and UX guidelines | For UX checklists |
+
+**Loading Instructions**: Read these rule files to generate checklists that validate requirements against project standards, testing patterns, and design guidelines.
+
 ## Execution Steps
 
 1. **Setup**: Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS list.
