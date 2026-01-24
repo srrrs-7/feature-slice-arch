@@ -1,6 +1,12 @@
 import { prisma } from "@api/lib/db";
 import { resetSequence, StampFactory } from "@api/lib/db/factory";
-import { afterEach } from "vitest";
+import { afterEach, beforeEach } from "vitest";
+
+// Clean up database before each test (ensures clean state)
+beforeEach(async () => {
+  await prisma.stamp.deleteMany();
+  resetSequence();
+});
 
 // Clean up database after each test
 afterEach(async () => {
