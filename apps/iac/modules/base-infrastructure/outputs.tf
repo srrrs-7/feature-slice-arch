@@ -94,3 +94,41 @@ output "alb_5xx_alarm_arn" {
   description = "ALB 5xx errors alarm ARN"
   value       = module.cloudwatch.alb_5xx_alarm_arn
 }
+
+#------------------------------------------------------------------------------
+# Cognito
+#------------------------------------------------------------------------------
+output "cognito_user_pool_id" {
+  description = "Cognito User Pool ID"
+  value       = module.cognito.user_pool_id
+}
+
+output "cognito_user_pool_arn" {
+  description = "Cognito User Pool ARN"
+  value       = module.cognito.user_pool_arn
+}
+
+output "cognito_client_id" {
+  description = "Cognito App Client ID"
+  value       = module.cognito.client_id
+}
+
+output "cognito_domain" {
+  description = "Cognito Hosted UI domain"
+  value       = module.cognito.domain
+}
+
+output "cognito_issuer" {
+  description = "Cognito Issuer URL (for JWT validation)"
+  value       = module.cognito.issuer
+}
+
+output "cognito_jwks_uri" {
+  description = "JWKS URI for JWT verification"
+  value       = module.cognito.jwks_uri
+}
+
+output "cognito_frontend_config" {
+  description = "Configuration object for frontend .env"
+  value       = module.cognito.frontend_config
+}

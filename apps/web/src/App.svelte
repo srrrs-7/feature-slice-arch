@@ -6,6 +6,11 @@ import {
   AttendanceDetailPage,
   AttendancePage,
 } from "./features/attendance/pages";
+import {
+  CallbackPage,
+  initializeAuth,
+  LoginPage,
+} from "./features/common/auth";
 import HomePage from "./features/home/pages/HomePage.svelte";
 import StampPage from "./features/stamp/pages/StampPage.svelte";
 import TaskDetailPage from "./features/todo-detail/pages/TaskDetailPage.svelte";
@@ -17,7 +22,9 @@ let currentRoute:
   | "detail"
   | "stamp"
   | "attendance"
-  | "attendance-detail" = $state("home");
+  | "attendance-detail"
+  | "login"
+  | "auth-callback" = $state("home");
 let taskId: string | null = $state(null);
 let attendanceDate: string | null = $state(null);
 let currentPath: string = $state("/");
@@ -36,6 +43,10 @@ const pageTitle = $derived.by(() => {
     case "attendance":
     case "attendance-detail":
       return $t.attendance.title;
+    case "login":
+      return $t.auth.login;
+    case "auth-callback":
+      return $t.auth.callback.processing;
     default:
       return "";
   }
@@ -44,6 +55,22 @@ const pageTitle = $derived.by(() => {
 function updateRoute() {
   const path = window.location.pathname;
   currentPath = path;
+
+  // Check for login route
+  if (path === "/login") {
+    currentRoute = "login";
+    taskId = null;
+    attendanceDate = null;
+    return;
+  }
+
+  // Check for auth callback route
+  if (path === "/auth/callback") {
+    currentRoute = "auth-callback";
+    taskId = null;
+    attendanceDate = null;
+    return;
+  }
 
   // Check for home route
   if (path === "/") {
@@ -127,6 +154,9 @@ function navigateToAttendanceDetail(date: string) {
 onMount(() => {
   updateRoute();
 
+  // Initialize authentication (check for existing tokens, refresh if needed)
+  void initializeAuth();
+
   // Handle browser back/forward buttons
   window.addEventListener("popstate", updateRoute);
 
@@ -136,6 +166,11 @@ onMount(() => {
 });
 </script>
 
+{#if currentRoute === "login"}
+  <LoginPage />
+{:else if currentRoute === "auth-callback"}
+  <CallbackPage />
+{:else}
 <MainLayout {currentPath} {pageTitle}>
   {#if currentRoute === "home"}
     <HomePage />
@@ -158,3 +193,4 @@ onMount(() => {
     </div>
   {/if}
 </MainLayout>
+{/if}

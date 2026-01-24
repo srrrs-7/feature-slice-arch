@@ -177,3 +177,37 @@ module "cloudwatch" {
   error_threshold         = var.error_alarm_threshold
   response_time_threshold = var.response_time_alarm_threshold
 }
+
+#------------------------------------------------------------------------------
+# Module: Cognito (Authentication)
+#------------------------------------------------------------------------------
+module "cognito" {
+  source = "../cognito"
+
+  name_prefix           = local.name_prefix
+  cognito_domain_prefix = var.cognito_domain_prefix
+
+  callback_urls = concat(
+    ["https://${module.cloudfront.distribution_domain_name}/auth/callback"],
+    var.cognito_additional_callback_urls
+  )
+
+  logout_urls = concat(
+    ["https://${module.cloudfront.distribution_domain_name}/login"],
+    var.cognito_additional_logout_urls
+  )
+
+  mfa_configuration            = var.cognito_mfa_configuration
+  access_token_validity        = var.cognito_access_token_validity
+  id_token_validity            = var.cognito_id_token_validity
+  refresh_token_validity       = var.cognito_refresh_token_validity
+  allow_admin_create_user_only = var.cognito_allow_admin_create_user_only
+  deletion_protection          = var.cognito_deletion_protection
+  create_user_groups           = var.cognito_create_user_groups
+
+  tags = {
+    Name = "${local.name_prefix}-cognito"
+  }
+
+  depends_on = [module.cloudfront]
+}

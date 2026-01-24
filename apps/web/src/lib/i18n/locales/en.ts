@@ -127,6 +127,36 @@ export const en: Translations = {
     required: "Required",
   },
 
+  // Authentication
+  auth: {
+    login: "Log In",
+    logout: "Log Out",
+    loginRequired: "Login Required",
+    pleaseLogin: "Please log in to access this feature.",
+    loginDescription: "Log in to your account to access all features.",
+    loggingIn: "Logging in...",
+    loginWithCognito: "Log In",
+    secureLogin: "Secure authentication login",
+    termsNotice: "By logging in, you agree to our Terms of Service.",
+    accessDenied: "Access Denied",
+    insufficientPermissions:
+      "You do not have permission to access this page. Please contact your administrator.",
+    callback: {
+      processing: "Processing Authentication",
+      pleaseWait: "Please wait...",
+      success: "Login Successful",
+      redirecting: "Redirecting...",
+      error: "Authentication Error",
+      retry: "Try Again",
+    },
+    errors: {
+      missingParams: "Missing authentication parameters",
+      invalidState: "Invalid authentication state. Please try again.",
+      tokenExchange: "Failed to exchange authorization code for tokens",
+      unknown: "An unexpected error occurred during authentication",
+    },
+  },
+
   // Attendance
   attendance: {
     title: "Attendance",

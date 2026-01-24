@@ -195,3 +195,65 @@ variable "response_time_alarm_threshold" {
   type        = number
   default     = 3.0
 }
+
+#------------------------------------------------------------------------------
+# Cognito
+#------------------------------------------------------------------------------
+variable "cognito_domain_prefix" {
+  description = "Cognito Hosted UI domain prefix (must be globally unique)"
+  type        = string
+}
+
+variable "cognito_additional_callback_urls" {
+  description = "Additional callback URLs (besides CloudFront)"
+  type        = list(string)
+  default     = ["http://localhost:5173/auth/callback"]
+}
+
+variable "cognito_additional_logout_urls" {
+  description = "Additional logout URLs (besides CloudFront)"
+  type        = list(string)
+  default     = ["http://localhost:5173/login"]
+}
+
+variable "cognito_mfa_configuration" {
+  description = "MFA configuration: OFF, ON, OPTIONAL"
+  type        = string
+  default     = "OFF"
+}
+
+variable "cognito_access_token_validity" {
+  description = "Access token validity in minutes"
+  type        = number
+  default     = 60
+}
+
+variable "cognito_id_token_validity" {
+  description = "ID token validity in minutes"
+  type        = number
+  default     = 60
+}
+
+variable "cognito_refresh_token_validity" {
+  description = "Refresh token validity in days"
+  type        = number
+  default     = 30
+}
+
+variable "cognito_allow_admin_create_user_only" {
+  description = "Only allow administrators to create users"
+  type        = bool
+  default     = false
+}
+
+variable "cognito_deletion_protection" {
+  description = "Enable deletion protection for the user pool"
+  type        = bool
+  default     = false
+}
+
+variable "cognito_create_user_groups" {
+  description = "Create default user groups (admin, member, viewer)"
+  type        = bool
+  default     = true
+}

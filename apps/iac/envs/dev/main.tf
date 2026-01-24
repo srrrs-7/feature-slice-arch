@@ -108,4 +108,16 @@ module "infrastructure" {
   memory_alarm_threshold        = var.memory_alarm_threshold
   error_alarm_threshold         = var.error_alarm_threshold
   response_time_alarm_threshold = var.response_time_alarm_threshold
+
+  # Cognito
+  cognito_domain_prefix                = var.cognito_domain_prefix
+  cognito_additional_callback_urls     = var.cognito_additional_callback_urls
+  cognito_additional_logout_urls       = var.cognito_additional_logout_urls
+  cognito_mfa_configuration            = var.cognito_mfa_configuration
+  cognito_access_token_validity        = var.cognito_access_token_validity
+  cognito_id_token_validity            = var.cognito_id_token_validity
+  cognito_refresh_token_validity       = var.cognito_refresh_token_validity
+  cognito_allow_admin_create_user_only = var.cognito_allow_admin_create_user_only
+  cognito_deletion_protection          = var.cognito_deletion_protection
+  cognito_create_user_groups           = var.cognito_create_user_groups
 }

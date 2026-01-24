@@ -1,10 +1,19 @@
 <script lang="ts">
 import { quintOut } from "svelte/easing";
 import { fade, fly } from "svelte/transition";
+import { LoginButton, UserMenu } from "@/features/common/auth";
+import {
+  isAuthenticated,
+  isCognitoConfigured,
+} from "@/features/common/auth/stores";
+import { t } from "$lib/i18n";
 import type { AppHeaderProps } from "../types";
 
 // Props (Svelte 5 runes)
 let { currentPath = "/", onMenuClick }: AppHeaderProps = $props();
+
+// Check if Cognito is configured
+const showAuthControls = $derived(isCognitoConfigured());
 
 // State
 let menuOpen = $state(false);
@@ -77,7 +86,7 @@ function isActive(href: string): boolean {
       <!-- Desktop Navigation -->
       <nav
         class="hidden md:flex items-center gap-1"
-        aria-label="メインナビゲーション"
+        aria-label={$t.nav.home}
       >
         {#each navItems as item (item.href)}
           <a
@@ -93,7 +102,17 @@ function isActive(href: string): boolean {
         {/each}
       </nav>
 
-      <!-- Mobile Menu Button -->
+      <!-- Auth Controls -->
+      <div class="flex items-center gap-2">
+        {#if showAuthControls}
+          {#if $isAuthenticated}
+            <UserMenu />
+          {:else}
+            <LoginButton class="hidden sm:flex" />
+          {/if}
+        {/if}
+
+        <!-- Mobile Menu Button -->
       <button
         onclick={toggleMenu}
         aria-label={menuOpen ? "メニューを閉じる" : "メニューを開く"}
@@ -132,6 +151,7 @@ function isActive(href: string): boolean {
           </svg>
         {/if}
       </button>
+      </div>
     </div>
   </div>
 </header>

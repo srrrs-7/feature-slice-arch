@@ -127,6 +127,37 @@ export const ja: Translations = {
     required: "必須",
   },
 
+  // Authentication
+  auth: {
+    login: "ログイン",
+    logout: "ログアウト",
+    loginRequired: "ログインが必要です",
+    pleaseLogin: "この機能を利用するにはログインしてください。",
+    loginDescription:
+      "アカウントにログインして、すべての機能にアクセスしましょう。",
+    loggingIn: "ログイン中...",
+    loginWithCognito: "ログイン",
+    secureLogin: "安全な認証でログインします",
+    termsNotice: "ログインすることで、利用規約に同意したことになります。",
+    accessDenied: "アクセスが拒否されました",
+    insufficientPermissions:
+      "このページにアクセスする権限がありません。管理者にお問い合わせください。",
+    callback: {
+      processing: "認証処理中",
+      pleaseWait: "しばらくお待ちください...",
+      success: "ログイン成功",
+      redirecting: "リダイレクトしています...",
+      error: "認証エラー",
+      retry: "再試行",
+    },
+    errors: {
+      missingParams: "認証パラメータが不足しています",
+      invalidState: "認証状態が無効です。もう一度お試しください。",
+      tokenExchange: "トークンの取得に失敗しました",
+      unknown: "認証中に予期しないエラーが発生しました",
+    },
+  },
+
   // Attendance (出勤簿)
   attendance: {
     title: "出勤簿",

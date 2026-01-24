@@ -132,6 +132,35 @@ export interface Translations {
     required: string;
   };
 
+  // Authentication
+  auth: {
+    login: string;
+    logout: string;
+    loginRequired: string;
+    pleaseLogin: string;
+    loginDescription: string;
+    loggingIn: string;
+    loginWithCognito: string;
+    secureLogin: string;
+    termsNotice: string;
+    accessDenied: string;
+    insufficientPermissions: string;
+    callback: {
+      processing: string;
+      pleaseWait: string;
+      success: string;
+      redirecting: string;
+      error: string;
+      retry: string;
+    };
+    errors: {
+      missingParams: string;
+      invalidState: string;
+      tokenExchange: string;
+      unknown: string;
+    };
+  };
+
   // Attendance (出勤簿)
   attendance: {
     title: string;

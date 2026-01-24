@@ -78,6 +78,39 @@ output "private_subnet_ids" {
 }
 
 #------------------------------------------------------------------------------
+# Cognito
+#------------------------------------------------------------------------------
+output "cognito_user_pool_id" {
+  description = "Cognito User Pool ID"
+  value       = module.infrastructure.cognito_user_pool_id
+}
+
+output "cognito_client_id" {
+  description = "Cognito App Client ID"
+  value       = module.infrastructure.cognito_client_id
+}
+
+output "cognito_domain" {
+  description = "Cognito Hosted UI domain"
+  value       = module.infrastructure.cognito_domain
+}
+
+output "cognito_issuer" {
+  description = "Cognito Issuer URL (for JWT validation)"
+  value       = module.infrastructure.cognito_issuer
+}
+
+output "cognito_jwks_uri" {
+  description = "JWKS URI for JWT verification"
+  value       = module.infrastructure.cognito_jwks_uri
+}
+
+output "cognito_frontend_config" {
+  description = "Configuration for frontend .env"
+  value       = module.infrastructure.cognito_frontend_config
+}
+
+#------------------------------------------------------------------------------
 # Deployment Commands
 #------------------------------------------------------------------------------
 output "deployment_commands" {
