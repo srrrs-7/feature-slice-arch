@@ -13,7 +13,7 @@ onMount(() => {
 });
 </script>
 
-<div class="container mx-auto py-8 px-4 max-w-6xl">
+<div class="py-4 sm:py-6 lg:py-8">
   <TodoListHeader />
 
   {#if $error}

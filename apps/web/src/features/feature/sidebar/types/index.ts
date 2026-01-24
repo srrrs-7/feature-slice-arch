@@ -4,8 +4,8 @@
 export interface NavigationItem {
   /** Route path */
   href: string;
-  /** Display label */
-  label: string;
+  /** Translation key for label (e.g., "nav.home") */
+  labelKey: "home" | "tasks" | "stamp" | "settings";
   /** SVG path d attribute */
   iconPath: string;
   /** SVG viewBox (defaults to "0 0 20 20") */

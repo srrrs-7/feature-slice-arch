@@ -1,6 +1,8 @@
 <script lang="ts">
 import { quintOut } from "svelte/easing";
 import { fade, fly } from "svelte/transition";
+import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
+import { t } from "$lib/i18n";
 import type { AppSidebarProps } from "../types";
 import { navigationItems } from "./navigation-items";
 
@@ -38,6 +40,15 @@ function isActive(href: string): boolean {
   }
   return currentPath?.startsWith(href) ?? false;
 }
+
+/**
+ * Get translated label for navigation item
+ */
+function getNavLabel(
+  labelKey: "home" | "tasks" | "stamp" | "settings",
+): string {
+  return $t.nav[labelKey];
+}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -69,13 +80,13 @@ function isActive(href: string): boolean {
             clip-rule="evenodd"
           />
         </svg>
-        <span>Todo App</span>
+        <span>{$t.common.appName}</span>
       </a>
     {/if}
     <!-- Collapse Toggle Button -->
     <button
       onclick={onToggleCollapse}
-      aria-label={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+      aria-label={collapsed ? $t.nav.expandSidebar : $t.nav.collapseSidebar}
       class="min-h-[40px] min-w-[40px] p-2 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,13 +112,13 @@ function isActive(href: string): boolean {
   <!-- Navigation -->
   <nav
     class="flex-1 overflow-y-auto {collapsed ? 'p-2' : 'p-4'}"
-    aria-label="サイドナビゲーション"
+    aria-label={$t.nav.home}
   >
     <div class="space-y-1">
       {#each navigationItems as item (item.href)}
         <a
           href={item.href}
-          title={collapsed ? item.label : undefined}
+          title={collapsed ? getNavLabel(item.labelKey) : undefined}
           class="flex items-center rounded-md text-sm font-medium min-h-[44px] transition-colors
                  {collapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'}
                  {isActive(item.href)
@@ -126,15 +137,23 @@ function isActive(href: string): boolean {
             />
           </svg>
           {#if !collapsed}
-            <span>{item.label}</span>
+            <span>{getNavLabel(item.labelKey)}</span>
           {/if}
         </a>
       {/each}
     </div>
   </nav>
 
-  <!-- Footer -->
+  <!-- Footer with Language Switcher -->
   <div class="border-t border-border {collapsed ? 'p-2' : 'p-4'}">
+    <!-- Language Switcher -->
+    {#if !collapsed}
+      <div class="mb-3">
+        <LanguageSwitcher class="w-full" />
+      </div>
+    {/if}
+
+    <!-- User Info -->
     <div
       class="flex items-center rounded-md hover:bg-accent transition-colors cursor-pointer
              {collapsed ? 'justify-center p-2' : 'gap-3 px-4 py-3'}"
@@ -162,7 +181,7 @@ function isActive(href: string): boolean {
       type="button"
       class="absolute inset-0 bg-black/50 cursor-default"
       onclick={onClose}
-      aria-label="サイドバーを閉じる"
+      aria-label={$t.nav.closeMenu}
       tabindex="-1"
     ></button>
 
@@ -172,7 +191,7 @@ function isActive(href: string): boolean {
       transition:fly={{ x: -300, duration: 300, easing: quintOut }}
       role="dialog"
       aria-modal="true"
-      aria-label="ナビゲーションサイドバー"
+      aria-label={$t.nav.home}
       tabindex="-1"
       onclick={(e) => e.stopPropagation()}
       onkeydown={(e) => e.stopPropagation()}
@@ -196,12 +215,12 @@ function isActive(href: string): boolean {
               clip-rule="evenodd"
             />
           </svg>
-          <span>Todo App</span>
+          <span>{$t.common.appName}</span>
         </a>
         <button
           class="min-h-[44px] min-w-[44px] p-2 rounded-md hover:bg-accent transition-colors"
           onclick={onClose}
-          aria-label="サイドバーを閉じる"
+          aria-label={$t.nav.closeMenu}
         >
           <svg
             class="w-5 h-5"
@@ -220,7 +239,7 @@ function isActive(href: string): boolean {
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto p-4" aria-label="サイドナビゲーション">
+      <nav class="flex-1 overflow-y-auto p-4" aria-label={$t.nav.home}>
         <div class="space-y-1">
           {#each navigationItems as item (item.href)}
             <a
@@ -243,14 +262,20 @@ function isActive(href: string): boolean {
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{item.label}</span>
+              <span>{getNavLabel(item.labelKey)}</span>
             </a>
           {/each}
         </div>
       </nav>
 
-      <!-- Footer -->
+      <!-- Footer with Language Switcher -->
       <div class="p-4 border-t border-border">
+        <!-- Language Switcher -->
+        <div class="mb-3">
+          <LanguageSwitcher class="w-full" />
+        </div>
+
+        <!-- User Info -->
         <div
           class="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-accent transition-colors cursor-pointer"
         >

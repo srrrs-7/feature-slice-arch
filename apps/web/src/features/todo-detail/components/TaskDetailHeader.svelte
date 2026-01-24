@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Button } from "$lib/components/ui/button";
+import { t } from "$lib/i18n";
 import TaskStatusBadge from "../../todo-list/components/TaskStatusBadge.svelte";
 import { currentTask, taskDetailStore } from "../stores";
 import type { TaskStatus } from "../types";
@@ -63,18 +64,18 @@ async function handleStatusClick() {
 </script>
 
 {#if $currentTask}
-  <div class="mb-6">
-    <div class="flex items-center justify-between mb-4">
-      <Button variant="ghost" size="sm" onclick={onBack}>
-        ← Back to List
+  <div class="mb-4 sm:mb-6">
+    <div class="flex items-center justify-between mb-3 sm:mb-4">
+      <Button variant="ghost" size="sm" onclick={onBack} class="text-sm sm:text-base">
+        ← {$t.taskDetail.backToList}
       </Button>
-      <Button variant="destructive" size="sm" onclick={onDelete}>
-        Delete
+      <Button variant="destructive" size="sm" onclick={onDelete} class="text-sm sm:text-base">
+        {$t.common.delete}
       </Button>
     </div>
 
-    <div class="flex items-start justify-between gap-4">
-      <div class="flex-1 min-w-0">
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+      <div class="flex-1 min-w-0 order-2 sm:order-1">
         {#if isEditingTitle}
           <!-- svelte-ignore a11y_autofocus -->
           <input
@@ -82,14 +83,14 @@ async function handleStatusClick() {
             bind:value={editTitle}
             on:blur={saveTitle}
             on:keydown={handleTitleKeydown}
-            class="text-3xl font-bold w-full px-2 py-1 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            class="text-xl sm:text-2xl lg:text-3xl font-bold w-full px-2 py-1 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary"
             maxlength={200}
             autofocus
           />
         {:else}
           <button
             type="button"
-            class="text-3xl font-bold cursor-pointer hover:text-primary transition-colors text-left w-full bg-transparent border-none p-0"
+            class="text-xl sm:text-2xl lg:text-3xl font-bold cursor-pointer hover:text-primary transition-colors text-left w-full bg-transparent border-none p-0"
             on:click={startEditTitle}
           >
             {$currentTask.title}
@@ -97,11 +98,13 @@ async function handleStatusClick() {
         {/if}
       </div>
 
-      <TaskStatusBadge
-        status={$currentTask.status}
-        clickable
-        onClick={handleStatusClick}
-      />
+      <div class="order-1 sm:order-2 flex-shrink-0">
+        <TaskStatusBadge
+          status={$currentTask.status}
+          clickable
+          onClick={handleStatusClick}
+        />
+      </div>
     </div>
   </div>
 {/if}

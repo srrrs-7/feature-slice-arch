@@ -54,7 +54,7 @@ async function handleBreakEnd() {
 }
 </script>
 
-<div class="container mx-auto py-8 px-4 max-w-4xl">
+<div class="py-4 sm:py-6 lg:py-8 max-w-2xl mx-auto">
   <StampHeader />
 
   {#if $isLoading && !$currentStamp && $currentStatus === "not_working"}

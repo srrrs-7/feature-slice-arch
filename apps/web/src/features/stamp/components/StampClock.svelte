@@ -28,14 +28,14 @@ $: dateString = currentTime.toLocaleDateString("ja-JP", {
 });
 </script>
 
-<div class="text-center py-6" aria-live="polite" aria-atomic="true">
+<div class="text-center py-4 sm:py-6" aria-live="polite" aria-atomic="true">
   <time
-    class="text-5xl sm:text-6xl font-mono font-bold text-foreground tabular-nums"
+    class="text-4xl sm:text-5xl lg:text-6xl font-mono font-bold text-foreground tabular-nums"
     datetime={currentTime.toISOString()}
   >
     {timeString}
   </time>
-  <p class="text-lg sm:text-xl text-muted-foreground mt-2">
+  <p class="text-base sm:text-lg lg:text-xl text-muted-foreground mt-1 sm:mt-2">
     {dateString}
   </p>
 </div>

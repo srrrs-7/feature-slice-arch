@@ -1,10 +1,12 @@
 <script lang="ts">
-// Stamp page header component
+import { t } from "$lib/i18n";
 </script>
 
-<div class="flex items-center justify-between mb-8">
-  <div>
-    <h1 class="text-4xl font-bold text-foreground">勤怠打刻</h1>
-    <p class="text-muted-foreground mt-2">出勤・退勤・休憩の打刻管理</p>
-  </div>
+<div class="mb-6 sm:mb-8">
+  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+    {$t.stamp.title}
+  </h1>
+  <p class="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">
+    {$t.stamp.subtitle}
+  </p>
 </div>

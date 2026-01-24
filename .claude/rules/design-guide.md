@@ -117,6 +117,240 @@ export default {
 </button>
 ```
 
+### レスポンシブタイポグラフィ
+
+**フォントサイズはモバイルファーストで段階的に拡大:**
+
+```svelte
+<!-- ✅ GOOD: レスポンシブなフォントサイズ -->
+
+<!-- ページタイトル -->
+<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold">
+  ページタイトル
+</h1>
+
+<!-- セクションタイトル -->
+<h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold">
+  セクションタイトル
+</h2>
+
+<!-- 本文 -->
+<p class="text-sm sm:text-base text-muted-foreground">
+  本文テキスト
+</p>
+
+<!-- 大きな表示（時計など） -->
+<time class="text-4xl sm:text-5xl lg:text-6xl font-mono tabular-nums">
+  12:34:56
+</time>
+
+<!-- ❌ BAD: 固定サイズ -->
+<h1 class="text-4xl">すべての画面で同じサイズ</h1>
+```
+
+### レスポンシブスペーシング
+
+**余白もモバイルファーストで段階的に拡大:**
+
+```svelte
+<!-- ✅ GOOD: レスポンシブなスペーシング -->
+
+<!-- コンテナのパディング -->
+<div class="px-3 sm:px-4 md:px-6 lg:px-8">
+  コンテンツ
+</div>
+
+<!-- セクション間の余白 -->
+<section class="py-4 sm:py-6 lg:py-8">
+  セクション
+</section>
+
+<!-- 要素間のギャップ -->
+<div class="space-y-4 sm:space-y-6 lg:space-y-8">
+  <div>アイテム1</div>
+  <div>アイテム2</div>
+</div>
+
+<!-- マージン -->
+<div class="mb-4 sm:mb-6 lg:mb-8">
+  下に余白
+</div>
+
+<!-- ❌ BAD: 固定スペーシング -->
+<div class="px-8 py-12">モバイルで余白が大きすぎる</div>
+```
+
+### レスポンシブレイアウトパターン
+
+**Flexbox方向の切り替え:**
+
+```svelte
+<!-- ✅ GOOD: モバイルは縦並び、デスクトップは横並び -->
+<div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+  <button class="min-w-full sm:min-w-[140px]">アクション1</button>
+  <button class="min-w-full sm:min-w-[140px]">アクション2</button>
+</div>
+
+<!-- ✅ GOOD: レスポンシブなグリッド列数 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+  {#each items as item}
+    <Card>{item.title}</Card>
+  {/each}
+</div>
+
+<!-- ✅ GOOD: タブの列数調整 -->
+<Tabs.List class="grid grid-cols-2 sm:grid-cols-4 gap-1">
+  <Tabs.Trigger value="all">All</Tabs.Trigger>
+  <Tabs.Trigger value="pending">Pending</Tabs.Trigger>
+  <Tabs.Trigger value="progress">Progress</Tabs.Trigger>
+  <Tabs.Trigger value="done">Done</Tabs.Trigger>
+</Tabs.List>
+```
+
+### レスポンシブコンポーネントパターン
+
+**ボタンのレスポンシブ化:**
+
+```svelte
+<!-- ✅ GOOD: モバイルでフル幅、デスクトップで適切なサイズ -->
+<Button
+  class="
+    min-h-[48px] sm:min-h-[52px]
+    min-w-full sm:min-w-[140px]
+    text-base sm:text-lg
+    font-semibold
+  "
+>
+  アクション
+</Button>
+```
+
+**カードのレスポンシブ化:**
+
+```svelte
+<!-- ✅ GOOD: レスポンシブなカードパディングとフォントサイズ -->
+<Card class="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]">
+  <Card.Header class="p-4 sm:p-6">
+    <Card.Title class="text-base sm:text-lg line-clamp-2">
+      {task.title}
+    </Card.Title>
+    <Card.Description class="mt-1 text-xs sm:text-sm line-clamp-2">
+      {task.description}
+    </Card.Description>
+  </Card.Header>
+  <Card.Content class="p-4 sm:p-6 pt-0 sm:pt-0">
+    <Badge class="text-xs">{task.status}</Badge>
+  </Card.Content>
+</Card>
+```
+
+**サイドバーのレスポンシブ化:**
+
+```svelte
+<!-- ✅ GOOD: モバイルでオーバーレイ、デスクトップで固定 -->
+<script lang="ts">
+  let sidebarOpen = $state(false);
+  let isMobile = $state(false);
+
+  $effect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    isMobile = mediaQuery.matches;
+
+    const handler = (e: MediaQueryListEvent) => {
+      isMobile = e.matches;
+      if (!e.matches) sidebarOpen = true;
+    };
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  });
+</script>
+
+<!-- モバイル: オーバーレイ背景 -->
+{#if isMobile && sidebarOpen}
+  <div
+    class="fixed inset-0 bg-black/50 z-40 md:hidden"
+    onclick={() => (sidebarOpen = false)}
+  ></div>
+{/if}
+
+<!-- サイドバー -->
+<aside class="
+  {isMobile ? 'fixed z-50' : 'relative'}
+  {sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+  transition-transform duration-300
+  w-64 h-full bg-background border-r
+">
+  サイドバーコンテンツ
+</aside>
+```
+
+### テキストの省略（line-clamp）
+
+```svelte
+<!-- ✅ GOOD: 長いテキストを省略して表示 -->
+<h3 class="line-clamp-2">
+  非常に長いタイトルが複数行にわたる場合、2行で省略されます...
+</h3>
+
+<p class="line-clamp-3 text-sm text-muted-foreground">
+  説明文は3行で省略。詳細は詳細ページで確認できます...
+</p>
+
+<!-- Tailwind CSS line-clamp クラス -->
+<!-- line-clamp-1: 1行で省略 -->
+<!-- line-clamp-2: 2行で省略 -->
+<!-- line-clamp-3: 3行で省略 -->
+<!-- line-clamp-none: 省略なし -->
+```
+
+### タッチフィードバック
+
+```svelte
+<!-- ✅ GOOD: タッチ操作時の視覚的フィードバック -->
+<Card class="
+  cursor-pointer
+  hover:shadow-md
+  transition-shadow
+  active:scale-[0.99]  /* タップ時に少し縮む */
+">
+  タップ可能なカード
+</Card>
+
+<button class="
+  transition-all duration-150
+  hover:bg-accent
+  active:scale-95      /* タップ時に縮む */
+  active:bg-accent/80
+">
+  タップ可能なボタン
+</button>
+```
+
+### レスポンシブデザインのベストプラクティス
+
+```markdown
+## チェックリスト
+
+### 必須
+- [ ] モバイルファーストで実装（sm: → md: → lg: → xl:）
+- [ ] タッチターゲット最小48×48px
+- [ ] フォントサイズがレスポンシブ
+- [ ] スペーシングがレスポンシブ
+- [ ] 長いテキストにline-clamp
+
+### 推奨
+- [ ] flexbox方向の切り替え（flex-col sm:flex-row）
+- [ ] グリッド列数の調整
+- [ ] タッチフィードバック（active:scale-*）
+- [ ] サイドバーのモバイル対応
+
+### 避けるべき
+- ❌ デスクトップファーストの設計
+- ❌ 固定幅/高さの多用
+- ❌ 小さすぎるタッチターゲット
+- ❌ モバイルでの横スクロール
+```
+
 ---
 
 ## アクセシビリティ
@@ -1060,6 +1294,406 @@ export default {
 
 ---
 
+## 多言語対応（i18n）
+
+このプロジェクトでは、外部ライブラリを使用せずにSvelte storeベースのシンプルなi18nシステムを実装しています。
+
+### アーキテクチャ
+
+```
+apps/web/src/lib/i18n/
+├── index.ts          # メインのi18n store とヘルパー関数
+├── types.ts          # 型定義とサポート言語の設定
+└── locales/
+    ├── ja.ts         # 日本語翻訳
+    └── en.ts         # 英語翻訳
+```
+
+### サポート言語
+
+```typescript
+// types.ts
+export type Locale = "ja" | "en";
+
+export const SUPPORTED_LOCALES: LocaleInfo[] = [
+  { code: "ja", name: "Japanese", nativeName: "日本語", flag: "🇯🇵" },
+  { code: "en", name: "English", nativeName: "English", flag: "🇺🇸" },
+];
+
+export const DEFAULT_LOCALE: Locale = "ja";
+```
+
+### 翻訳の構造
+
+```typescript
+// types.ts
+export interface Translations {
+  common: {
+    appName: string;
+    loading: string;
+    save: string;
+    cancel: string;
+    delete: string;
+    edit: string;
+    create: string;
+    back: string;
+    // ...
+  };
+  nav: {
+    home: string;
+    tasks: string;
+    stamp: string;
+    settings: string;
+    // ...
+  };
+  home: {
+    title: string;
+    subtitle: string;
+    // ...
+  };
+  tasks: {
+    title: string;
+    createTask: string;
+    // ...
+  };
+  // ... 他のセクション
+}
+```
+
+### 翻訳ファイルの書き方
+
+```typescript
+// locales/ja.ts
+import type { Translations } from "../types";
+
+export const ja: Translations = {
+  common: {
+    appName: "WorkFlow",
+    loading: "読み込み中...",
+    save: "保存",
+    cancel: "キャンセル",
+    delete: "削除",
+    edit: "編集",
+    create: "作成",
+    back: "戻る",
+  },
+  nav: {
+    home: "ホーム",
+    tasks: "タスク",
+    stamp: "打刻",
+    settings: "設定",
+  },
+  // ...
+};
+
+// locales/en.ts
+import type { Translations } from "../types";
+
+export const en: Translations = {
+  common: {
+    appName: "WorkFlow",
+    loading: "Loading...",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    edit: "Edit",
+    create: "Create",
+    back: "Back",
+  },
+  nav: {
+    home: "Home",
+    tasks: "Tasks",
+    stamp: "Stamp",
+    settings: "Settings",
+  },
+  // ...
+};
+```
+
+### i18n Store
+
+```typescript
+// index.ts
+import { writable, derived, get } from "svelte/store";
+import type { Locale, Translations } from "./types";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "./types";
+import { ja } from "./locales/ja";
+import { en } from "./locales/en";
+
+const translations: Record<Locale, Translations> = { ja, en };
+
+// ブラウザの言語設定から初期ロケールを決定
+function getInitialLocale(): Locale {
+  if (typeof window === "undefined") return DEFAULT_LOCALE;
+
+  const stored = localStorage.getItem("locale") as Locale | null;
+  if (stored && SUPPORTED_LOCALES.some((l) => l.code === stored)) {
+    return stored;
+  }
+
+  const browserLang = navigator.language.split("-")[0];
+  if (SUPPORTED_LOCALES.some((l) => l.code === browserLang)) {
+    return browserLang as Locale;
+  }
+
+  return DEFAULT_LOCALE;
+}
+
+// 現在のロケール
+export const locale = writable<Locale>(getInitialLocale());
+
+// 翻訳オブジェクト（derived store）
+export const t = derived(locale, ($locale) => translations[$locale]);
+
+// ロケールを変更
+export function setLocale(newLocale: Locale): void {
+  locale.set(newLocale);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("locale", newLocale);
+    document.documentElement.lang = newLocale;
+  }
+}
+
+// 日付フォーマット
+export function formatDate(
+  date: Date | string,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const currentLocale = get(locale);
+  return new Intl.DateTimeFormat(currentLocale, options).format(d);
+}
+
+// 時刻フォーマット
+export function formatTime(
+  date: Date | string,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const currentLocale = get(locale);
+  return new Intl.DateTimeFormat(currentLocale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    ...options,
+  }).format(d);
+}
+```
+
+### コンポーネントでの使用方法
+
+```svelte
+<script lang="ts">
+  import { t, locale, formatDate, formatTime } from "$lib/i18n";
+</script>
+
+<!-- 基本的な翻訳 -->
+<h1>{$t.home.title}</h1>
+<p>{$t.home.subtitle}</p>
+
+<!-- ボタン -->
+<button>{$t.common.save}</button>
+<button>{$t.common.cancel}</button>
+
+<!-- ナビゲーション -->
+<nav>
+  <a href="/">{$t.nav.home}</a>
+  <a href="/tasks">{$t.nav.tasks}</a>
+</nav>
+
+<!-- 日付・時刻フォーマット -->
+<time>{formatDate(task.createdAt)}</time>
+<time>{formatTime(new Date())}</time>
+
+<!-- 現在のロケールに基づくフォーマット -->
+<time>
+  {new Date().toLocaleString($locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  })}
+</time>
+```
+
+### 言語切替コンポーネント
+
+```svelte
+<!-- LanguageSwitcher.svelte -->
+<script lang="ts">
+  import { locale, setLocale, t } from "$lib/i18n";
+  import { SUPPORTED_LOCALES, type Locale } from "$lib/i18n/types";
+
+  let { compact = false, class: className = "" } = $props();
+  let isOpen = $state(false);
+
+  const currentLocale = $derived(
+    SUPPORTED_LOCALES.find((l) => l.code === $locale)
+  );
+
+  function handleSelect(code: Locale) {
+    setLocale(code);
+    isOpen = false;
+  }
+</script>
+
+<div class="relative {className}">
+  <button
+    onclick={() => (isOpen = !isOpen)}
+    class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent"
+    aria-label={$t.language.label}
+    aria-expanded={isOpen}
+  >
+    <span>{currentLocale?.flag}</span>
+    {#if !compact}
+      <span>{currentLocale?.nativeName}</span>
+    {/if}
+  </button>
+
+  {#if isOpen}
+    <div class="absolute right-0 mt-2 w-40 bg-background border rounded-md shadow-lg">
+      {#each SUPPORTED_LOCALES as loc}
+        <button
+          onclick={() => handleSelect(loc.code)}
+          class="w-full px-4 py-2 text-left hover:bg-accent flex items-center gap-2"
+          class:bg-accent={loc.code === $locale}
+        >
+          <span>{loc.flag}</span>
+          <span>{loc.nativeName}</span>
+        </button>
+      {/each}
+    </div>
+  {/if}
+</div>
+```
+
+### 新しい翻訳キーの追加手順
+
+1. **types.ts に型を追加**
+```typescript
+export interface Translations {
+  // 既存のセクション...
+  newSection: {
+    newKey: string;
+    anotherKey: string;
+  };
+}
+```
+
+2. **各言語ファイルに翻訳を追加**
+```typescript
+// locales/ja.ts
+export const ja: Translations = {
+  // ...
+  newSection: {
+    newKey: "新しいキー",
+    anotherKey: "別のキー",
+  },
+};
+
+// locales/en.ts
+export const en: Translations = {
+  // ...
+  newSection: {
+    newKey: "New Key",
+    anotherKey: "Another Key",
+  },
+};
+```
+
+3. **コンポーネントで使用**
+```svelte
+<p>{$t.newSection.newKey}</p>
+```
+
+### 動的な値を含む翻訳
+
+```typescript
+// types.ts
+export interface Translations {
+  tasks: {
+    count: string;  // "{count}件のタスク"
+  };
+}
+
+// locales/ja.ts
+tasks: {
+  count: "{count}件のタスク",
+}
+
+// locales/en.ts
+tasks: {
+  count: "{count} tasks",
+}
+```
+
+```svelte
+<script lang="ts">
+  import { t } from "$lib/i18n";
+
+  let count = 5;
+
+  // 簡易的な置換
+  const message = $derived($t.tasks.count.replace("{count}", count.toString()));
+</script>
+
+<p>{message}</p>
+```
+
+### ベストプラクティス
+
+#### 翻訳キーの命名規則
+```typescript
+// ✅ GOOD: セクション.キー形式
+$t.common.save
+$t.tasks.createTask
+$t.errors.notFound
+
+// ❌ BAD: フラットな構造
+$t.saveButton
+$t.createTaskButton
+```
+
+#### ハードコードされた文字列を避ける
+```svelte
+<!-- ✅ GOOD: 翻訳を使用 -->
+<button>{$t.common.delete}</button>
+<h1>{$t.tasks.title}</h1>
+
+<!-- ❌ BAD: ハードコード -->
+<button>削除</button>
+<h1>タスク一覧</h1>
+```
+
+#### アクセシビリティラベルも翻訳
+```svelte
+<!-- ✅ GOOD: aria-labelも翻訳 -->
+<button aria-label={$t.a11y.toggleSidebar}>
+  <MenuIcon />
+</button>
+
+<!-- ❌ BAD: aria-labelがハードコード -->
+<button aria-label="サイドバーを開く">
+  <MenuIcon />
+</button>
+```
+
+### i18nチェックリスト
+
+#### 新機能実装時
+- [ ] すべての表示文字列が翻訳キーを使用
+- [ ] 日付・時刻はformatDate/formatTimeを使用
+- [ ] aria-labelも翻訳を使用
+- [ ] 新しいキーをすべての言語ファイルに追加
+- [ ] TypeScriptの型チェックがパス
+
+#### 新言語追加時
+1. `types.ts`のSUPPORTED_LOCALESに追加
+2. `locales/`に新しい言語ファイルを作成
+3. `index.ts`のtranslationsに追加
+4. すべてのキーを翻訳
+
+---
+
 ## デザインチェックリスト
 
 ### 新機能実装時の確認事項
@@ -1107,6 +1741,13 @@ export default {
 - [ ] 遅延ローディングを使用
 - [ ] 大量データに仮想スクロール
 - [ ] Lighthouseスコア90以上
+
+#### 多言語対応（i18n）
+- [ ] すべての表示文字列が翻訳キーを使用
+- [ ] 日付・時刻はformatDate/formatTimeを使用
+- [ ] aria-labelも翻訳を使用
+- [ ] 新しいキーをすべての言語ファイルに追加
+- [ ] TypeScriptの型チェックがパス
 
 ---
 

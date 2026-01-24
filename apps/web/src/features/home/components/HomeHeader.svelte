@@ -1,8 +1,12 @@
 <script lang="ts">
-// Home page header
+import { t } from "$lib/i18n";
 </script>
 
-<div class="mb-8">
-  <h1 class="text-4xl font-bold text-foreground">ダッシュボード</h1>
-  <p class="text-muted-foreground mt-2">ようこそ！今日も頑張りましょう</p>
+<div class="mb-6 sm:mb-8">
+  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+    {$t.home.title}
+  </h1>
+  <p class="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">
+    {$t.home.subtitle}
+  </p>
 </div>

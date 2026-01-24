@@ -41,12 +41,12 @@ function handleCardClick() {
 }
 </script>
 
-<Card.Root class="cursor-pointer hover:shadow-md transition-shadow" onclick={handleCardClick}>
-  <Card.Header>
-    <div class="flex items-start justify-between gap-4">
+<Card.Root class="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.99]" onclick={handleCardClick}>
+  <Card.Header class="p-4 sm:p-6">
+    <div class="flex items-start justify-between gap-3 sm:gap-4">
       <div class="flex-1 min-w-0">
-        <Card.Title class="text-lg">{task.title}</Card.Title>
-        <Card.Description class="mt-1">
+        <Card.Title class="text-base sm:text-lg line-clamp-2">{task.title}</Card.Title>
+        <Card.Description class="mt-1 text-xs sm:text-sm line-clamp-2">
           {#if task.description}
             {task.description}
           {:else}
@@ -55,17 +55,17 @@ function handleCardClick() {
         </Card.Description>
       </div>
       <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
-      <div on:click={(e) => e.stopPropagation()}>
+      <div on:click={(e) => e.stopPropagation()} class="flex-shrink-0">
         <TaskStatusBadge status={task.status} clickable onClick={handleStatusToggle} />
       </div>
     </div>
   </Card.Header>
-  <Card.Footer class="flex justify-between items-center">
-    <span class="text-xs text-muted-foreground">
+  <Card.Footer class="flex justify-between items-center p-4 sm:p-6 pt-0 sm:pt-0">
+    <span class="text-[10px] sm:text-xs text-muted-foreground">
       {formatDateCompact(task.createdAt)}
     </span>
     <div class="flex gap-2">
-      <Button variant="outline" size="sm" onclick={handleDelete}>
+      <Button variant="outline" size="sm" onclick={handleDelete} class="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3">
         Delete
       </Button>
     </div>

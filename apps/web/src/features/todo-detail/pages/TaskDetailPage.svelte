@@ -40,7 +40,7 @@ function handleDeleteCancel() {
 }
 </script>
 
-<div class="container mx-auto py-8 px-4 max-w-4xl">
+<div class="py-4 sm:py-6 lg:py-8 max-w-4xl mx-auto">
   {#if $isLoading && !$currentTask}
     <div class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -61,7 +61,7 @@ function handleDeleteCancel() {
     <TaskDetailMetadata />
   {:else}
     <div class="text-center py-12">
-      <h2 class="text-2xl font-semibold text-muted-foreground mb-4">
+      <h2 class="text-xl sm:text-2xl font-semibold text-muted-foreground mb-4">
         Task Not Found
       </h2>
       <p class="text-muted-foreground mb-6">

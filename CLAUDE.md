@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Bun monorepo with Feature-Sliced Architecture for the API. Uses Bun workspaces with `apps/*` and `packages/*`.
+Bun monorepo with Feature-Sliced Architecture. Uses Bun workspaces with `apps/*` and `packages/*`.
 
 ```
 apps/
-├── api/     # Hono + Prisma REST API
+├── api/     # Hono + Prisma 7 REST API
 ├── web/     # Svelte 5 + Vite SPA
 └── iac/     # Terraform AWS Infrastructure
 ```
@@ -16,176 +16,26 @@ apps/
 ## Commands
 
 ```bash
-# Install dependencies
-bun install
-
 # Development
-bun run dev          # Run both api and web
-bun run dev:api      # Run API only (HMR enabled)
-bun run dev:web      # Run web only (HMR enabled)
+bun run dev              # Run both api and web
+bun run dev:api          # Run API only (port 8080, HMR)
+bun run dev:web          # Run web only (port 5173)
 
 # Testing
-bun run test:run     # Run tests once
-bun run test:watch   # Run tests in watch mode
+bun run test:run         # Run all tests
+bun run test:coverage    # Run tests with coverage
+bun test apps/api/src/features/tasks/.test/handler.get-all.test.ts  # Single test
 
-# Build & Type Check
-bun run build:api    # Build API
-bun run build:web    # Build web
-bun run check:type   # Type check all workspaces
-bun run check        # Run spell check, type check, and biome
-
-# Linting & Formatting
-bun run format       # Format with Biome
-bun run check:biome  # Lint and fix with Biome
+# Build & Checks
+bun run check            # Run spell check, type check, and biome
+bun run check:type       # Type check all workspaces
+bun run format           # Format with Biome
 
 # Database (Prisma)
-bun run db:generate       # Generate Prisma client
-bun run db:migrate:dev    # Run migrations in dev
-bun run db:migrate:deploy # Deploy migrations to prod
-bun run db:migrate:reset  # Reset database
-bun run db:seed           # Seed database
-```
-
-## Shell Aliases
-
-For faster development workflow, the following aliases are available in the devcontainer (configured in `.devcontainer/setup.personal.sh`):
-
-```bash
-# Basic shortcuts
-b          # bun
-g          # git
-ll         # ls -la (detailed list)
-la         # ls -A (show hidden files)
-l          # ls -CF
-c          # clear
-h          # history
-..         # cd ..
-...        # cd ../..
-
-# Bun shortcuts
-bi         # bun install
-bd         # bun run dev (API + Web)
-bda        # bun run dev:api
-bdw        # bun run dev:web
-bt         # bun run test:run
-btc        # bun run test:coverage
-btw        # bun run test:watch
-bc         # bun run check
-bf         # bun run format
-bb         # bun run build:api
-
-# Database shortcuts
-dbg        # bun run db:generate
-dbm        # bun run db:migrate:dev
-dbd        # bun run db:migrate:deploy
-dbs        # bun run db:studio
-dbseed     # bun run db:seed
-dbr        # bun run db:migrate:reset
-
-# Git shortcuts
-gs         # git status
-gc         # git commit
-gp         # git push
-gl         # git log --oneline --graph --decorate
-gco        # git checkout
-gcb        # git checkout -b (create new branch)
-gaa        # git add --all
-gcm        # git commit -m
-gca        # git commit --amend
-gst        # git stash
-gstp       # git stash pop
-gpl        # git pull
-gpf        # git push --force-with-lease
-gd         # git diff
-gds        # git diff --staged
-grb        # git rebase
-grbc       # git rebase --continue
-grba       # git rebase --abort
-
-# GitHub CLI shortcuts
-ghpr       # gh pr create
-ghprl      # gh pr list
-ghprv      # gh pr view
-ghprc      # gh pr checkout
-ghprm      # gh pr merge
-ghprs      # gh pr status
-ghis       # gh issue create
-ghisl      # gh issue list
-ghisv      # gh issue view
-ghrv       # gh repo view
-ghrw       # gh repo view --web
-ghas       # gh auth status
-ghal       # gh auth login
-
-# AWS CLI shortcuts (for apps/iac infrastructure)
-awswho     # aws sts get-caller-identity
-ecsls      # aws ecs list-clusters
-ecssvc     # aws ecs list-services --cluster
-rdsls      # aws rds describe-db-clusters
-cflist     # aws cloudfront list-distributions
-s3ls       # aws s3 ls
-logtail    # aws logs tail --follow
-secget     # aws secretsmanager get-secret-value --secret-id
-albls      # aws elbv2 describe-load-balancers
-
-# Terraform shortcuts
-tf         # terraform
-tfi        # terraform init
-tfp        # terraform plan
-tfa        # terraform apply
-tfd        # terraform destroy
-tfv        # terraform validate
-tff        # terraform fmt -recursive
-tfo        # terraform output
-
-# Utilities
-reload     # source ~/.bashrc (reload aliases)
-path       # echo $PATH (display PATH nicely)
-ports      # lsof -i -P -n | grep LISTEN (show listening ports)
-```
-
-**Usage examples:**
-```bash
-# Quick development
-bd                    # Start both API and Web servers
-bda                   # Start API only
-bt                    # Run tests
-btc                   # Run tests with coverage
-
-# Database operations
-dbm                   # Run migrations
-dbs                   # Open Prisma Studio
-dbg                   # Generate Prisma client
-
-# Git workflow
-gs                    # Check status
-gcb feat/new-feature  # Create and checkout new branch
-gaa                   # Stage all changes
-gcm "feat: add user auth"  # Commit with message
-gp                    # Push to remote
-
-# GitHub workflow
-ghpr                  # Create a PR
-ghprl                 # List PRs
-ghprm                 # Merge PR
-
-# AWS operations (for apps/iac)
-awswho                # Check current AWS identity
-ecsls                 # List ECS clusters
-ecssvc my-cluster     # List services in cluster
-logtail /aws/ecs/my-log-group  # Tail logs
-cflist                # List CloudFront distributions
-s3ls s3://my-bucket   # List S3 bucket contents
-
-# Terraform workflow (from apps/iac)
-tfi                   # Initialize Terraform
-tfp                   # Plan changes
-tfa                   # Apply changes
-tfo                   # Show outputs
-
-# Utilities
-reload                # Reload aliases after editing .bashrc
-ports                 # Check which ports are in use
+bun run db:generate      # Generate Prisma client
+bun run db:migrate:dev   # Run migrations in dev
+bun run db:migrate:reset # Reset database
+bun run db:seed          # Seed database
 ```
 
 ## Architecture
@@ -195,72 +45,55 @@ ports                 # Check which ports are in use
 Feature-Sliced Architecture with layers:
 
 ```
-apps/api/
+apps/api/src/
 ├── features/           # Feature modules
 │   └── {feature}/
-│       ├── index.ts        # Public API (exports)
-│       ├── domain/         # Domain types and entities
-│       ├── service/        # Business logic
-│       ├── repository/     # Data access layer
-│       ├── handler.ts      # HTTP route handlers (Hono)
-│       └── validator.ts    # Zod schemas for validation
-├── lib/                # Shared utilities (workspace: @api/lib)
-│   ├── db/             # Prisma client, schema, migrations
-│   ├── error/          # Common error types
-│   ├── http/           # HTTP response helpers
-│   ├── logger/         # Pino logger
-│   ├── time/           # Time utilities
-│   └── types/          # Shared types (Result wrappers)
-├── index.ts            # Entry point (Hono app)
-└── package.json
+│       ├── index.ts        # Public API (exports types + routes)
+│       ├── domain/         # Domain types, entities, errors
+│       ├── service/        # Business logic (returns ResultAsync)
+│       ├── repository/     # Data access with Prisma
+│       ├── handler.ts      # Hono HTTP handlers
+│       ├── validator.ts    # Zod schemas
+│       └── .test/          # Handler tests
+├── lib/                # Shared utilities (@api/lib workspace)
+└── index.ts            # Entry point
 ```
 
-New features should follow `.example/` as a template.
+New features should follow `features/.example/` as a template.
 
 ### Web (`apps/web`)
 
-Svelte 5 SPA with Vite, Tailwind CSS 4, and shadcn-svelte UI components.
+Svelte 5 SPA with Feature-Sliced Architecture:
 
 ```
-apps/web/
-├── src/
-│   ├── features/           # Feature modules
-│   │   └── {feature}/
-│   │       ├── pages/          # Page components
-│   │       ├── components/     # UI components
-│   │       ├── api/            # Hono RPC client
-│   │       ├── stores/         # Svelte stores
-│   │       └── types/          # Type definitions
-│   ├── lib/
-│   │   ├── components/ui/  # shadcn-svelte components
-│   │   └── utils/          # Utility functions
-│   ├── App.svelte          # Root component
-│   └── main.ts             # Entry point
-├── index.html
-└── vite.config.ts
+apps/web/src/
+├── features/           # Feature modules
+│   └── {feature}/
+│       ├── pages/          # Page components
+│       ├── components/     # UI components
+│       ├── api/            # Hono RPC client
+│       ├── stores/         # Svelte stores
+│       └── types/          # Type definitions
+├── lib/
+│   ├── components/ui/  # shadcn-svelte components
+│   └── utils/          # Utility functions
+├── App.svelte          # Root component with routing
+└── main.ts             # Entry point
 ```
 
-## Bun-Specific Guidelines
+## Key Patterns
 
-- Use `Bun.serve()` for HTTP servers (not Express)
-- Use `bun:test` for testing (not Jest/Vitest)
-- Use `Bun.file` for file operations (not node:fs)
-- Bun auto-loads `.env` files (no dotenv needed)
-- Use `bun:sqlite` for SQLite, `Bun.sql` for Postgres, `Bun.redis` for Redis
+### Error Handling (API)
 
-## Key Architectural Patterns
+Uses `neverthrow` for functional error handling:
 
-### Error Handling with neverthrow
-
-The API uses functional error handling with the `neverthrow` library:
-
-- All service/repository functions return `Result<T, E>` or `ResultAsync<T, E>`
-- Error types are defined in `domain/` and `lib/error/`
-- Use `.match()` to handle success/error cases in handlers
-- Common error types: `DatabaseError`, `ValidationError`, `NotFoundError`
-
-Example:
 ```typescript
+// Service returns ResultAsync
+export const getById = (id: string): ResultAsync<Task, TaskError> =>
+  liftAsync(parseWith(taskIdSchema, id))
+    .andThen(taskRepository.findById);
+
+// Handler uses .match() for HTTP responses
 taskService.getById(id).match(
   (task) => responseOk(c, { task }),
   (error) => {
@@ -272,88 +105,70 @@ taskService.getById(id).match(
 );
 ```
 
-### Domain Layer
+### Domain Layer (API)
 
-- All domain types are **immutable** (use `readonly`)
-- Use branded types for IDs (e.g., `TaskId = string & { readonly _brand: unique symbol }`)
-- Smart constructors create domain entities (e.g., `createTask()`, `createTaskId()`)
-- Domain-specific errors defined alongside entities
+- Immutable types with `readonly`
+- Branded types for IDs: `type TaskId = string & { readonly _brand: unique symbol }`
+- Smart constructors: `createTask()`, `createTaskId()`
+- Domain errors: `TaskErrors.notFound(id)`
 
-### Service Layer
+### Svelte 5 (Web)
 
-- Validates input using Zod schemas
-- Orchestrates business logic
-- Returns `ResultAsync<T, Error>` for all operations
-- Uses functional composition with `.andThen()`, `.map()`, `.mapErr()`
+```svelte
+<script lang="ts">
+  // Runes for props
+  let { task, onEdit } = $props();
 
-### Repository Layer
+  // State
+  let count = $state(0);
+  let doubled = $derived(count * 2);
+</script>
 
-- Direct Prisma access
-- Returns `ResultAsync` with typed errors
-- Uses `wrapAsync()` or `wrapAsyncWithLog()` helpers from `@api/lib/db`
+<!-- Store subscription with $ prefix -->
+{#each $tasks as task (task.id)}
+  <TaskCard {task} />
+{/each}
+```
 
-### Handler Layer (HTTP)
+### API Integration (Web)
 
-- Uses Hono for routing
-- Validates with `@hono/zod-validator`
-- Maps service results to HTTP responses using helpers from `@api/lib/http`
-- Exports as default Hono app
+```typescript
+// Hono RPC Client (type-safe)
+import { hc } from "hono/client";
+import type { AppType } from "@api/index";
 
-## Database (Prisma)
+const client = hc<AppType>(import.meta.env.VITE_API_URL);
+const res = await client.api.tasks.$get();
+```
 
-- PostgreSQL with Prisma adapter (`@prisma/adapter-pg`)
+## Database
+
+- PostgreSQL with Prisma 7 + `@prisma/adapter-pg`
 - Schema: `apps/api/src/lib/db/prisma/schema.prisma`
-- Generated client: `apps/api/src/lib/db/generated/client/`
-- Test factories: `@quramy/prisma-fabbrica` in `generated/fabbrica/`
+- Test factories: `@quramy/prisma-fabbrica`
 
 ## Timezone Handling
 
-**Critical: All timestamps must use UTC throughout the system.**
-
-### Backend (API)
-- **Database**: Store all timestamps in UTC (PostgreSQL default with `TIMESTAMP` or `TIMESTAMP WITH TIME ZONE`)
-- **API Responses**: Return all timestamps in UTC (ISO 8601 format: `YYYY-MM-DDTHH:mm:ss.sssZ`)
-- **No timezone conversion** in backend - keep everything in UTC
-
-### Frontend (Web)
-- **Display**: Convert UTC timestamps to user's local timezone for display
-- **Input**: Convert user's local date/time inputs to UTC before sending to API
-- **Requests**: Always send date/time values in UTC format to the backend
-
-### Benefits
-- Eliminates timezone-related bugs
-- Consistent data storage and retrieval
-- Easy to support users in different timezones
-- Simplifies backend logic (no timezone conversions needed)
-
-### Example
-```typescript
-// Backend response (UTC)
-{
-  "createdAt": "2025-01-23T08:00:00.000Z",  // Always UTC
-  "updatedAt": "2025-01-23T09:30:00.000Z"   // Always UTC
-}
-
-// Frontend display (converts to user's timezone)
-const date = new Date("2025-01-23T08:00:00.000Z");
-console.log(date.toLocaleString()); // "2025/1/23 17:00:00" (JST)
-
-// Frontend request (converts back to UTC)
-const localDate = new Date("2025-01-23T17:00:00"); // User's local time
-const utcDate = localDate.toISOString(); // "2025-01-23T08:00:00.000Z"
-```
+**All timestamps use UTC:**
+- Backend: Store and return UTC (ISO 8601)
+- Frontend: Convert to local timezone for display
 
 ## Infrastructure (`apps/iac`)
 
-Terraform-based AWS infrastructure with modular architecture.
+Terraform-based AWS: CloudFront → ALB → ECS Fargate → Aurora Serverless v2
 
 ```bash
-# From apps/iac directory
 make plan ENV=dev      # Terraform plan
 make apply ENV=dev     # Terraform apply
-make validate ENV=dev  # Validate configuration
 ```
 
-**Architecture**: CloudFront → ALB → ECS Fargate → Aurora Serverless v2
+See `apps/iac/CLAUDE.md` for detailed documentation.
 
-See `apps/iac/CLAUDE.md` for detailed infrastructure documentation.
+## Additional Guidelines
+
+Detailed coding rules, TDD practices, and PR templates are in `.claude/rules/`:
+- `coding-rules.md` - TypeScript, API, and Web conventions
+- `testing.md` - Test patterns with vitest and Prisma Fabbrica
+- `tdd.md` - Test-Driven Development practices
+- `github-pr.md` - PR creation templates
+- `design-guide.md` - UI/UX design guidelines

@@ -1,5 +1,7 @@
 <script lang="ts">
 import { AppSidebar } from "@/features/feature/sidebar";
+import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
+import { t } from "$lib/i18n";
 
 interface Props {
   /** Current route path for navigation highlighting */
@@ -44,7 +46,7 @@ function toggleCollapse() {
         <!-- Menu Button -->
         <button
           onclick={toggleSidebar}
-          aria-label={sidebarOpen ? "メニューを閉じる" : "メニューを開く"}
+          aria-label={sidebarOpen ? $t.nav.closeMenu : $t.nav.openMenu}
           aria-expanded={sidebarOpen}
           class="min-h-[44px] min-w-[44px] p-2 rounded-md text-foreground hover:bg-accent transition-colors"
         >
@@ -79,11 +81,11 @@ function toggleCollapse() {
               clip-rule="evenodd"
             />
           </svg>
-          <span>Todo App</span>
+          <span>{$t.common.appName}</span>
         </a>
 
-        <!-- Spacer for balance -->
-        <div class="w-[44px]"></div>
+        <!-- Language Switcher -->
+        <LanguageSwitcher compact />
       </div>
     </div>
   </header>
@@ -103,7 +105,7 @@ function toggleCollapse() {
       ? 'lg:pl-16'
       : 'lg:pl-64'}"
   >
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
       {#if children}
         {@render children()}
       {/if}
