@@ -16,10 +16,31 @@
 
 ### Non-Functional Requirements
 
-- **NFR1**: レスポンシブデザイン
+- **NFR1**: レスポンシブデザイン (モバイルファースト)
 - **NFR2**: オプティミスティックアップデート
-- **NFR3**: ローディング状態表示
+- **NFR3**: ローディング状態表示 (スピナー、スケルトン)
 - **NFR4**: エラーハンドリング (404, API errors)
+- **NFR5**: WCAG 2.1 AA準拠
+- **NFR6**: Material Design準拠
+
+## Design Principles
+
+### Material Design Application
+
+#### Material is the Metaphor
+- **カード構造**: メタデータセクションにborder/shadow
+- **Elevation**: ホバー時のフィードバック
+- **明確な境界**: セクション間のborder
+
+#### Bold, Graphic, Intentional
+- **階層的タイポグラフィ**: text-3xl (タイトル) → text-base (説明) → text-sm (メタデータ)
+- **セマンティックカラー**: ステータスバッジ、削除ボタン(destructive)
+- **アイコン使用**: 視覚的な手がかり
+
+#### Motion Provides Meaning
+- **編集モード切り替え**: スムーズなトランジション
+- **ステータス変更**: 即座のフィードバック
+- **削除確認**: モーダルアニメーション(fade + scale)
 
 ## User Stories
 

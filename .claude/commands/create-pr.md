@@ -16,10 +16,34 @@ Create a GitHub Pull Request with comprehensive details including summary, relat
 
 ## Prerequisites
 
-Before creating a PR, ensure:
+Before creating a PR, ensure you have read and understand:
+- **GitHub PR Rules**: `/workspace/main/.claude/rules/github-pr.md`
+- **Project Guidelines**: `/workspace/main/.claude/rules/guideline.md`
+- **Coding Standards**: `/workspace/main/.claude/rules/coding-rules.md`
+
+And verify:
 - All changes are committed locally
 - You are on the correct feature branch (not main/master)
 - Remote branch is pushed or will be pushed
+
+## Phase 0: Load PR Context
+
+**CRITICAL**: Read PR guidelines before proceeding.
+
+```bash
+# Read PR rules and project guidelines in parallel
+Read /workspace/main/.claude/rules/github-pr.md
+Read /workspace/main/.claude/rules/guideline.md
+Read /workspace/main/.claude/rules/coding-rules.md
+```
+
+**Parse and internalize:**
+- PR structure and template
+- Commit message conventions
+- Testing requirements
+- Documentation expectations
+- Git safety protocols
+- Review checklist
 
 ## Execution Steps
 
