@@ -47,6 +47,7 @@ export interface Translations {
     quickActions: string;
     viewTasks: string;
     recordAttendance: string;
+    viewAttendance: string;
     recentActivity: string;
   };
 

@@ -41,6 +41,7 @@ export const ja: Translations = {
     quickActions: "クイックアクション",
     viewTasks: "タスクを見る",
     recordAttendance: "出勤打刻",
+    viewAttendance: "出勤簿を見る",
     recentActivity: "最近のアクティビティ",
   },
 
