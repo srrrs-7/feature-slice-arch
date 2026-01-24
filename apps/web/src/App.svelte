@@ -1,6 +1,7 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import { MainLayout } from "$lib/components/layouts";
+import { t } from "$lib/i18n";
 import HomePage from "./features/home/pages/HomePage.svelte";
 import StampPage from "./features/stamp/pages/StampPage.svelte";
 import TaskDetailPage from "./features/todo-detail/pages/TaskDetailPage.svelte";
@@ -9,6 +10,22 @@ import TodoListPage from "./features/todo-list/pages/TodoListPage.svelte";
 let currentRoute: "home" | "tasks" | "detail" | "stamp" = $state("home");
 let taskId: string | null = $state(null);
 let currentPath: string = $state("/");
+
+// Get page title based on current route
+const pageTitle = $derived.by(() => {
+  switch (currentRoute) {
+    case "home":
+      return $t.home.title;
+    case "tasks":
+      return $t.tasks.title;
+    case "detail":
+      return $t.taskDetail.title;
+    case "stamp":
+      return $t.stamp.title;
+    default:
+      return "";
+  }
+});
 
 function updateRoute() {
   const path = window.location.pathname;
@@ -75,7 +92,7 @@ onMount(() => {
 });
 </script>
 
-<MainLayout {currentPath}>
+<MainLayout {currentPath} {pageTitle}>
   {#if currentRoute === "home"}
     <HomePage />
   {:else if currentRoute === "tasks"}
