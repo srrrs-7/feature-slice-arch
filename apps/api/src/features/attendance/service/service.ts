@@ -7,8 +7,8 @@ import {
   type ResultAsync,
 } from "neverthrow";
 import { z } from "zod";
-import type { StampError } from "../../stamp/domain/stamp.ts";
-import { stampRepository } from "../../stamp/repository/repository.ts";
+import type { StampError } from "../domain/stamp.ts";
+import { stampRepository } from "../repository/stamp-repository.ts";
 import {
   type AttendanceError,
   AttendanceErrors,

@@ -1,5 +1,7 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
-import { onMount } from "svelte";
+import dayjs from "dayjs";
 import { t } from "$lib/i18n";
 import {
   AttendanceCard,
@@ -7,16 +9,8 @@ import {
   AttendanceTable,
   MonthSelector,
 } from "../components";
-import {
-  attendanceStore,
-  dateRange,
-  error,
-  isLoading,
-  records,
-  selectedMonth,
-  selectedYear,
-  summary,
-} from "../stores";
+import { createAttendanceListQuery } from "../queries";
+import { selectedMonth, selectedYear } from "../stores";
 
 interface Props {
   onNavigateToDetail?: (date: string) => void;
@@ -24,17 +18,45 @@ interface Props {
 
 let { onNavigateToDetail }: Props = $props();
 
-// Fetch data when date range changes
-$effect(() => {
-  const { from, to } = $dateRange;
-  void attendanceStore.fetchByDateRange(from, to);
+// Calculate date range from selected year and month
+const dateRange = $derived.by(() => {
+  const year = $selectedYear;
+  const month = $selectedMonth;
+  const from = `${year}-${String(month).padStart(2, "0")}-01`;
+  const lastDay = dayjs(from).endOf("month").date();
+  const to = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+  return { from, to };
 });
 
-onMount(() => {
-  return () => {
-    attendanceStore.clear();
-  };
-});
+// Use TanStack Query for data fetching
+const attendanceQuery = createAttendanceListQuery(() => dateRange);
+
+// Navigation functions
+function prevMonth(): void {
+  selectedMonth.update((m) => {
+    if (m === 1) {
+      selectedYear.update((y) => y - 1);
+      return 12;
+    }
+    return m - 1;
+  });
+}
+
+function nextMonth(): void {
+  selectedMonth.update((m) => {
+    if (m === 12) {
+      selectedYear.update((y) => y + 1);
+      return 1;
+    }
+    return m + 1;
+  });
+}
+
+function goToThisMonth(): void {
+  const now = dayjs();
+  selectedYear.set(now.year());
+  selectedMonth.set(now.month() + 1);
+}
 
 function handleSelectDate(date: string) {
   if (onNavigateToDetail) {
@@ -59,14 +81,14 @@ function handleSelectDate(date: string) {
     <MonthSelector
       year={$selectedYear}
       month={$selectedMonth}
-      onPrevMonth={attendanceStore.prevMonth}
-      onNextMonth={attendanceStore.nextMonth}
-      onThisMonth={attendanceStore.goToThisMonth}
+      onPrevMonth={prevMonth}
+      onNextMonth={nextMonth}
+      onThisMonth={goToThisMonth}
     />
   </div>
 
   <!-- Loading State -->
-  {#if $isLoading}
+  {#if attendanceQuery.isPending}
     <div class="space-y-4" role="status" aria-label={$t.common.loading}>
       <!-- Summary Skeleton -->
       <div class="animate-pulse p-6 bg-muted rounded-xl h-32"></div>
@@ -80,17 +102,17 @@ function handleSelectDate(date: string) {
     </div>
 
     <!-- Error State -->
-  {:else if $error}
+  {:else if attendanceQuery.isError}
     <div
       class="bg-destructive/15 border border-destructive text-destructive-foreground p-4 rounded-lg"
       role="alert"
     >
       <p class="font-medium">{$t.common.error}</p>
-      <p class="mt-1 text-sm">{$error}</p>
+      <p class="mt-1 text-sm">{attendanceQuery.error?.message || "Failed to fetch attendance"}</p>
     </div>
 
     <!-- Empty State -->
-  {:else if $records.length === 0}
+  {:else if (attendanceQuery.data?.records ?? []).length === 0}
     <div class="text-center py-12">
       <p class="text-muted-foreground text-lg">{$t.attendance.noRecord}</p>
     </div>
@@ -98,22 +120,22 @@ function handleSelectDate(date: string) {
     <!-- Content -->
   {:else}
     <!-- Summary Card -->
-    {#if $summary}
+    {#if attendanceQuery.data?.summary}
       <div class="mb-6 sm:mb-8">
-        <AttendanceSummaryCard summary={$summary} />
+        <AttendanceSummaryCard summary={attendanceQuery.data.summary} />
       </div>
     {/if}
 
     <!-- Mobile: Card List -->
     <div class="sm:hidden space-y-3">
-      {#each $records as record (record.id)}
+      {#each attendanceQuery.data?.records ?? [] as record (record.id)}
         <AttendanceCard {record} onclick={() => handleSelectDate(record.date)} />
       {/each}
     </div>
 
     <!-- Desktop: Table -->
     <div class="hidden sm:block bg-card rounded-xl border shadow-sm overflow-hidden">
-      <AttendanceTable records={$records} onSelectDate={handleSelectDate} />
+      <AttendanceTable records={attendanceQuery.data?.records ?? []} onSelectDate={handleSelectDate} />
     </div>
   {/if}
 </div>

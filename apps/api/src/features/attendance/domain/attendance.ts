@@ -3,7 +3,7 @@ import {
   Errors,
   type ValidationError,
 } from "@api/lib/error";
-import type { Stamp } from "../../stamp/domain/stamp.ts";
+import type { Stamp } from "./stamp.ts";
 
 // Attendance record entity types (immutable)
 

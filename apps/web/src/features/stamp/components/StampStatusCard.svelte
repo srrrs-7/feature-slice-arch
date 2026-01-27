@@ -1,4 +1,6 @@
 <script lang="ts">
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
 import { locale, t } from "$lib/i18n";
 import type { Stamp, WorkStatus } from "../types";
 
@@ -47,14 +49,11 @@ function getStatusLabel(
   return $t.stamp.status[labelKey];
 }
 
-function formatTime(date: Date | string | null): string {
+function formatTime(date: string | null): string {
   if (!date) return "--:--";
-  const d = typeof date === "string" ? new Date(date) : date;
-  const localeString = $locale === "ja" ? "ja-JP" : "en-US";
-  return d.toLocaleTimeString(localeString, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const localeCode = $locale === "ja" ? "ja" : "en";
+  const d = dayjs(date).locale(localeCode);
+  return localeCode === "ja" ? d.format("HH:mm") : d.format("h:mm A");
 }
 </script>
 

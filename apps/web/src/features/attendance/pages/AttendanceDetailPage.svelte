@@ -1,10 +1,11 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-import { onMount } from "svelte";
-import { Button } from "$lib/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { t } from "$lib/i18n";
 import { AttendanceDetailCard, AttendanceTimeline } from "../components";
-import { attendanceStore, error, isLoading, selectedRecord } from "../stores";
+import { createAttendanceDetailQuery } from "../queries";
 import { formatFullDate } from "../utils";
 
 interface Props {
@@ -14,12 +15,8 @@ interface Props {
 
 let { date, onBack }: Props = $props();
 
-onMount(() => {
-  void attendanceStore.fetchByDate(date);
-  return () => {
-    selectedRecord.set(null);
-  };
-});
+// Use TanStack Query for data fetching
+const attendanceQuery = createAttendanceDetailQuery(() => date);
 
 function handleBack() {
   if (onBack) {
@@ -34,7 +31,7 @@ function handleKeydown(event: KeyboardEvent) {
 }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="py-4 sm:py-6 lg:py-8 max-w-4xl mx-auto px-4 sm:px-6">
   <!-- Back Button -->
@@ -61,7 +58,7 @@ function handleKeydown(event: KeyboardEvent) {
   </header>
 
   <!-- Loading State -->
-  {#if $isLoading}
+  {#if attendanceQuery.isPending}
     <div class="space-y-4" role="status" aria-label={$t.common.loading}>
       <div class="animate-pulse p-6 bg-muted rounded-xl h-48"></div>
       <div class="animate-pulse p-6 bg-muted rounded-xl h-64"></div>
@@ -69,23 +66,23 @@ function handleKeydown(event: KeyboardEvent) {
     </div>
 
     <!-- Error State -->
-  {:else if $error}
+  {:else if attendanceQuery.isError}
     <div
       class="bg-destructive/15 border border-destructive text-destructive-foreground p-4 rounded-lg"
       role="alert"
     >
       <p class="font-medium">{$t.common.error}</p>
-      <p class="mt-1 text-sm">{$error}</p>
+      <p class="mt-1 text-sm">{attendanceQuery.error?.message || "Failed to fetch attendance"}</p>
     </div>
 
     <!-- Content -->
-  {:else if $selectedRecord}
+  {:else if attendanceQuery.data?.record}
     <div class="space-y-6">
       <!-- Timeline -->
-      <AttendanceTimeline record={$selectedRecord} />
+      <AttendanceTimeline record={attendanceQuery.data.record} />
 
       <!-- Work Breakdown -->
-      <AttendanceDetailCard record={$selectedRecord} />
+      <AttendanceDetailCard record={attendanceQuery.data.record} />
     </div>
   {/if}
 </div>

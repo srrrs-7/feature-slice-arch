@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ChevronDown, LogOut } from "@lucide/svelte";
-import { Button } from "$lib/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { t } from "$lib/i18n";
 import { currentUser, logout } from "../stores";
 

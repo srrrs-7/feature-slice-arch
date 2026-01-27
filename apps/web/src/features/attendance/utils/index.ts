@@ -1,5 +1,11 @@
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
 import { get } from "svelte/store";
 import { locale } from "$lib/i18n";
+
+function getDayjsLocale(currentLocale: string): "ja" | "en" {
+  return currentLocale === "ja" ? "ja" : "en";
+}
 
 /**
  * Format minutes to duration string
@@ -46,43 +52,39 @@ export function formatDateWithWeekday(
   localeOverride?: string,
 ): string {
   const currentLocale = localeOverride ?? get(locale);
-  const date = new Date(dateStr);
-  const options: Intl.DateTimeFormatOptions = {
-    month: currentLocale === "ja" ? "numeric" : "short",
-    day: "numeric",
-    weekday: "short",
-  };
-  return date.toLocaleDateString(
-    currentLocale === "ja" ? "ja-JP" : "en-US",
-    options,
-  );
+  const localeCode = getDayjsLocale(currentLocale);
+  const date = dayjs(dateStr).locale(localeCode);
+  if (localeCode === "ja") {
+    return date.format("M月D日（ddd）");
+  }
+  return date.format("MMM D (ddd)");
 }
 
 /**
  * Format Date/string to HH:MM:SS format
  * @example formatTime(new Date()) => "09:00:00"
  */
-export function formatTime(date: Date | string | null): string {
+export function formatTime(date: string | null, localeOverride?: string): string {
   if (!date) return "--:--:--";
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleTimeString("ja-JP", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  const currentLocale = localeOverride ?? get(locale);
+  const localeCode = getDayjsLocale(currentLocale);
+  const d = dayjs(date).locale(localeCode);
+  return localeCode === "ja" ? d.format("HH:mm:ss") : d.format("h:mm:ss A");
 }
 
 /**
  * Format Date/string to HH:MM format (without seconds)
  * @example formatTimeShort(new Date()) => "09:00"
  */
-export function formatTimeShort(date: Date | string | null): string {
+export function formatTimeShort(
+  date: string | null,
+  localeOverride?: string,
+): string {
   if (!date) return "--:--";
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleTimeString("ja-JP", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const currentLocale = localeOverride ?? get(locale);
+  const localeCode = getDayjsLocale(currentLocale);
+  const d = dayjs(date).locale(localeCode);
+  return localeCode === "ja" ? d.format("HH:mm") : d.format("h:mm A");
 }
 
 /**
@@ -112,11 +114,13 @@ export function formatMonthLabel(
   localeOverride?: string,
 ): string {
   const currentLocale = localeOverride ?? get(locale);
-  const date = new Date(year, month - 1);
-  return date.toLocaleDateString(currentLocale === "ja" ? "ja-JP" : "en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const localeCode = getDayjsLocale(currentLocale);
+  const date = dayjs(`${year}-${String(month).padStart(2, "0")}-01`).locale(
+    localeCode,
+  );
+  return localeCode === "ja"
+    ? date.format("YYYY年M月")
+    : date.format("MMMM YYYY");
 }
 
 /**
@@ -128,15 +132,9 @@ export function formatFullDate(
   localeOverride?: string,
 ): string {
   const currentLocale = localeOverride ?? get(locale);
-  const date = new Date(dateStr);
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    weekday: "long",
-  };
-  return date.toLocaleDateString(
-    currentLocale === "ja" ? "ja-JP" : "en-US",
-    options,
-  );
+  const localeCode = getDayjsLocale(currentLocale);
+  const date = dayjs(dateStr).locale(localeCode);
+  return localeCode === "ja"
+    ? date.format("YYYY年M月D日（dddd）")
+    : date.format("MMMM D, YYYY (dddd)");
 }

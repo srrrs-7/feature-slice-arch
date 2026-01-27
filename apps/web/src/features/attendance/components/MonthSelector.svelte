@@ -1,7 +1,7 @@
 <script lang="ts">
 import ChevronLeft from "@lucide/svelte/icons/chevron-left";
 import ChevronRight from "@lucide/svelte/icons/chevron-right";
-import { Button } from "$lib/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { locale, t } from "$lib/i18n";
 import { formatMonthLabel } from "../utils";
 

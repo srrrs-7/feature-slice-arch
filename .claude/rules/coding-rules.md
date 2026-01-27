@@ -10,6 +10,24 @@
 - **any禁止**: `unknown`を使用
 - **非nullアサーション最小化**: 本当に必要な場合のみ `!` を使用
 
+### 日時 (Date/Time)
+- **dayjs必須**: 日時の生成・変換・比較・フォーマットは必ず `dayjs` を使用
+- **`Date`の直接操作を避ける**: `new Date()` / `Date.parse()` / `toISOString()` などの直接利用は最小化
+- **境界で文字列化**: API入出力などの境界では ISO 文字列を使い、内部ロジックは `dayjs` で扱う
+
+```typescript
+// ✅ GOOD
+import dayjs from "dayjs";
+
+const now = dayjs();
+const due = dayjs(dueAtIso);
+const isOverdue = due.isBefore(now);
+const label = due.format("YYYY-MM-DD HH:mm");
+
+// ❌ BAD
+const isOverdue = new Date(dueAtIso) < new Date();
+```
+
 ### ファイル命名
 - **ケバブケース**: `task-service.ts`, `task-list.svelte`
 - **拡張子**: TypeScript `.ts`, Svelte `.svelte`, 設定ファイル `.js`

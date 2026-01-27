@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
 import { derived, get, writable } from "svelte/store";
 import { en } from "./locales/en";
 import { ja } from "./locales/ja";
@@ -139,15 +141,19 @@ export function formatDate(
   options?: Intl.DateTimeFormatOptions,
 ): string {
   const $locale = get(locale);
-  const localeString = $locale === "ja" ? "ja-JP" : "en-US";
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const localeCode = $locale === "ja" ? "ja" : "en";
+  const d = dayjs(date).locale(localeCode);
 
-  return dateObj.toLocaleDateString(localeString, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    ...options,
-  });
+  const hasWeekday = options?.weekday != null;
+  if (localeCode === "ja") {
+    return hasWeekday
+      ? d.format("YYYY年M月D日（dddd）")
+      : d.format("YYYY年M月D日");
+  }
+
+  return hasWeekday
+    ? d.format("MMMM D, YYYY (dddd)")
+    : d.format("MMMM D, YYYY");
 }
 
 /**
@@ -158,14 +164,15 @@ export function formatTime(
   options?: Intl.DateTimeFormatOptions,
 ): string {
   const $locale = get(locale);
-  const localeString = $locale === "ja" ? "ja-JP" : "en-US";
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const localeCode = $locale === "ja" ? "ja" : "en";
+  const d = dayjs(date).locale(localeCode);
 
-  return dateObj.toLocaleTimeString(localeString, {
-    hour: "2-digit",
-    minute: "2-digit",
-    ...options,
-  });
+  const includeSeconds = options?.second != null;
+  if (localeCode === "ja") {
+    return includeSeconds ? d.format("HH:mm:ss") : d.format("HH:mm");
+  }
+
+  return includeSeconds ? d.format("h:mm:ss A") : d.format("h:mm A");
 }
 
 /**
@@ -176,15 +183,17 @@ export function formatDateTime(
   options?: Intl.DateTimeFormatOptions,
 ): string {
   const $locale = get(locale);
-  const localeString = $locale === "ja" ? "ja-JP" : "en-US";
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const localeCode = $locale === "ja" ? "ja" : "en";
+  const d = dayjs(date).locale(localeCode);
 
-  return dateObj.toLocaleString(localeString, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    ...options,
-  });
+  const includeSeconds = options?.second != null;
+  if (localeCode === "ja") {
+    return includeSeconds
+      ? d.format("YYYY/MM/DD HH:mm:ss")
+      : d.format("YYYY/MM/DD HH:mm");
+  }
+
+  return includeSeconds
+    ? d.format("MMM D, YYYY h:mm:ss A")
+    : d.format("MMM D, YYYY h:mm A");
 }

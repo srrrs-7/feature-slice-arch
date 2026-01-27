@@ -32,6 +32,7 @@ words:
   - dbname
   - DBNAME
   - dbseed
+  - dnsutils
   - Dockerfiles
   - dotenv
   - dotenvx
@@ -42,8 +43,8 @@ words:
   - ecsstop
   - ecssvc
   - ecstask
-  - elif
   - elbv
+  - elif
   - émojis
   - Entra
   - esac
@@ -92,11 +93,11 @@ words:
   - ncat
   - netcat
   - neverthrow
-  - nums
   - nftables
   - npmjs
-  - nuxt
   - ntvs
+  - nums
+  - nuxt
   - oklch
   - oneline
   - pino
@@ -114,6 +115,7 @@ words:
   - QWEN
   - rdsls
   - rdsstart
+  - Refetches
   - rgba
   - sato
   - Sato

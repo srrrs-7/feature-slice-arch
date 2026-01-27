@@ -1,4 +1,6 @@
 <script lang="ts">
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
 import type { Stamp } from "../types";
 
 export let stamp: Stamp | null;
@@ -9,14 +11,9 @@ type HistoryEntry = {
   icon: string;
 };
 
-function formatTime(date: Date | string | null): string {
+function formatTime(date: string | null): string {
   if (!date) return "";
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleTimeString("ja-JP", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  return dayjs(date).locale("ja").format("HH:mm:ss");
 }
 
 $: stampHistory = buildHistory(stamp);

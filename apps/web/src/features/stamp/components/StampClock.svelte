@@ -1,12 +1,16 @@
 <script lang="ts">
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
 import { onDestroy, onMount } from "svelte";
 
-let currentTime = new Date();
+dayjs.locale("ja");
+
+let currentTime = dayjs();
 let interval: ReturnType<typeof setInterval> | undefined;
 
 onMount(() => {
   interval = setInterval(() => {
-    currentTime = new Date();
+    currentTime = dayjs();
   }, 1000);
 });
 
@@ -14,18 +18,8 @@ onDestroy(() => {
   if (interval) clearInterval(interval);
 });
 
-$: timeString = currentTime.toLocaleTimeString("ja-JP", {
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-});
-
-$: dateString = currentTime.toLocaleDateString("ja-JP", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  weekday: "long",
-});
+$: timeString = currentTime.format("HH:mm:ss");
+$: dateString = currentTime.format("YYYY年M月D日 dddd");
 </script>
 
 <div class="text-center py-4 sm:py-6" aria-live="polite" aria-atomic="true">

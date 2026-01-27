@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { derived, writable } from "svelte/store";
 import * as api from "../api";
 import type { AttendanceRecord, AttendanceSummary } from "../types";
@@ -10,15 +11,17 @@ export const isLoading = writable<boolean>(false);
 export const error = writable<string | null>(null);
 
 // Selected year and month for list view
-export const selectedYear = writable<number>(new Date().getFullYear());
-export const selectedMonth = writable<number>(new Date().getMonth() + 1);
+export const selectedYear = writable<number>(dayjs().year());
+export const selectedMonth = writable<number>(dayjs().month() + 1);
 
 // Derived: date range for API query
 export const dateRange = derived(
   [selectedYear, selectedMonth],
   ([$year, $month]) => {
     const from = `${$year}-${String($month).padStart(2, "0")}-01`;
-    const lastDay = new Date($year, $month, 0).getDate();
+    const lastDay = dayjs(`${$year}-${String($month).padStart(2, "0")}-01`)
+      .endOf("month")
+      .date();
     const to = `${$year}-${String($month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
     return { from, to };
   },
@@ -93,9 +96,9 @@ export const attendanceStore = {
    * Navigate to current month
    */
   goToThisMonth(): void {
-    const now = new Date();
-    selectedYear.set(now.getFullYear());
-    selectedMonth.set(now.getMonth() + 1);
+    const now = dayjs();
+    selectedYear.set(now.year());
+    selectedMonth.set(now.month() + 1);
   },
 
   /**

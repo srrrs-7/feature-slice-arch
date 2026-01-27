@@ -25,7 +25,7 @@
     "check:type": "bun --workspaces check:type",
     "format": "biome format --write",
     "check": "bun run check:spell && bun run check:type && bun run check:biome",
-    "check:biome": "biome check --write",
+    "check:biome": "biome check",
     "check:spell": "cspell lint . --gitignore --report=simple --dot",
     "husky": "husky",
     "version:check": "bun update -ir --latest --check",

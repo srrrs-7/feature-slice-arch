@@ -1,6 +1,6 @@
 import { testClient } from "hono/testing";
 import { describe, expect, it } from "vitest";
-import attendanceRoutes from "../handler.ts";
+import attendanceRoutes from "../handler/attendance-handler.ts";
 import { StampFactory } from "./setup.ts";
 
 describe.sequential("GET /api/attendance", () => {

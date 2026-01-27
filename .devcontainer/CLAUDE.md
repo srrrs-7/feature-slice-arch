@@ -133,11 +133,10 @@ services:
   dev:
     # ポートマッピング（ホストから接続）
     ports:
-      - "3000:3000"    # API
-      - "5173:5173"    # Vite dev server
+      - "8080:8080"    # API
+      - "3000:3000"    # Vite dev server
       - "5555:5555"    # Prisma Studio
       - "8080:8080"    # Backend
-      - "24282:24282"  # Serena
 
   db:
     # PostgreSQLポート公開
@@ -218,9 +217,7 @@ cp .devcontainer/compose.override.yaml.sample .devcontainer/compose.override.yam
 "forwardPorts": [
   3000,   // API
   8080,   // Backend
-  5432,   // PostgreSQL
   5555,   // Prisma Studio
-  24282   // Serena
 ]
 ```
 

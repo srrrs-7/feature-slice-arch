@@ -1,7 +1,7 @@
 <script lang="ts">
 import { quintOut } from "svelte/easing";
 import { fade, fly } from "svelte/transition";
-import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
+import LanguageSwitcher from "@/components/LanguageSwitcher.svelte";
 import { t } from "$lib/i18n";
 import type { AppSidebarProps } from "../types";
 import { navigationItems } from "./navigation-items";

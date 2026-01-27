@@ -45,6 +45,16 @@
       }
     },
     {
+      "includes": ["apps/web/src/app.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/storybook/**/*.stories.tsx"],
       "linter": {
         "rules": {

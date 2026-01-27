@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Loader2, LogIn } from "@lucide/svelte";
-import { Button } from "$lib/components/ui/button";
-import * as Card from "$lib/components/ui/card";
+import { Button } from "@/components/ui/button";
+import * as Card from "@/components/ui/card";
 import { t } from "$lib/i18n";
 import { goto } from "$lib/utils/navigation";
 import { isAuthenticated, isAuthLoading, login } from "../stores";

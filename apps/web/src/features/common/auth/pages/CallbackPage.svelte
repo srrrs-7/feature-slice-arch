@@ -1,8 +1,8 @@
 <script lang="ts">
 import { AlertCircle, CheckCircle2, Loader2 } from "@lucide/svelte";
 import { onMount } from "svelte";
-import { Button } from "$lib/components/ui/button";
-import * as Card from "$lib/components/ui/card";
+import { Button } from "@/components/ui/button";
+import * as Card from "@/components/ui/card";
 import { t } from "$lib/i18n";
 import { goto } from "$lib/utils/navigation";
 import { handleCallback } from "../stores";

@@ -30,22 +30,10 @@ USER vscode
 ENV BUN_INSTALL="/home/vscode/.bun"
 ENV PATH="${BUN_INSTALL}/bin:${PATH}"
 
-# Install Bun version 1.3.0
+# Install Bun
 RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.5"
 
 # Install claude code 
 RUN curl -fsSL https://claude.ai/install.sh | bash
-
-# Install uv (Python package installer and resolver)
-ENV UV_HOME="/home/vscode/.local/share/uv"
-ENV PATH="${UV_HOME}/bin:${PATH}"
-
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install Python 3.12 using uvx
-RUN /home/vscode/.local/bin/uv python install 3.12
-
-# Install spec-kit (Spec-Driven Development toolkit)
-RUN /home/vscode/.local/bin/uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
 WORKDIR /workspace/main

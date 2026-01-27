@@ -1,6 +1,12 @@
 import { prisma } from "@api/lib/db";
 import { resetSequence, StampFactory } from "@api/lib/db/factory";
-import { afterEach } from "vitest";
+import { afterEach, beforeEach } from "vitest";
+
+// Clean up database before each test (ensures clean state)
+beforeEach(async () => {
+  await prisma.stamp.deleteMany();
+  resetSequence();
+});
 
 // Clean up database after each test
 afterEach(async () => {
@@ -17,3 +23,6 @@ export const getDateString = (daysOffset = 0): string => {
   date.setDate(date.getDate() + daysOffset);
   return date.toISOString().split("T")[0] as string;
 };
+
+// Alias for stamp tests
+export const getTodayDateString = (): string => getDateString(0);
