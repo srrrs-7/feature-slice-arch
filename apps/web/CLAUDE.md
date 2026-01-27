@@ -433,5 +433,6 @@ const formatted = formatDate(task.createdAt);
 ## Related Documentation
 
 - [Root CLAUDE.md](/workspace/main/CLAUDE.md) - Project overview
-- [.claude/rules/design-guide.md](/workspace/main/.claude/rules/design-guide.md) - UI/UX design guidelines
 - [.claude/rules/coding-rules.md](/workspace/main/.claude/rules/coding-rules.md) - Coding rules
+- [.claude/rules/design-guide.md](/workspace/main/.claude/rules/design-guide.md) - UI/UX design guidelines
+- [.claude/rules/security.md](/workspace/main/.claude/rules/security.md) - Security guidelines

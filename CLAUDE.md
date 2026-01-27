@@ -48,6 +48,7 @@ Feature-Sliced Architecture with layers:
 apps/api/src/
 ├── features/           # Feature modules
 │   ├── tasks/              # Simple feature (single handler)
+│   ├── master/             # Master data feature
 │   └── attendance/         # Complex feature (stamp + attendance)
 │       ├── index.ts        # Public API (exports types + routes)
 │       ├── domain/         # Domain types, entities, errors
@@ -71,14 +72,17 @@ Svelte 5 SPA with Feature-Sliced Architecture:
 ```
 apps/web/src/
 ├── features/           # Feature modules
-│   └── {feature}/
-│       ├── pages/          # Page components
-│       ├── components/     # UI components
-│       ├── api/            # Hono RPC client
-│       ├── stores/         # Svelte stores
-│       └── types/          # Type definitions
+│   ├── task/               # Task management
+│   ├── stamp/              # Time stamping (clock in/out)
+│   ├── attendance/         # Attendance records view
+│   ├── common/             # Shared components (auth, sidebar)
+│   └── home/               # Home page
+├── components/         # Global shared components
+│   └── ui/             # shadcn-svelte components
 ├── lib/
-│   ├── components/ui/  # shadcn-svelte components
+│   ├── api/            # Shared API client setup
+│   ├── query/          # TanStack Query configuration
+│   ├── i18n/           # Internationalization
 │   └── utils/          # Utility functions
 ├── App.svelte          # Root component with routing
 └── main.ts             # Entry point
@@ -178,7 +182,8 @@ See `apps/iac/CLAUDE.md` for detailed documentation.
 
 ### Coding Guidelines (`.claude/rules/`)
 - `coding-rules.md` - TypeScript, API, and Web conventions
-- `testing.md` - Test patterns with vitest and Prisma Fabbrica
-- `tdd.md` - Test-Driven Development practices
+- `testing.md` - Test patterns with vitest, Prisma Fabbrica, and TDD
+- `security.md` - Security guidelines (OWASP Top 10)
+- `planning.md` - Feature planning and design documents
 - `github-pr.md` - PR creation templates
 - `design-guide.md` - UI/UX design guidelines

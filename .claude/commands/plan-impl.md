@@ -17,11 +17,10 @@ Plan and implement a feature or refactoring task following Test-Driven Developme
 ## Prerequisites
 
 Before starting, ensure you have read and understand:
-- **TDD Rules**: `/workspace/main/.claude/rules/tdd.md`
-- **Project Guidelines**: `/workspace/main/.claude/rules/guideline.md`
 - **Coding Standards**: `/workspace/main/.claude/rules/coding-rules.md`
-- **Testing Patterns**: `/workspace/main/.claude/rules/testing.md`
-- **Planning Process**: `/workspace/main/.claude/rules/planing.md`
+- **Testing & TDD**: `/workspace/main/.claude/rules/testing.md`
+- **Planning Process**: `/workspace/main/.claude/rules/planning.md`
+- **Security**: `/workspace/main/.claude/rules/security.md`
 
 ## Phase 0: Load Project Context
 
@@ -29,11 +28,10 @@ Before starting, ensure you have read and understand:
 
 ```bash
 # Read project rules in parallel
-cat /workspace/main/.claude/rules/tdd.md
-cat /workspace/main/.claude/rules/guideline.md
 cat /workspace/main/.claude/rules/coding-rules.md
 cat /workspace/main/.claude/rules/testing.md
-cat /workspace/main/.claude/rules/planing.md
+cat /workspace/main/.claude/rules/planning.md
+cat /workspace/main/.claude/rules/security.md
 ```
 
 **Parse and internalize:**
@@ -93,7 +91,7 @@ git status --short
 
 ### 2.1 Create TODO List (TDD Requirement)
 
-**Following `/workspace/main/.claude/rules/tdd.md` Step 1:**
+**Following `/workspace/main/.claude/rules/testing.md` Step 1:**
 
 Create a comprehensive TODO list before writing any code.
 
@@ -178,7 +176,7 @@ Create a comprehensive TODO list before writing any code.
 
 **For Web features**, create: `apps/web/src/features/{feature}/.docs/design.md`
 
-Follow the template in `/workspace/main/.claude/rules/planing.md`.
+Follow the template in `/workspace/main/.claude/rules/planning.md`.
 
 ### 2.3 User Approval
 
@@ -344,8 +342,7 @@ This command enforces:
 
 ## References
 
-- `/workspace/main/.claude/rules/tdd.md`
-- `/workspace/main/.claude/rules/guideline.md`
-- `/workspace/main/.claude/rules/coding-rules.md`
-- `/workspace/main/.claude/rules/testing.md`
-- `/workspace/main/.claude/rules/planing.md`
+- `/workspace/main/.claude/rules/coding-rules.md` - Coding standards
+- `/workspace/main/.claude/rules/testing.md` - Testing patterns and TDD
+- `/workspace/main/.claude/rules/planning.md` - Planning process
+- `/workspace/main/.claude/rules/security.md` - Security guidelines

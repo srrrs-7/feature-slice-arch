@@ -7,9 +7,9 @@
 以下のルールファイルを必ず参照してリファクタリングを実行:
 
 - **コーディング規約**: `.claude/rules/coding-rules.md`
-- **テスト規約**: `.claude/rules/testing.md`
-- **TDD実践**: `.claude/rules/tdd.md`
-- **計画規約**: `.claude/rules/planing.md`
+- **テスト規約**: `.claude/rules/testing.md` (TDD含む)
+- **計画規約**: `.claude/rules/planning.md`
+- **セキュリティ**: `.claude/rules/security.md`
 
 ## リファクタリングの原則
 

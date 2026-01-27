@@ -387,5 +387,5 @@ TZ=Asia/Tokyo
 
 - [Root CLAUDE.md](/workspace/main/CLAUDE.md) - Project overview
 - [.claude/rules/coding-rules.md](/workspace/main/.claude/rules/coding-rules.md) - Detailed coding rules
-- [.claude/rules/testing.md](/workspace/main/.claude/rules/testing.md) - Test patterns
-- [.claude/rules/tdd.md](/workspace/main/.claude/rules/tdd.md) - TDD practices
+- [.claude/rules/testing.md](/workspace/main/.claude/rules/testing.md) - Test patterns and TDD practices
+- [.claude/rules/security.md](/workspace/main/.claude/rules/security.md) - Security guidelines

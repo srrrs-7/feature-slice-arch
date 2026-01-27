@@ -7,10 +7,10 @@
 レビュー実行前に以下のルールファイルを必ず参照:
 
 - **コーディング規約**: `.claude/rules/coding-rules.md`
-- **テスト規約**: `.claude/rules/testing.md`
-- **TDD実践**: `.claude/rules/tdd.md`
+- **テスト規約**: `.claude/rules/testing.md` (TDD含む)
 - **デザインガイド**: `.claude/rules/design-guide.md`
-- **計画規約**: `.claude/rules/planing.md`
+- **セキュリティ**: `.claude/rules/security.md`
+- **計画規約**: `.claude/rules/planning.md`
 - **GitHub PR規約**: `.claude/rules/github-pr.md`
 
 ---
