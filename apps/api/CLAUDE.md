@@ -51,14 +51,20 @@ src/
 │   └── {feature}/
 │       ├── index.ts        # Public API - exports types and routes
 │       ├── domain/         # Domain layer
-│       │   └── {name}.ts       # Domain types, entities, errors
+│       │   ├── {name}.ts       # Domain types, entities, errors
+│       │   └── index.ts        # Barrel export (optional)
 │       ├── service/        # Service layer
-│       │   ├── service.ts      # Business logic
-│       │   └── service.test.ts # Service tests
+│       │   ├── {name}-service.ts   # Business logic
+│       │   ├── {name}-service.test.ts
+│       │   └── index.ts        # Barrel export
 │       ├── repository/     # Repository layer
-│       │   └── repository.ts   # Data access with Prisma
-│       ├── handler.ts      # HTTP handlers (Hono routes)
-│       ├── validator.ts    # Zod validation schemas
+│       │   └── {name}-repository.ts
+│       ├── handler/        # HTTP handlers (for multiple routes)
+│       │   ├── {name}-handler.ts
+│       │   └── index.ts
+│       ├── validator/      # Zod validation schemas
+│       │   ├── {name}-validator.ts
+│       │   └── index.ts
 │       └── .test/          # Handler E2E tests
 ├── middleware/         # Hono middleware
 ├── lib/                # Shared workspace (@api/lib)
@@ -69,6 +75,49 @@ src/
 │   ├── time/           # Time utilities (dayjs)
 │   └── types/          # Shared types (Result helpers)
 └── index.ts            # Entry point - Hono app setup
+```
+
+## Feature Examples
+
+### tasks - Simple feature (single handler)
+```
+features/tasks/
+├── index.ts
+├── domain/task.ts
+├── service/service.ts
+├── repository/repository.ts
+├── handler.ts          # Single handler file
+├── validator.ts        # Single validator file
+└── .test/
+```
+
+### attendance - Complex feature (multiple sub-domains)
+```
+features/attendance/
+├── index.ts                    # Public API exports
+├── domain/
+│   ├── stamp.ts               # Stamp entity (clock in/out, break)
+│   ├── attendance.ts          # Attendance calculations
+│   └── index.ts               # Barrel export
+├── service/
+│   ├── stamp-service.ts       # Stamp business logic
+│   ├── service.ts             # Attendance calculations
+│   └── index.ts               # Exports both services
+├── repository/
+│   └── stamp-repository.ts    # Database operations
+├── handler/
+│   ├── stamp-handler.ts       # POST /api/stamps, GET /api/stamps/status
+│   ├── attendance-handler.ts  # GET /api/attendance endpoints
+│   └── index.ts               # Exports stampRoutes, attendanceRoutes
+├── validator/
+│   ├── stamp-validator.ts
+│   ├── attendance-validator.ts
+│   └── index.ts
+└── .test/
+    ├── setup.ts
+    ├── stamp.handler.post.test.ts
+    ├── stamp.handler.status.test.ts
+    └── handler.get.test.ts
 ```
 
 ## Layer Responsibilities

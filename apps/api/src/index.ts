@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { attendanceRoutes } from "./features/attendance/index.ts";
-import { stampRoutes } from "./features/stamp/index.ts";
+import { attendanceRoutes, stampRoutes } from "./features/attendance/index.ts";
 import { taskRoutes } from "./features/tasks/index.ts";
 import { logger } from "./lib/logger/index.ts";
 import { bearerAuthMiddleware } from "./middleware/bearer.ts";

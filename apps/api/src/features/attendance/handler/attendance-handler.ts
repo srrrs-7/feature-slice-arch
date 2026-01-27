@@ -8,7 +8,7 @@ import { zValidator } from "@hono/zod-validator";
 import type { Context } from "hono";
 import { Hono } from "hono";
 import type { AttendanceError } from "../domain/attendance.ts";
-import { attendanceService } from "../service/service.ts";
+import { attendanceService } from "../service/attendance-service.ts";
 import {
   dateParamSchema,
   dateRangeQuerySchema,

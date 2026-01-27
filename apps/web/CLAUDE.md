@@ -36,20 +36,33 @@ Feature-Sliced Architecture:
 ```
 src/
 ├── features/           # Feature modules
-│   └── {feature}/
-│       ├── .docs/          # Feature documentation
-│       │   └── design.md
-│       ├── pages/          # Page components
-│       ├── components/     # UI components
-│       ├── api/            # Hono RPC client
-│       │   ├── client.ts   # API client setup
-│       │   └── index.ts    # API wrapper functions
-│       ├── stores/         # Svelte stores
-│       │   └── index.ts
-│       └── types/          # Type definitions
-│           └── index.ts
+│   ├── task/               # Task management
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── api/
+│   │   ├── queries/        # TanStack Query hooks
+│   │   ├── stores/
+│   │   └── types/
+│   ├── stamp/              # Time stamping (clock in/out)
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── api/
+│   │   ├── queries/
+│   │   ├── stores/
+│   │   └── types/          # Re-exports from @api/features/attendance/domain/stamp
+│   ├── attendance/         # Attendance records view
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── api/
+│   │   ├── queries/
+│   │   └── types/
+│   ├── common/             # Shared components (auth, sidebar)
+│   └── home/               # Home page
+├── components/         # Global shared components
+│   └── ui/             # shadcn-svelte components
 ├── lib/
-│   ├── components/ui/  # shadcn-svelte components
+│   ├── api/            # Shared API client setup
+│   ├── query/          # TanStack Query configuration
 │   ├── i18n/           # Internationalization
 │   │   ├── index.ts    # i18n store and helpers
 │   │   ├── types.ts    # Type definitions
@@ -60,6 +73,21 @@ src/
 ├── App.svelte          # Root component with routing
 ├── app.css             # Global styles (Tailwind)
 └── main.ts             # Entry point
+```
+
+### API Type Imports
+
+Web features import API types from their corresponding API feature domains:
+
+```typescript
+// Task types
+import type { Task, TaskId } from "@api/features/tasks/domain/task";
+
+// Stamp types (from attendance feature on API side)
+import type { Stamp, StampId, WorkStatus } from "@api/features/attendance/domain/stamp";
+
+// Attendance types
+import type { AttendanceRecord, AttendanceSummary } from "@api/features/attendance/domain/attendance";
 ```
 
 ## Svelte 5 Patterns
@@ -332,11 +360,13 @@ export const en: Translations = {
 
 ```typescript
 // App components
-import Component from "@/features/todo-list/Component.svelte";
+import Component from "@/features/task/Component.svelte";
 
 // API types (from API workspace)
 import type { AppType } from "@api/index";
 import type { Task } from "@api/features/tasks/domain/task";
+import type { Stamp, WorkStatus } from "@api/features/attendance/domain/stamp";
+import type { AttendanceRecord } from "@api/features/attendance/domain/attendance";
 
 // shadcn-svelte components
 import { Button } from "$lib/components/ui/button";

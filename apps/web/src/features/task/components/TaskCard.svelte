@@ -68,8 +68,13 @@ function handleCardClick() {
           {/if}
         </Card.Description>
       </div>
-      <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
-      <div onclick={(e) => e.stopPropagation()} class="flex-shrink-0">
+      <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+      <div
+        role="group"
+        onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.stopPropagation()}
+        class="flex-shrink-0"
+      >
         <TaskStatusBadge status={task.status} clickable onClick={handleStatusToggle} />
       </div>
     </div>

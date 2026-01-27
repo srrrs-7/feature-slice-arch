@@ -63,12 +63,12 @@ const mockRepository: {
 };
 
 // Mock the repository module
-vi.mock("../repository/repository.ts", () => ({
+vi.mock("../repository/stamp-repository.ts", () => ({
   stampRepository: mockRepository,
 }));
 
 // Import service after mocking
-const { stampService } = await import("./service.ts");
+const { stampService } = await import("./stamp-service.ts");
 
 beforeEach(() => {
   vi.clearAllMocks();

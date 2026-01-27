@@ -3,7 +3,7 @@ export type {
   StampId,
   StampType,
   WorkStatus,
-} from "@api/features/stamp/domain/stamp";
+} from "@api/features/attendance/domain/stamp";
 
 // Client-side types (JSON serialized - dates are strings)
 export interface Stamp {
@@ -18,7 +18,7 @@ export interface Stamp {
 }
 
 export interface CurrentStatusResponse {
-  readonly status: import("@api/features/stamp/domain/stamp").WorkStatus;
+  readonly status: import("@api/features/attendance/domain/stamp").WorkStatus;
   readonly stamp: Stamp | null;
 }
 

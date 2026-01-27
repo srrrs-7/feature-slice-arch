@@ -1,6 +1,54 @@
 # Testing Rules
 
-このドキュメントではテスト戦略とパターンを定義します。
+このドキュメントではテスト戦略とTDD実践パターンを定義します。
+
+---
+
+## TDD (Test-Driven Development)
+
+### Red-Green-Refactor サイクル
+
+```
+🔴 Red    → テストを書いて失敗させる
+🟢 Green  → テストが通る最小限のコードを書く
+🔵 Refactor → 重複を排除し、コードを整理する
+```
+
+### TDDの原則
+
+1. **テストファースト**: コードより先にテストを書く
+2. **小さなステップ**: 一度に1つのことだけ（10-20分で1サイクル）
+3. **リファクタリングはグリーン状態で**: テストが通ってから整理
+
+### TDD実践フロー
+
+```bash
+# 1. TODOリスト作成
+# - [ ] タイトルを指定してタスクを作成できる
+# - [ ] 空のタイトルでエラー
+
+# 2. テストを書く（🔴 Red）
+test("creates task with title", () => { ... });
+# → 失敗
+
+# 3. 最小限の実装（🟢 Green）
+export const create = () => { ... };
+# → 成功
+
+# 4. リファクタリング（🔵 Refactor）
+# コードを整理、テストは通ったまま
+
+# 5. 次のTODOへ
+```
+
+### TDDチェックリスト
+
+- [ ] TODOリストを作成してから開始
+- [ ] 各サイクルでテスト→実装→リファクタの順序を守る
+- [ ] テストが通ったらコミット
+- [ ] カバレッジ80%以上を維持
+
+---
 
 ## テスト戦略
 
@@ -111,6 +159,45 @@ features/{feature}/
     ├── handler.put.test.ts
     └── handler.delete.test.ts
 ```
+
+### 1.1 Routes層テストケースの作成方針（HTTP Statusごとに入れ子）
+
+Routes（handler）層のテストは **HTTP statusごとに`describe`を分け、その中に「そのstatusが発生するケース」を入れ子で配置**します。
+
+```typescript
+describe.sequential("POST /api/tasks", () => {
+  const client = testClient(taskRoutes);
+
+  const testCases = [
+    { name: "valid input", expectedStatus: 201, ... },
+    { name: "missing title", expectedStatus: 400, ... },
+  ] as const;
+
+  const casesByStatus = new Map<number, typeof testCases>();
+  for (const tc of testCases) {
+    const list = casesByStatus.get(tc.expectedStatus) ?? [];
+    casesByStatus.set(tc.expectedStatus, [...list, tc]);
+  }
+
+  for (const [status, cases] of casesByStatus) {
+    describe(`HTTP ${status}`, () => {
+      for (const tc of cases) {
+        it(tc.name, async () => {
+          const ctx = await tc.setup?.();
+          const res = await tc.execute(ctx);
+          expect(res.status).toBe(status);
+          await tc.assert(res, ctx);
+        });
+      }
+    });
+  }
+});
+```
+
+要点:
+- `expectedStatus` を必ず各ケースに持たせる
+- `describe("HTTP 200")` のように status単位でグルーピング
+- 同一status内で「そのstatusが起きる条件」を明確に表現
 
 ### 2. vitest設定
 

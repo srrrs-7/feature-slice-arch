@@ -47,13 +47,16 @@ Feature-Sliced Architecture with layers:
 ```
 apps/api/src/
 ├── features/           # Feature modules
-│   └── {feature}/
+│   ├── tasks/              # Simple feature (single handler)
+│   └── attendance/         # Complex feature (stamp + attendance)
 │       ├── index.ts        # Public API (exports types + routes)
 │       ├── domain/         # Domain types, entities, errors
+│       │   ├── stamp.ts        # Stamp entity
+│       │   └── attendance.ts   # Attendance calculations
 │       ├── service/        # Business logic (returns ResultAsync)
 │       ├── repository/     # Data access with Prisma
-│       ├── handler.ts      # Hono HTTP handlers
-│       ├── validator.ts    # Zod schemas
+│       ├── handler/        # Multiple HTTP handlers
+│       ├── validator/      # Zod schemas
 │       └── .test/          # Handler tests
 ├── lib/                # Shared utilities (@api/lib workspace)
 └── index.ts            # Entry point

@@ -1,10 +1,5 @@
 import { describe, expect, test } from "vitest";
 import {
-  createStamp,
-  createStampId,
-  type Stamp,
-} from "../../stamp/domain/stamp.ts";
-import {
   calculateAttendanceFromStamp,
   calculateAttendanceSummary,
   calculateBreakMinutes,
@@ -17,6 +12,7 @@ import {
   LATE_NIGHT_START_HOUR,
   STANDARD_WORK_MINUTES,
 } from "./attendance.ts";
+import { createStamp, createStampId, type Stamp } from "./stamp.ts";
 
 // Helper to create dates
 const date = (str: string) => new Date(str);

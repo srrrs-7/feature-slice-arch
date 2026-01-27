@@ -16,7 +16,9 @@ function isStamp(value: unknown): value is Stamp {
   );
 }
 
-function isCurrentStatusResponse(value: unknown): value is CurrentStatusResponse {
+function isCurrentStatusResponse(
+  value: unknown,
+): value is CurrentStatusResponse {
   if (!value || typeof value !== "object") return false;
   const data = value;
   if (!("status" in data) || !("stamp" in data)) return false;

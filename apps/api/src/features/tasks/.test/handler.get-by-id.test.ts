@@ -10,6 +10,7 @@ describe.sequential("GET /api/tasks/:id", () => {
   const testCases = [
     {
       name: "returns task by valid ID",
+      expectedStatus: 200,
       setup: async () => {
         const task = await TaskFactory.create({
           title: "Test Task",
@@ -28,7 +29,6 @@ describe.sequential("GET /api/tasks/:id", () => {
           expectedTask: { id: string; title: string; description: string };
         },
       ) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.task).toMatchObject({
           id: context.expectedTask.id,
@@ -41,23 +41,8 @@ describe.sequential("GET /api/tasks/:id", () => {
       },
     },
     {
-      name: "returns 404 for non-existent task",
-      setup: async () => {
-        // Use a valid UUID format that doesn't exist
-        return { taskId: "550e8400-e29b-41d4-a716-446655440000" };
-      },
-      execute: async (context: { taskId: string }) => {
-        return await client[":id"].$get({ param: { id: context.taskId } });
-      },
-      assert: async (res: Response) => {
-        expect(res.status).toBe(404);
-        const data = await res.json();
-        expect(data).toHaveProperty("error", "NOT_FOUND");
-        expect(data).toHaveProperty("message");
-      },
-    },
-    {
       name: "returns correct task among multiple tasks",
+      expectedStatus: 200,
       setup: async () => {
         await TaskFactory.createList(3);
         const targetTask = await TaskFactory.create({
@@ -77,7 +62,6 @@ describe.sequential("GET /api/tasks/:id", () => {
           expectedTask: { id: string; title: string; description: string };
         },
       ) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.task.id).toBe(context.expectedTask.id);
         expect(data.task.title).toBe("Target Task");
@@ -85,6 +69,7 @@ describe.sequential("GET /api/tasks/:id", () => {
     },
     {
       name: "returns task with null description",
+      expectedStatus: 200,
       setup: async () => {
         const task = await TaskFactory.use("withoutDescription").create({
           title: "Task without description",
@@ -95,23 +80,44 @@ describe.sequential("GET /api/tasks/:id", () => {
         return await client[":id"].$get({ param: { id: context.taskId } });
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.task.description).toBeNull();
       },
     },
-  ];
+    {
+      name: "returns 404 for non-existent task",
+      expectedStatus: 404,
+      setup: async () => {
+        // Use a valid UUID format that doesn't exist
+        return { taskId: "550e8400-e29b-41d4-a716-446655440000" };
+      },
+      execute: async (context: { taskId: string }) => {
+        return await client[":id"].$get({ param: { id: context.taskId } });
+      },
+      assert: async (res: Response) => {
+        const data = await res.json();
+        expect(data).toHaveProperty("error", "NOT_FOUND");
+        expect(data).toHaveProperty("message");
+      },
+    },
+  ] as const;
 
+  const casesByStatus = new Map<number, typeof testCases>();
   for (const tc of testCases) {
-    it(tc.name, async () => {
-      // Setup
-      const context = await tc.setup();
+    const list = casesByStatus.get(tc.expectedStatus) ?? [];
+    casesByStatus.set(tc.expectedStatus, [...list, tc]);
+  }
 
-      // Execute
-      const res = await tc.execute(context);
-
-      // Assert
-      await tc.assert(res, context);
+  for (const [status, cases] of casesByStatus) {
+    describe(`HTTP ${status}`, () => {
+      for (const tc of cases) {
+        it(tc.name, async () => {
+          const context = await tc.setup();
+          const res = await tc.execute(context);
+          expect(res.status).toBe(status);
+          await tc.assert(res, context);
+        });
+      }
     });
   }
 });

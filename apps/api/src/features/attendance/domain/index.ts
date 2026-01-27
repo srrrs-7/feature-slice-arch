@@ -1,26 +1,4 @@
 // Re-export stamp domain types
-export type {
-  AlreadyClockedInError,
-  AlreadyClockedOutError,
-  AlreadyOnBreakError,
-  CurrentStatusResponse,
-  NotClockedInError,
-  NotOnBreakError,
-  Stamp,
-  StampError,
-  StampId,
-  StampNotFoundError,
-  StampType,
-  StillOnBreakError,
-  WorkStatus,
-} from "./stamp.ts";
-
-export {
-  createStamp,
-  createStampId,
-  getWorkStatus,
-  StampErrors,
-} from "./stamp.ts";
 
 // Re-export attendance domain types
 export type {
@@ -31,7 +9,6 @@ export type {
   AttendanceSummary,
   InvalidDateRangeError,
 } from "./attendance.ts";
-
 export {
   AttendanceErrors,
   calculateAttendanceFromStamp,
@@ -47,3 +24,24 @@ export {
   STANDARD_WORK_MINUTES,
   WEEKLY_STATUTORY_LIMIT_MINUTES,
 } from "./attendance.ts";
+export type {
+  AlreadyClockedInError,
+  AlreadyClockedOutError,
+  AlreadyOnBreakError,
+  CurrentStatusResponse,
+  NotClockedInError,
+  NotOnBreakError,
+  Stamp,
+  StampError,
+  StampId,
+  StampNotFoundError,
+  StampType,
+  StillOnBreakError,
+  WorkStatus,
+} from "./stamp.ts";
+export {
+  createStamp,
+  createStampId,
+  getWorkStatus,
+  StampErrors,
+} from "./stamp.ts";

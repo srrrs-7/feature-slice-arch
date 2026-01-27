@@ -44,24 +44,62 @@ const isOverdue = new Date(dueAtIso) < new Date();
 
 ### 1. Feature-Sliced Architecture
 
-すべての機能は以下の層に分割:
+すべての機能は以下の層に分割。シンプルな機能と複雑な機能で構造が異なる:
+
+#### シンプルな機能 (単一ドメイン)
 
 ```
-features/{feature}/
+features/tasks/
 ├── index.ts              # 公開API (型とルートのみエクスポート)
-├── domain/               # ドメイン層
-│   └── {name}.ts
-├── service/              # サービス層
+├── domain/
+│   └── task.ts           # ドメイン型・エラー・コンストラクタ
+├── service/
 │   ├── service.ts
 │   └── service.test.ts
-├── repository/           # リポジトリ層
+├── repository/
 │   └── repository.ts
-├── handler.ts            # ハンドラー層 (HTTP)
-├── validator.ts          # バリデーション
-└── .test/                # E2Eテスト
+├── handler.ts            # 単一ハンドラーファイル
+├── validator.ts          # 単一バリデーションファイル
+└── .test/
     ├── setup.ts
     └── handler.*.test.ts
 ```
+
+#### 複雑な機能 (複数サブドメイン)
+
+```
+features/attendance/
+├── index.ts                    # 公開API (すべての型とルートをエクスポート)
+├── domain/
+│   ├── stamp.ts               # Stamp エンティティ (出退勤打刻)
+│   ├── attendance.ts          # Attendance 計算ロジック
+│   └── index.ts               # barrel export
+├── service/
+│   ├── stamp-service.ts       # Stamp ビジネスロジック
+│   ├── stamp-service.test.ts
+│   ├── attendance-service.ts  # Attendance ビジネスロジック
+│   ├── attendance-service.test.ts
+│   └── index.ts               # barrel export
+├── repository/
+│   └── stamp-repository.ts    # DB操作
+├── handler/                   # 複数ハンドラー → ディレクトリ
+│   ├── stamp-handler.ts       # POST /api/stamps, GET /api/stamps/status
+│   ├── attendance-handler.ts  # GET /api/attendance
+│   └── index.ts               # barrel export
+├── validator/                 # 複数バリデーター → ディレクトリ
+│   ├── stamp-validator.ts
+│   ├── attendance-validator.ts
+│   └── index.ts               # barrel export
+└── .test/
+    ├── setup.ts
+    ├── stamp.handler.post.test.ts
+    ├── stamp.handler.status.test.ts
+    └── handler.get.test.ts
+```
+
+**使い分けの基準:**
+- **シンプルな機能**: 1つのエンティティ、単一のAPIリソース → `handler.ts`, `validator.ts`
+- **複雑な機能**: 複数のサブドメイン、関連する複数APIリソース → `handler/`, `validator/` ディレクトリ
 
 ### 2. Domain層の規約
 

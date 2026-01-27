@@ -1,4 +1,5 @@
 import { prisma } from "@api/lib/db";
+import dayjs from "dayjs";
 import { testClient } from "hono/testing";
 import { describe, expect, it } from "vitest";
 import stampRoutes from "../handler/stamp-handler";
@@ -10,11 +11,11 @@ describe.sequential("GET /api/stamps/status", () => {
   const testCases = [
     {
       name: "returns not_working status when no stamp exists",
+      expectedStatus: 200,
       setup: async () => {
         // No setup needed - no stamp for today
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data).toMatchObject({
           status: "not_working",
@@ -24,12 +25,13 @@ describe.sequential("GET /api/stamps/status", () => {
     },
     {
       name: "returns working status when clocked in",
+      expectedStatus: 200,
       setup: async () => {
         const today = getTodayDateString();
         await prisma.stamp.create({
           data: {
             date: today,
-            clockInAt: new Date(),
+            clockInAt: dayjs().toDate(),
             clockOutAt: null,
             breakStartAt: null,
             breakEndAt: null,
@@ -37,7 +39,6 @@ describe.sequential("GET /api/stamps/status", () => {
         });
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.status).toBe("working");
         expect(data.stamp).not.toBeNull();
@@ -49,20 +50,20 @@ describe.sequential("GET /api/stamps/status", () => {
     },
     {
       name: "returns on_break status when on break",
+      expectedStatus: 200,
       setup: async () => {
         const today = getTodayDateString();
         await prisma.stamp.create({
           data: {
             date: today,
-            clockInAt: new Date(),
+            clockInAt: dayjs().toDate(),
             clockOutAt: null,
-            breakStartAt: new Date(),
+            breakStartAt: dayjs().toDate(),
             breakEndAt: null,
           },
         });
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.status).toBe("on_break");
         expect(data.stamp).not.toBeNull();
@@ -72,20 +73,20 @@ describe.sequential("GET /api/stamps/status", () => {
     },
     {
       name: "returns clocked_out status when clocked out",
+      expectedStatus: 200,
       setup: async () => {
         const today = getTodayDateString();
         await prisma.stamp.create({
           data: {
             date: today,
-            clockInAt: new Date(),
-            clockOutAt: new Date(),
+            clockInAt: dayjs().toDate(),
+            clockOutAt: dayjs().toDate(),
             breakStartAt: null,
             breakEndAt: null,
           },
         });
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.status).toBe("clocked_out");
         expect(data.stamp).not.toBeNull();
@@ -94,15 +95,16 @@ describe.sequential("GET /api/stamps/status", () => {
     },
     {
       name: "returns working status after break ended",
+      expectedStatus: 200,
       setup: async () => {
         const today = getTodayDateString();
-        const now = new Date();
-        const breakStart = new Date(now.getTime() - 60 * 60 * 1000); // 1 hour ago
-        const breakEnd = new Date(now.getTime() - 30 * 60 * 1000); // 30 min ago
+        const now = dayjs();
+        const breakStart = now.subtract(1, "hour").toDate();
+        const breakEnd = now.subtract(30, "minute").toDate();
         await prisma.stamp.create({
           data: {
             date: today,
-            clockInAt: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+            clockInAt: now.subtract(2, "hour").toDate(),
             clockOutAt: null,
             breakStartAt: breakStart,
             breakEndAt: breakEnd,
@@ -110,7 +112,6 @@ describe.sequential("GET /api/stamps/status", () => {
         });
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.status).toBe("working");
         expect(data.stamp).not.toBeNull();
@@ -118,18 +119,16 @@ describe.sequential("GET /api/stamps/status", () => {
         expect(data.stamp.breakEndAt).not.toBeNull();
       },
     },
-  ];
+  ] as const;
 
-  for (const tc of testCases) {
-    it(tc.name, async () => {
-      // Setup
-      await tc.setup();
-
-      // Execute
-      const res = await client.status.$get();
-
-      // Assert
-      await tc.assert(res);
-    });
-  }
+  describe("HTTP 200", () => {
+    for (const tc of testCases) {
+      it(tc.name, async () => {
+        await tc.setup();
+        const res = await client.status.$get();
+        expect(res.status).toBe(200);
+        await tc.assert(res);
+      });
+    }
+  });
 });

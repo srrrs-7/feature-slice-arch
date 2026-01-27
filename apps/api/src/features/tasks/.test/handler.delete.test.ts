@@ -5,12 +5,13 @@ import taskRoutes from "../handler";
 import { TaskFactory } from "./setup";
 import "./setup"; // Import for afterEach cleanup
 
-describe("DELETE /api/tasks/:id", () => {
+describe.sequential("DELETE /api/tasks/:id", () => {
   const client = testClient(taskRoutes);
 
   const testCases = [
     {
       name: "deletes existing task",
+      expectedStatus: 204,
       setup: async () => {
         const task = await TaskFactory.create({
           title: "Task to delete",
@@ -18,8 +19,6 @@ describe("DELETE /api/tasks/:id", () => {
         return { taskId: task.id };
       },
       assert: async (res: Response, context: { taskId: string }) => {
-        expect(res.status).toBe(204);
-
         // Verify response body is empty
         const text = await res.text();
         expect(text).toBe("");
@@ -33,25 +32,24 @@ describe("DELETE /api/tasks/:id", () => {
     },
     {
       name: "returns no content body",
+      expectedStatus: 204,
       setup: async () => {
         const task = await TaskFactory.create();
         return { taskId: task.id };
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(204);
         const text = await res.text();
         expect(text).toBe("");
       },
     },
     {
       name: "deletes task with all statuses",
+      expectedStatus: 204,
       setup: async () => {
         const task = await TaskFactory.use("completed").create();
         return { taskId: task.id };
       },
-      assert: async (res: Response, context: { taskId: string }) => {
-        expect(res.status).toBe(204);
-
+      assert: async (_res: Response, context: { taskId: string }) => {
         const dbTask = await prisma.task.findUnique({
           where: { id: context.taskId },
         });
@@ -60,6 +58,7 @@ describe("DELETE /api/tasks/:id", () => {
     },
     {
       name: "deletes only the specified task among multiple",
+      expectedStatus: 204,
       setup: async () => {
         const task1 = await TaskFactory.create({ title: "Task 1" });
         const taskToDelete = await TaskFactory.create({ title: "Task 2" });
@@ -70,11 +69,9 @@ describe("DELETE /api/tasks/:id", () => {
         };
       },
       assert: async (
-        res: Response,
+        _res: Response,
         context: { taskId: string; remainingTaskIds: string[] },
       ) => {
-        expect(res.status).toBe(204);
-
         // Verify deleted task is gone
         const deletedTask = await prisma.task.findUnique({
           where: { id: context.taskId },
@@ -89,12 +86,26 @@ describe("DELETE /api/tasks/:id", () => {
       },
     },
     {
+      name: "deletes task with null description",
+      expectedStatus: 204,
+      setup: async () => {
+        const task = await TaskFactory.use("withoutDescription").create();
+        return { taskId: task.id };
+      },
+      assert: async (_res: Response, context: { taskId: string }) => {
+        const dbTask = await prisma.task.findUnique({
+          where: { id: context.taskId },
+        });
+        expect(dbTask).toBeNull();
+      },
+    },
+    {
       name: "returns 404 for non-existent task",
+      expectedStatus: 404,
       setup: async () => {
         return { taskId: "550e8400-e29b-41d4-a716-446655440000" };
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(404);
         const data = await res.json();
         expect(data).toHaveProperty("error", "NOT_FOUND");
         expect(data).toHaveProperty("message");
@@ -102,35 +113,26 @@ describe("DELETE /api/tasks/:id", () => {
     },
     // Note: Empty ID and whitespace-only ID tests are skipped because
     // they route to GET /api/tasks instead of DELETE /api/tasks/:id
-    {
-      name: "deletes task with null description",
-      setup: async () => {
-        const task = await TaskFactory.use("withoutDescription").create();
-        return { taskId: task.id };
-      },
-      assert: async (res: Response, context: { taskId: string }) => {
-        expect(res.status).toBe(204);
+  ] as const;
 
-        const dbTask = await prisma.task.findUnique({
-          where: { id: context.taskId },
-        });
-        expect(dbTask).toBeNull();
-      },
-    },
-  ];
-
+  const casesByStatus = new Map<number, typeof testCases>();
   for (const tc of testCases) {
-    it(tc.name, async () => {
-      // Setup
-      const context = await tc.setup();
+    const list = casesByStatus.get(tc.expectedStatus) ?? [];
+    casesByStatus.set(tc.expectedStatus, [...list, tc]);
+  }
 
-      // Execute
-      const res = await client[":id"].$delete({
-        param: { id: context.taskId },
-      });
-
-      // Assert
-      await tc.assert(res, context);
+  for (const [status, cases] of casesByStatus) {
+    describe(`HTTP ${status}`, () => {
+      for (const tc of cases) {
+        it(tc.name, async () => {
+          const context = await tc.setup();
+          const res = await client[":id"].$delete({
+            param: { id: context.taskId },
+          });
+          expect(res.status).toBe(status);
+          await tc.assert(res, context);
+        });
+      }
     });
   }
 });

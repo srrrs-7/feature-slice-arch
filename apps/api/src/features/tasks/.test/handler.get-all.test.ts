@@ -10,28 +10,29 @@ describe.sequential("GET /api/tasks", () => {
   const testCases = [
     {
       name: "returns empty array when no tasks exist",
+      expectedStatus: 200,
       setup: async () => {
         // No setup needed
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data).toEqual({ tasks: [] });
       },
     },
     {
       name: "returns all tasks",
+      expectedStatus: 200,
       setup: async () => {
         await TaskFactory.createList(3);
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.tasks).toHaveLength(3);
       },
     },
     {
       name: "returns tasks with correct structure",
+      expectedStatus: 200,
       setup: async () => {
         return await TaskFactory.create({
           title: "Test Task",
@@ -40,7 +41,6 @@ describe.sequential("GET /api/tasks", () => {
         });
       },
       assert: async (res: Response, context?: { id: string }) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.tasks).toHaveLength(1);
 
@@ -57,13 +57,13 @@ describe.sequential("GET /api/tasks", () => {
     },
     {
       name: "returns tasks with null description",
+      expectedStatus: 200,
       setup: async () => {
         await TaskFactory.use("withoutDescription").create({
           title: "Task without description",
         });
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.tasks).toHaveLength(1);
         expect(data.tasks[0].description).toBeNull();
@@ -71,34 +71,30 @@ describe.sequential("GET /api/tasks", () => {
     },
     {
       name: "returns tasks with different statuses",
+      expectedStatus: 200,
       setup: async () => {
         await TaskFactory.create({ status: "pending" });
         await TaskFactory.use("inProgress").create();
         await TaskFactory.use("completed").create();
       },
       assert: async (res: Response) => {
-        expect(res.status).toBe(200);
         const data = await res.json();
         expect(data.tasks).toHaveLength(3);
-
-        const statuses = data.tasks.map((t: { status: string }) => t.status);
-        expect(statuses).toContain("pending");
-        expect(statuses).toContain("in_progress");
-        expect(statuses).toContain("completed");
+        expect(data.tasks.map((t: { status: string }) => t.status)).toEqual(
+          expect.arrayContaining(["pending", "in_progress", "completed"]),
+        );
       },
     },
-  ];
+  ] as const;
 
-  for (const tc of testCases) {
-    it(tc.name, async () => {
-      // Setup
-      const context = await tc.setup();
-
-      // Execute
-      const res = await client.$get();
-
-      // Assert
-      await tc.assert(res, context ? { id: context.id } : undefined);
-    });
-  }
+  describe("HTTP 200", () => {
+    for (const tc of testCases) {
+      it(tc.name, async () => {
+        const context = await tc.setup();
+        const res = await client.$get();
+        expect(res.status).toBe(200);
+        await tc.assert(res, context);
+      });
+    }
+  });
 });

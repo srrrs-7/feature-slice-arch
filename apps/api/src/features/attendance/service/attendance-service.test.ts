@@ -1,12 +1,12 @@
 import { okAsync, type ResultAsync } from "neverthrow";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
+import type { AttendanceRecord } from "../domain/attendance.ts";
 import {
   createStamp,
   createStampId,
   type Stamp,
   type StampError,
-} from "../../stamp/domain/stamp.ts";
-import type { AttendanceRecord } from "../domain/attendance.ts";
+} from "../domain/stamp.ts";
 
 // Mock helpers
 function createMockStamp(overrides: Partial<Stamp> = {}): Stamp {
@@ -45,12 +45,12 @@ const mockStampRepository: {
 };
 
 // Mock the stamp repository
-vi.mock("../../stamp/repository/repository.ts", () => ({
+vi.mock("../repository/stamp-repository.ts", () => ({
   stampRepository: mockStampRepository,
 }));
 
 // Import service after mocking
-const { attendanceService } = await import("./service.ts");
+const { attendanceService } = await import("./attendance-service.ts");
 
 beforeEach(() => {
   vi.clearAllMocks();

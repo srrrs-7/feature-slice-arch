@@ -62,9 +62,12 @@ export function formatDateWithWeekday(
 
 /**
  * Format Date/string to HH:MM:SS format
- * @example formatTime(new Date()) => "09:00:00"
+ * @example formatTime(dayjs().toISOString()) => "09:00:00"
  */
-export function formatTime(date: string | null, localeOverride?: string): string {
+export function formatTime(
+  date: string | null,
+  localeOverride?: string,
+): string {
   if (!date) return "--:--:--";
   const currentLocale = localeOverride ?? get(locale);
   const localeCode = getDayjsLocale(currentLocale);
@@ -74,7 +77,7 @@ export function formatTime(date: string | null, localeOverride?: string): string
 
 /**
  * Format Date/string to HH:MM format (without seconds)
- * @example formatTimeShort(new Date()) => "09:00"
+ * @example formatTimeShort(dayjs().toISOString()) => "09:00"
  */
 export function formatTimeShort(
   date: string | null,
