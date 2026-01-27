@@ -89,10 +89,10 @@ module "iam" {
   account_id  = local.account_id
   region      = local.region
 
-  ecr_repository_arn     = module.ecr.repository_arn
-  secrets_arns           = module.secrets.secret_arns
-  cloudwatch_log_group   = module.cloudwatch.ecs_log_group_arn
-  enable_ecs_exec        = var.enable_ecs_exec
+  ecr_repository_arn   = module.ecr.repository_arn
+  secrets_arns         = module.secrets.secret_arns
+  cloudwatch_log_group = module.cloudwatch.ecs_log_group_arn
+  enable_ecs_exec      = var.enable_ecs_exec
 
   tags = local.common_tags
 }
@@ -114,9 +114,9 @@ module "ecr" {
 module "secrets" {
   source = "./modules/secrets"
 
-  name_prefix       = local.name_prefix
-  db_username       = var.db_master_username
-  api_bearer_token  = var.api_bearer_token
+  name_prefix      = local.name_prefix
+  db_username      = var.db_master_username
+  api_bearer_token = var.api_bearer_token
 
   tags = local.common_tags
 }
@@ -132,16 +132,16 @@ module "rds" {
   subnet_ids      = module.network.database_subnet_ids
   security_groups = [module.network.rds_security_group_id]
 
-  db_name                    = var.db_name
-  master_username            = var.db_master_username
-  master_password_secret_arn = module.secrets.db_password_secret_arn
-  engine_version             = var.db_engine_version
-  min_capacity               = var.db_min_capacity
-  max_capacity               = var.db_max_capacity
-  backup_retention_period    = var.db_backup_retention_period
-  deletion_protection        = var.db_deletion_protection
-  skip_final_snapshot        = var.db_skip_final_snapshot
-  enable_enhanced_monitoring = var.enable_enhanced_monitoring
+  db_name                     = var.db_name
+  master_username             = var.db_master_username
+  master_password_secret_arn  = module.secrets.db_password_secret_arn
+  engine_version              = var.db_engine_version
+  min_capacity                = var.db_min_capacity
+  max_capacity                = var.db_max_capacity
+  backup_retention_period     = var.db_backup_retention_period
+  deletion_protection         = var.db_deletion_protection
+  skip_final_snapshot         = var.db_skip_final_snapshot
+  enable_enhanced_monitoring  = var.enable_enhanced_monitoring
   enable_performance_insights = var.enable_performance_insights
 
   tags = local.common_tags
@@ -160,7 +160,7 @@ module "alb" {
   subnet_ids      = module.network.public_subnet_ids
   security_groups = [module.network.alb_security_group_id]
 
-  container_port  = var.api_container_port
+  container_port = var.api_container_port
 
   tags = local.common_tags
 }
@@ -174,9 +174,9 @@ module "cloudwatch" {
   name_prefix        = local.name_prefix
   log_retention_days = var.log_retention_days
 
-  ecs_cluster_name   = "${local.name_prefix}-cluster"
-  ecs_service_name   = "${local.name_prefix}-api"
-  alb_arn_suffix     = module.alb.alb_arn_suffix
+  ecs_cluster_name        = "${local.name_prefix}-cluster"
+  ecs_service_name        = "${local.name_prefix}-api"
+  alb_arn_suffix          = module.alb.alb_arn_suffix
   target_group_arn_suffix = module.alb.target_group_arn_suffix
 
   tags = local.common_tags
@@ -193,23 +193,23 @@ module "ecs" {
   subnet_ids      = module.network.private_subnet_ids
   security_groups = [module.network.ecs_security_group_id]
 
-  task_cpu           = var.ecs_task_cpu
-  task_memory        = var.ecs_task_memory
-  desired_count      = var.ecs_desired_count
-  min_capacity       = var.ecs_min_capacity
-  max_capacity       = var.ecs_max_capacity
-  container_port     = var.api_container_port
-  enable_ecs_exec    = var.enable_ecs_exec
+  task_cpu        = var.ecs_task_cpu
+  task_memory     = var.ecs_task_memory
+  desired_count   = var.ecs_desired_count
+  min_capacity    = var.ecs_min_capacity
+  max_capacity    = var.ecs_max_capacity
+  container_port  = var.api_container_port
+  enable_ecs_exec = var.enable_ecs_exec
 
-  ecr_repository_url     = module.ecr.repository_url
-  execution_role_arn     = module.iam.ecs_execution_role_arn
-  task_role_arn          = module.iam.ecs_task_role_arn
-  target_group_arn       = module.alb.target_group_arn
-  log_group_name         = module.cloudwatch.ecs_log_group_name
+  ecr_repository_url = module.ecr.repository_url
+  execution_role_arn = module.iam.ecs_execution_role_arn
+  task_role_arn      = module.iam.ecs_task_role_arn
+  target_group_arn   = module.alb.target_group_arn
+  log_group_name     = module.cloudwatch.ecs_log_group_name
 
   # Environment variables for the container
-  db_secret_arn          = module.secrets.db_credentials_secret_arn
-  api_token_secret_arn   = module.secrets.api_token_secret_arn
+  db_secret_arn        = module.secrets.db_credentials_secret_arn
+  api_token_secret_arn = module.secrets.api_token_secret_arn
 
   tags = local.common_tags
 
@@ -227,14 +227,14 @@ module "cloudfront" {
     aws.us_east_1 = aws.us_east_1
   }
 
-  name_prefix         = local.name_prefix
-  alb_dns_name        = module.alb.alb_dns_name
-  alb_origin_id       = "alb-api"
-  s3_origin_id        = "s3-frontend"
+  name_prefix   = local.name_prefix
+  alb_dns_name  = module.alb.alb_dns_name
+  alb_origin_id = "alb-api"
+  s3_origin_id  = "s3-frontend"
 
-  price_class         = var.cloudfront_price_class
-  default_ttl         = var.cloudfront_default_ttl
-  max_ttl             = var.cloudfront_max_ttl
+  price_class = var.cloudfront_price_class
+  default_ttl = var.cloudfront_default_ttl
+  max_ttl     = var.cloudfront_max_ttl
 
   tags = local.common_tags
 }

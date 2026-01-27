@@ -66,6 +66,88 @@ apps/iac/
 └── Makefile                   # Convenience commands
 ```
 
+## AWS Login & Prerequisites
+
+### 1. AWS CLI Setup
+
+```bash
+# Install AWS CLI (if not installed)
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip && sudo ./aws/install
+
+# Verify installation
+aws --version
+```
+
+### 2. AWS Authentication
+
+**Option A: AWS SSO (Recommended for organizations)**
+```bash
+# Configure SSO profile
+aws configure sso
+# Follow prompts to set up SSO
+
+# Login to SSO
+aws sso login --profile <profile-name>
+
+# Verify credentials
+aws sts get-caller-identity --profile <profile-name>
+
+# Set default profile (optional)
+export AWS_PROFILE=<profile-name>
+```
+
+**Option B: IAM Access Keys (For personal accounts)**
+```bash
+# Configure with access keys
+aws configure
+# Enter:
+#   AWS Access Key ID: <your-access-key>
+#   AWS Secret Access Key: <your-secret-key>
+#   Default region: ap-northeast-1
+#   Default output format: json
+
+# Verify credentials
+aws sts get-caller-identity
+```
+
+### 3. Required IAM Permissions
+
+The AWS user/role needs these permissions:
+- `ec2:*` - VPC, Subnets, Security Groups
+- `ecs:*` - ECS Cluster, Service, Task
+- `elasticloadbalancing:*` - ALB
+- `rds:*` - Aurora
+- `s3:*` - Frontend bucket, Terraform state
+- `cloudfront:*` - CDN
+- `ecr:*` - Container registry
+- `secretsmanager:*` - Secrets
+- `iam:*` - Roles and policies
+- `logs:*` - CloudWatch Logs
+- `cloudwatch:*` - Alarms
+- `cognito-idp:*` - Cognito User Pool
+- `dynamodb:*` - Terraform state locking (if using remote backend)
+
+Or attach `AdministratorAccess` policy for development.
+
+### 4. Environment Verification
+
+```bash
+# Check AWS CLI is authenticated
+aws sts get-caller-identity
+
+# Expected output:
+# {
+#     "UserId": "AIDAXXXXXXXXXXXXXXXXX",
+#     "Account": "123456789012",
+#     "Arn": "arn:aws:iam::123456789012:user/your-username"
+# }
+
+# Verify region
+aws configure get region
+# Expected: ap-northeast-1
+```
+
 ## Commands
 
 ```bash
@@ -132,6 +214,59 @@ To enable:
 2. Uncomment the backend block in `envs/dev/backend.tf`
 3. Run `terraform init -migrate-state`
 
+## Infrastructure Deployment Steps
+
+### First-time Setup
+
+```bash
+# 1. Login to AWS
+aws sso login --profile <profile-name>
+# or
+aws configure  # for IAM access keys
+
+# 2. Verify authentication
+aws sts get-caller-identity
+
+# 3. Navigate to environment directory
+cd apps/iac/envs/dev  # or prod
+
+# 4. Initialize Terraform
+terraform init -backend=false  # Local state for first setup
+
+# 5. Validate configuration
+terraform validate
+
+# 6. Plan infrastructure
+terraform plan -out=tfplan
+
+# 7. Apply infrastructure
+terraform apply tfplan
+
+# 8. Note the outputs (CloudFront URL, ECR URL, etc.)
+terraform output
+```
+
+### Subsequent Deployments
+
+```bash
+# 1. Login to AWS (if session expired)
+aws sso login --profile <profile-name>
+
+# 2. Navigate and plan
+cd apps/iac/envs/dev
+terraform plan -out=tfplan
+
+# 3. Review and apply
+terraform apply tfplan
+```
+
+### Destroy Infrastructure
+
+```bash
+# WARNING: This deletes all resources
+terraform destroy
+```
+
 ## Security Groups Flow
 
 ```
@@ -151,6 +286,56 @@ After `terraform apply`:
 - `s3_frontend_bucket`: Frontend deployment bucket
 - `ecs_cluster_name`, `ecs_service_name`: For ECS updates
 - `deployment_commands`: Ready-to-use CLI commands
+- `api_env_config`: Environment variables for API `.env` file
+- `web_env_config`: Environment variables for Web `.env` file
+- `db_password_retrieval_command`: Command to get DB password from Secrets Manager
+
+## Generating .env Files
+
+After `terraform apply`, generate `.env` files for API and Web:
+
+```bash
+# Navigate to environment directory
+cd apps/iac/envs/dev  # or prod
+
+# Generate API .env
+terraform output -raw api_env_config > ../../../api/.env
+
+# Generate Web .env
+terraform output -raw web_env_config > ../../../web/.env
+
+# Retrieve and update database password
+DB_PASSWORD=$(eval "$(terraform output -raw db_password_retrieval_command)")
+sed -i "s/<DB_PASSWORD>/$DB_PASSWORD/" ../../../api/.env
+
+# Verify .env files
+cat ../../../api/.env
+cat ../../../web/.env
+```
+
+### Generated .env Contents
+
+**API (.env)**
+```bash
+PORT=8080
+NODE_ENV=production
+DATABASE_URL=postgresql://postgres:<password>@<aurora-endpoint>:5432/todoapp
+COGNITO_ISSUER=https://cognito-idp.ap-northeast-1.amazonaws.com/<pool-id>
+COGNITO_CLIENT_ID=<client-id>
+COGNITO_JWKS_URI=https://cognito-idp.ap-northeast-1.amazonaws.com/<pool-id>/.well-known/jwks.json
+CORS_ALLOWED_ORIGINS=https://<cloudfront-domain>
+```
+
+**Web (.env)**
+```bash
+VITE_API_URL=https://<cloudfront-domain>
+VITE_COGNITO_USER_POOL_ID=<pool-id>
+VITE_COGNITO_CLIENT_ID=<client-id>
+VITE_COGNITO_DOMAIN=<domain>.auth.ap-northeast-1.amazoncognito.com
+VITE_COGNITO_REDIRECT_URI=https://<cloudfront-domain>/auth/callback
+VITE_COGNITO_LOGOUT_URI=https://<cloudfront-domain>/login
+VITE_COGNITO_SCOPE=openid email profile
+```
 
 ## Adding New Resources
 

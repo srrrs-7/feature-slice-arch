@@ -9,9 +9,9 @@
 # Local Variables
 #------------------------------------------------------------------------------
 locals {
-  name_prefix           = "${var.project_name}-${var.environment}"
-  ecs_log_group_name    = "/ecs/${local.name_prefix}-api"
-  ecs_log_group_arn     = "arn:aws:logs:${var.aws_region}:${var.account_id}:log-group:${local.ecs_log_group_name}"
+  name_prefix        = "${var.project_name}-${var.environment}"
+  ecs_log_group_name = "/ecs/${local.name_prefix}-api"
+  ecs_log_group_arn  = "arn:aws:logs:${var.aws_region}:${var.account_id}:log-group:${local.ecs_log_group_name}"
 
   # Subnet CIDRs derived from VPC CIDR
   public_subnet_cidrs   = [for i, az in var.availability_zones : cidrsubnet(var.vpc_cidr, 8, i + 1)]
@@ -150,13 +150,13 @@ module "cloudfront" {
     aws.us_east_1 = aws.us_east_1
   }
 
-  name_prefix     = local.name_prefix
-  alb_dns_name    = module.alb.alb_dns_name
-  alb_origin_id   = "alb-api"
-  s3_origin_id    = "s3-frontend"
-  price_class     = var.cloudfront_price_class
-  default_ttl     = var.cloudfront_default_ttl
-  max_ttl         = var.cloudfront_max_ttl
+  name_prefix   = local.name_prefix
+  alb_dns_name  = module.alb.alb_dns_name
+  alb_origin_id = "alb-api"
+  s3_origin_id  = "s3-frontend"
+  price_class   = var.cloudfront_price_class
+  default_ttl   = var.cloudfront_default_ttl
+  max_ttl       = var.cloudfront_max_ttl
 }
 
 #------------------------------------------------------------------------------
@@ -165,17 +165,17 @@ module "cloudfront" {
 module "cloudwatch" {
   source = "../cloudwatch"
 
-  name_prefix             = local.name_prefix
-  ecs_cluster_name        = module.ecs.cluster_name
-  ecs_service_name        = module.ecs.service_name
-  alb_arn_suffix          = module.alb.alb_arn_suffix
-  target_group_arn_suffix = module.alb.target_group_arn_suffix
-  log_retention_days      = var.log_retention_days
+  name_prefix              = local.name_prefix
+  ecs_cluster_name         = module.ecs.cluster_name
+  ecs_service_name         = module.ecs.service_name
+  alb_arn_suffix           = module.alb.alb_arn_suffix
+  target_group_arn_suffix  = module.alb.target_group_arn_suffix
+  log_retention_days       = var.log_retention_days
   alarm_evaluation_periods = var.alarm_evaluation_periods
-  cpu_threshold           = var.cpu_alarm_threshold
-  memory_threshold        = var.memory_alarm_threshold
-  error_threshold         = var.error_alarm_threshold
-  response_time_threshold = var.response_time_alarm_threshold
+  cpu_threshold            = var.cpu_alarm_threshold
+  memory_threshold         = var.memory_alarm_threshold
+  error_threshold          = var.error_alarm_threshold
+  response_time_threshold  = var.response_time_alarm_threshold
 }
 
 #------------------------------------------------------------------------------

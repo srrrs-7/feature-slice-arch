@@ -83,11 +83,11 @@ output "logout_endpoint" {
 output "frontend_config" {
   description = "Configuration object for frontend .env"
   value = {
-    user_pool_id       = aws_cognito_user_pool.main.id
-    client_id          = aws_cognito_user_pool_client.spa.id
-    domain             = "${aws_cognito_user_pool_domain.main.domain}.auth.${data.aws_region.current.name}.amazoncognito.com"
-    scope              = "openid email profile"
-    issuer             = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.main.id}"
-    jwks_uri           = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.main.id}/.well-known/jwks.json"
+    user_pool_id = aws_cognito_user_pool.main.id
+    client_id    = aws_cognito_user_pool_client.spa.id
+    domain       = "${aws_cognito_user_pool_domain.main.domain}.auth.${data.aws_region.current.name}.amazoncognito.com"
+    scope        = "openid email profile"
+    issuer       = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.main.id}"
+    jwks_uri     = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.main.id}/.well-known/jwks.json"
   }
 }

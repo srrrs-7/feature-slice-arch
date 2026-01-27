@@ -1,5 +1,5 @@
 {
-  "name": "play-devcontainer",
+  "name": "feature-slice-devcontainer",
   "license": "MIT",
   "private": true,
   "workspaces": [

@@ -42,7 +42,7 @@ output "cognito_hosted_ui_url" {
 
 output "frontend_env_vars" {
   description = "Environment variables for frontend (.env)"
-  value = <<-EOT
+  value       = <<-EOT
 # Cognito Configuration for local development
 # Add these to apps/web/.env
 
@@ -61,7 +61,7 @@ EOT
 
 output "backend_env_vars" {
   description = "Environment variables for backend (.env)"
-  value = <<-EOT
+  value       = <<-EOT
 # Cognito Configuration for API JWT verification
 # Add these to apps/api/.env
 

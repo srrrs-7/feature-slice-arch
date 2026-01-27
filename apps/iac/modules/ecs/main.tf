@@ -160,7 +160,7 @@ resource "aws_ecs_service" "api" {
 
   lifecycle {
     ignore_changes = [
-      desired_count,  # Managed by auto-scaling
+      desired_count, # Managed by auto-scaling
     ]
   }
 

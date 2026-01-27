@@ -2,6 +2,29 @@
 
 このディレクトリには、Todo List アプリケーションのAWSインフラストラクチャ定義が含まれます。
 
+## クイックスタート
+
+```bash
+# 1. AWS認証
+aws sso login --profile <profile-name>  # SSO使用時
+# または
+aws configure  # IAM Access Keys使用時
+
+# 2. 認証確認
+aws sts get-caller-identity
+
+# 3. Terraformでインフラ構築
+cd apps/iac/envs/dev
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+
+# 4. 出力値を確認
+terraform output
+```
+
+詳細な手順は「デプロイメントフロー」セクションを参照してください。
+
 ## アーキテクチャ概要
 
 ### 構成要素
@@ -431,12 +454,92 @@ VITE_TIMEZONE=Asia/Tokyo
 
 ## デプロイメントフロー
 
+### 0. AWS認証（前提条件）
+
+インフラ構築の前に、AWS CLIの認証が必要です。
+
+#### Option A: AWS SSO (推奨)
+
+組織でAWS SSOを使用している場合:
+
+```bash
+# 1. AWS SSOプロファイルを設定（初回のみ）
+aws configure sso
+# プロンプトに従って設定:
+#   SSO session name: my-sso
+#   SSO start URL: https://your-org.awsapps.com/start
+#   SSO region: ap-northeast-1
+#   SSO registration scopes: sso:account:access
+
+# 2. SSOにログイン
+aws sso login --profile <profile-name>
+# ブラウザが開くので認証を完了
+
+# 3. 認証確認
+aws sts get-caller-identity --profile <profile-name>
+# {
+#     "UserId": "AROAXXXXXXXXXXXXXXXXX:user@example.com",
+#     "Account": "123456789012",
+#     "Arn": "arn:aws:sts::123456789012:assumed-role/..."
+# }
+
+# 4. デフォルトプロファイルとして設定（オプション）
+export AWS_PROFILE=<profile-name>
+```
+
+#### Option B: IAM Access Keys
+
+個人アカウントやCI/CDで使用する場合:
+
+```bash
+# 1. AWS CLIを設定
+aws configure
+# プロンプトに入力:
+#   AWS Access Key ID: AKIAXXXXXXXXXXXXXXXX
+#   AWS Secret Access Key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#   Default region name: ap-northeast-1
+#   Default output format: json
+
+# 2. 認証確認
+aws sts get-caller-identity
+# {
+#     "UserId": "AIDAXXXXXXXXXXXXXXXXX",
+#     "Account": "123456789012",
+#     "Arn": "arn:aws:iam::123456789012:user/your-username"
+# }
+```
+
+#### 必要なIAM権限
+
+インフラ構築に必要な主な権限:
+
+| サービス | 権限 | 用途 |
+|---------|------|------|
+| EC2 | `ec2:*` | VPC, Subnets, Security Groups, NAT Gateway |
+| ECS | `ecs:*` | Cluster, Service, Task Definition |
+| ELB | `elasticloadbalancing:*` | Application Load Balancer |
+| RDS | `rds:*` | Aurora Serverless v2 |
+| S3 | `s3:*` | Frontend bucket, Terraform state |
+| CloudFront | `cloudfront:*` | CDN Distribution |
+| ECR | `ecr:*` | Container Registry |
+| Secrets Manager | `secretsmanager:*` | DB credentials, API tokens |
+| IAM | `iam:*` | Roles and policies |
+| CloudWatch | `logs:*`, `cloudwatch:*` | Logs, Alarms |
+| Cognito | `cognito-idp:*` | User Pool, App Client |
+| DynamoDB | `dynamodb:*` | Terraform state locking |
+
+開発環境では `AdministratorAccess` ポリシーを使用することも可能です。
+
 ### 1. インフラストラクチャ構築
 ```bash
-# Terraform/CDK/Pulumi でインフラを構築
+# AWS認証済みであることを確認
+aws sts get-caller-identity
+
+# Terraform でインフラを構築
+cd apps/iac/envs/dev  # または prod
 terraform init
-terraform plan
-terraform apply
+terraform plan -out=tfplan
+terraform apply tfplan
 
 # 出力される値:
 # - CloudFront Distribution URL
@@ -446,10 +549,69 @@ terraform apply
 # - Secrets ARNs
 ```
 
+### 1.5. 環境変数ファイル (.env) の生成
+
+Terraformの出力から、APIとWebの`.env`ファイルを自動生成できます。
+
+```bash
+# 環境ディレクトリに移動
+cd apps/iac/envs/dev  # または prod
+
+# API用の.envファイルを生成
+terraform output -raw api_env_config > ../../../api/.env
+
+# Web用の.envファイルを生成
+terraform output -raw web_env_config > ../../../web/.env
+
+# データベースパスワードを取得して.envに設定
+DB_PASSWORD=$(eval "$(terraform output -raw db_password_retrieval_command)")
+sed -i "s/<DB_PASSWORD>/$DB_PASSWORD/" ../../../api/.env
+
+# 確認
+cat ../../../api/.env
+cat ../../../web/.env
+```
+
+#### 生成される.envの内容
+
+**API (.env)**
+```bash
+# Server
+PORT=8080
+NODE_ENV=production
+TZ=Asia/Tokyo
+
+# Database
+DATABASE_URL=postgresql://postgres:<password>@<aurora-endpoint>:5432/todoapp
+
+# Cognito (JWT Authentication)
+COGNITO_ISSUER=https://cognito-idp.ap-northeast-1.amazonaws.com/<pool-id>
+COGNITO_CLIENT_ID=<client-id>
+COGNITO_JWKS_URI=https://cognito-idp.ap-northeast-1.amazonaws.com/<pool-id>/.well-known/jwks.json
+
+# CORS
+CORS_ALLOWED_ORIGINS=https://<cloudfront-domain>
+```
+
+**Web (.env)**
+```bash
+# API
+VITE_API_URL=https://<cloudfront-domain>
+VITE_TIMEZONE=Asia/Tokyo
+
+# Cognito Authentication
+VITE_COGNITO_USER_POOL_ID=<pool-id>
+VITE_COGNITO_CLIENT_ID=<client-id>
+VITE_COGNITO_DOMAIN=<domain>.auth.ap-northeast-1.amazoncognito.com
+VITE_COGNITO_REDIRECT_URI=https://<cloudfront-domain>/auth/callback
+VITE_COGNITO_LOGOUT_URI=https://<cloudfront-domain>/login
+VITE_COGNITO_SCOPE=openid email profile
+```
+
 ### 2. データベースマイグレーション
 ```bash
 # Prisma migration を実行 (ローカルまたはCI/CD)
-export DATABASE_URL="postgresql://postgres:${password}@${aurora-endpoint}:5432/todo_db"
+# .envファイルが設定済みの場合
 cd apps/api
 bun run prisma migrate deploy
 ```

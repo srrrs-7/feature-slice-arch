@@ -97,9 +97,9 @@ module "infrastructure" {
   container_port    = var.container_port
 
   # CloudFront
-  cloudfront_price_class  = var.cloudfront_price_class
-  cloudfront_default_ttl  = var.cloudfront_default_ttl
-  cloudfront_max_ttl      = var.cloudfront_max_ttl
+  cloudfront_price_class = var.cloudfront_price_class
+  cloudfront_default_ttl = var.cloudfront_default_ttl
+  cloudfront_max_ttl     = var.cloudfront_max_ttl
 
   # Monitoring
   log_retention_days            = var.log_retention_days

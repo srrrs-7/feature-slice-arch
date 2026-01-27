@@ -158,29 +158,29 @@ output "deployment_info" {
   description = "Information needed for deployment"
   value = {
     # URLs
-    app_url           = "https://${module.cloudfront.distribution_domain_name}"
-    api_url           = "https://${module.cloudfront.distribution_domain_name}/api"
-    alb_url           = "http://${module.alb.alb_dns_name}"
+    app_url = "https://${module.cloudfront.distribution_domain_name}"
+    api_url = "https://${module.cloudfront.distribution_domain_name}/api"
+    alb_url = "http://${module.alb.alb_dns_name}"
 
     # ECR
-    ecr_repository    = module.ecr.repository_url
+    ecr_repository = module.ecr.repository_url
 
     # ECS
-    ecs_cluster       = module.ecs.cluster_name
-    ecs_service       = module.ecs.service_name
+    ecs_cluster = module.ecs.cluster_name
+    ecs_service = module.ecs.service_name
 
     # S3
-    frontend_bucket   = module.cloudfront.s3_bucket_name
+    frontend_bucket = module.cloudfront.s3_bucket_name
 
     # CloudFront
-    distribution_id   = module.cloudfront.distribution_id
+    distribution_id = module.cloudfront.distribution_id
 
     # Database
-    db_host           = module.rds.cluster_endpoint
-    db_port           = module.rds.cluster_port
-    db_name           = module.rds.database_name
+    db_host = module.rds.cluster_endpoint
+    db_port = module.rds.cluster_port
+    db_name = module.rds.database_name
 
     # Region
-    region            = var.aws_region
+    region = var.aws_region
   }
 }

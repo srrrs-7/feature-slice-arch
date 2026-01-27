@@ -111,6 +111,24 @@ output "cognito_frontend_config" {
 }
 
 #------------------------------------------------------------------------------
+# Environment Configuration (.env files)
+#------------------------------------------------------------------------------
+output "api_env_config" {
+  description = "Environment variables for API .env file (run: terraform output -raw api_env_config > ../../api/.env)"
+  value       = module.infrastructure.api_env_config
+}
+
+output "web_env_config" {
+  description = "Environment variables for Web .env file (run: terraform output -raw web_env_config > ../../web/.env)"
+  value       = module.infrastructure.web_env_config
+}
+
+output "db_password_retrieval_command" {
+  description = "Command to retrieve database password from Secrets Manager"
+  value       = module.infrastructure.db_password_retrieval_command
+}
+
+#------------------------------------------------------------------------------
 # Deployment Commands
 #------------------------------------------------------------------------------
 output "deployment_commands" {

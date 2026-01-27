@@ -78,6 +78,57 @@ output "private_subnet_ids" {
 }
 
 #------------------------------------------------------------------------------
+# Cognito
+#------------------------------------------------------------------------------
+output "cognito_user_pool_id" {
+  description = "Cognito User Pool ID"
+  value       = module.infrastructure.cognito_user_pool_id
+}
+
+output "cognito_client_id" {
+  description = "Cognito App Client ID"
+  value       = module.infrastructure.cognito_client_id
+}
+
+output "cognito_domain" {
+  description = "Cognito Hosted UI domain"
+  value       = module.infrastructure.cognito_domain
+}
+
+output "cognito_issuer" {
+  description = "Cognito Issuer URL (for JWT validation)"
+  value       = module.infrastructure.cognito_issuer
+}
+
+output "cognito_jwks_uri" {
+  description = "JWKS URI for JWT verification"
+  value       = module.infrastructure.cognito_jwks_uri
+}
+
+output "cognito_frontend_config" {
+  description = "Configuration for frontend .env"
+  value       = module.infrastructure.cognito_frontend_config
+}
+
+#------------------------------------------------------------------------------
+# Environment Configuration (.env files)
+#------------------------------------------------------------------------------
+output "api_env_config" {
+  description = "Environment variables for API .env file (run: terraform output -raw api_env_config > ../../api/.env)"
+  value       = module.infrastructure.api_env_config
+}
+
+output "web_env_config" {
+  description = "Environment variables for Web .env file (run: terraform output -raw web_env_config > ../../web/.env)"
+  value       = module.infrastructure.web_env_config
+}
+
+output "db_password_retrieval_command" {
+  description = "Command to retrieve database password from Secrets Manager"
+  value       = module.infrastructure.db_password_retrieval_command
+}
+
+#------------------------------------------------------------------------------
 # Deployment Commands
 #------------------------------------------------------------------------------
 output "deployment_commands" {

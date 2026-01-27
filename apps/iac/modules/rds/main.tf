@@ -48,7 +48,7 @@ resource "aws_rds_cluster_parameter_group" "main" {
 
   parameter {
     name  = "log_min_duration_statement"
-    value = "1000"  # Log queries taking more than 1 second
+    value = "1000" # Log queries taking more than 1 second
   }
 
   tags = merge(var.tags, {
@@ -101,8 +101,8 @@ resource "aws_rds_cluster" "main" {
   storage_encrypted = true
 
   # Deletion protection
-  deletion_protection = var.deletion_protection
-  skip_final_snapshot = var.skip_final_snapshot
+  deletion_protection       = var.deletion_protection
+  skip_final_snapshot       = var.skip_final_snapshot
   final_snapshot_identifier = var.skip_final_snapshot ? null : "${var.name_prefix}-final-snapshot"
 
   # Enable CloudWatch Logs export

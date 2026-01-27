@@ -40,6 +40,7 @@
       "settings": {
         "eslint.enable": false,
         "biome.enabled": true,
+        "terminal.integrated.suggest.enabled": true,
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "vscode.typescript-language-features",
         "editor.codeActionsOnSave": {
