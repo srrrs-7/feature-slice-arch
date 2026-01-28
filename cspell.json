@@ -1,0 +1,15 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": ["Cladex"],
+  "ignorePaths": [
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    "coverage",
+    "*.lock",
+    "pnpm-lock.yaml",
+    "bun.lockb"
+  ]
+}
