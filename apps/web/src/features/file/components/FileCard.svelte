@@ -5,7 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { t } from "$lib/i18n";
 import { formatDateCompact } from "$lib/utils/date";
 import type { File } from "../types";
-import { formatFileSize, getContentTypeLabel } from "../utils";
+import {
+  formatFileSize,
+  getContentTypeLabel,
+  isImageContentType,
+} from "../utils";
 import FilePreview from "./FilePreview.svelte";
 import FilePreviewDialog from "./FilePreviewDialog.svelte";
 
@@ -15,7 +19,7 @@ interface Props {
 
 let { file }: Props = $props();
 
-const isImage = $derived(file.contentType.startsWith("image/"));
+const isImage = $derived(isImageContentType(file.contentType));
 
 let isPreviewOpen = $state(false);
 

@@ -65,6 +65,7 @@ Then [expected outcome]
 - Each task should be completable in < 30 minutes
 - Each task should have a test
 - Tasks should be independently verifiable
+- Always add a post-implementation refactor task to revisit and improve the code after it works
 
 ## Deliverables
 

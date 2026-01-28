@@ -2,6 +2,11 @@
 
 <script lang="ts">
 import { createViewUrlQuery } from "../queries";
+import {
+  isImageContentType,
+  isPdfContentType,
+  isTextContentType,
+} from "../utils";
 
 interface Props {
   fileId?: string;
@@ -12,9 +17,9 @@ interface Props {
 
 let { fileId, contentType, fileName, class: className = "" }: Props = $props();
 
-const isImage = $derived(contentType.startsWith("image/"));
-const isPdf = $derived(contentType === "application/pdf");
-const isText = $derived(contentType.startsWith("text/"));
+const isImage = $derived(isImageContentType(contentType));
+const isPdf = $derived(isPdfContentType(contentType));
+const isText = $derived(isTextContentType(contentType));
 
 const viewUrlQuery = createViewUrlQuery(() => fileId ?? "", {
   enabled: () => isImage && !!fileId,
@@ -22,14 +27,6 @@ const viewUrlQuery = createViewUrlQuery(() => fileId ?? "", {
 
 let imageLoaded = $state(false);
 let imageError = $state(false);
-
-function handleImageLoad() {
-  imageLoaded = true;
-}
-
-function handleImageError() {
-  imageError = true;
-}
 
 const viewUrl = $derived(viewUrlQuery.data?.viewUrl);
 const isPending = $derived(viewUrlQuery.isPending);
@@ -50,8 +47,8 @@ const isPending = $derived(viewUrlQuery.isPending);
       class:opacity-100={imageLoaded}
       class:transition-opacity={true}
       class:duration-200={true}
-      onload={handleImageLoad}
-      onerror={handleImageError}
+      onload={() => (imageLoaded = true)}
+      onerror={() => (imageError = true)}
     />
   {:else if isImage && fileId && isPending}
     <div class="animate-pulse bg-muted w-full h-full"></div>

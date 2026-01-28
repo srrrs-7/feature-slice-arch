@@ -1,6 +1,7 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
+import { t } from "$lib/i18n";
 import type { Task, TaskStatus } from "../types";
 import TaskCard from "./TaskCard.svelte";
 
@@ -30,7 +31,10 @@ let {
 {:else if tasks.length === 0}
   <div class="text-center py-8 sm:py-12">
     <p class="text-sm sm:text-base text-muted-foreground">
-      No tasks found. Create one to get started!
+      {$t.tasks.noTasks}
+    </p>
+    <p class="text-xs sm:text-sm text-muted-foreground mt-1">
+      {$t.tasks.noTasksDescription}
     </p>
   </div>
 {:else}

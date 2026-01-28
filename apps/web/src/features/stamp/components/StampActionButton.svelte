@@ -14,6 +14,7 @@ type ActionConfig = {
   labelKey: "clockIn" | "clockOut" | "breakStart" | "breakEnd";
   variant: "default" | "secondary" | "destructive" | "outline";
   action: () => void;
+  className?: string;
 };
 
 $: actions = getActionsForStatus(status);
@@ -28,7 +29,15 @@ function getActionsForStatus(status: WorkStatus): ActionConfig[] {
         { labelKey: "clockOut", variant: "destructive", action: onClockOut },
       ];
     case "on_break":
-      return [{ labelKey: "breakEnd", variant: "default", action: onBreakEnd }];
+      return [
+        {
+          labelKey: "breakEnd",
+          variant: "default",
+          action: onBreakEnd,
+          className:
+            "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/40",
+        },
+      ];
     case "clocked_out":
       return [];
   }
@@ -42,11 +51,11 @@ function getLabel(
 </script>
 
 <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-  {#each actions as { labelKey, variant, action }}
+  {#each actions as { labelKey, variant, action, className }}
     <Button
       {variant}
       size="lg"
-      class="min-h-[48px] sm:min-h-[52px] min-w-full sm:min-w-[140px] text-base sm:text-lg font-semibold"
+      class={`min-h-[48px] sm:min-h-[52px] min-w-full sm:min-w-[140px] text-base sm:text-lg font-semibold ${className ?? ""}`}
       disabled={isLoading}
       onclick={action}
     >

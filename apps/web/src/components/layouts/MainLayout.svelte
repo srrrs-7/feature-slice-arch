@@ -1,4 +1,5 @@
 <script lang="ts">
+import AppLogo from "@/components/AppLogo.svelte";
 import LanguageSwitcher from "@/components/LanguageSwitcher.svelte";
 import { AppSidebar } from "@/features/common/sidebar";
 import { t } from "$lib/i18n";
@@ -91,17 +92,7 @@ function toggleCollapse() {
               href="/"
               class="lg:hidden flex items-center gap-2 text-lg font-semibold text-foreground"
             >
-              <svg
-                class="w-6 h-6 text-primary"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 5a1 1 0 112 0v4a1 1 0 11-2 0V5zm1 8a1 1 0 100 2 1 1 0 000-2z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <AppLogo size="md" />
               <span class="hidden sm:inline">{$t.common.appName}</span>
             </a>
 

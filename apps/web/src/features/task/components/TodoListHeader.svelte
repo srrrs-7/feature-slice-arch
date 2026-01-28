@@ -13,7 +13,10 @@ import { dialogActions } from "../stores";
       {$t.tasks.subtitle}
     </p>
   </div>
-  <Button onclick={dialogActions.openCreate} class="w-full sm:w-auto">
+  <Button
+    onclick={dialogActions.openCreate}
+    class="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500/40"
+  >
     + {$t.tasks.createTask}
   </Button>
 </div>

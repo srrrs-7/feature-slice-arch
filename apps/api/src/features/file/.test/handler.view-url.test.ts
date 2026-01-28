@@ -1,20 +1,17 @@
+import dayjs from "dayjs";
 import { testClient } from "hono/testing";
 import { describe, expect, it, vi } from "vitest";
 import { fileRoutes } from "../handler/index.ts";
 import "./setup.ts";
 import { FileFactory } from "./setup.ts";
 
-vi.mock("@api/lib/s3/presign", async (importOriginal) => {
-  const original = await importOriginal<typeof import("@api/lib/s3/presign")>();
-  return {
-    ...original,
-    generatePresignedDownloadUrl: vi.fn().mockResolvedValue({
-      url: "https://localhost:4566/file-uploads-dev/uploads/test-id/test-file.png?X-Amz-Algorithm=AWS4&X-Amz-Signature=test",
-      expiresAt: new Date(Date.now() + 3600 * 1000),
-      expiresIn: 3600,
-    }),
-  };
-});
+vi.mock("@api/lib/s3/presign", () => ({
+  generatePresignedDownloadUrl: vi.fn().mockResolvedValue({
+    url: "https://localhost:4566/file-uploads-dev/uploads/test-id/test-file.png?X-Amz-Algorithm=AWS4&X-Amz-Signature=test",
+    expiresAt: dayjs().add(1, "hour").toDate(),
+    expiresIn: 3600,
+  }),
+}));
 
 describe.sequential("GET /api/files/:id/view-url", () => {
   const client = testClient(fileRoutes);

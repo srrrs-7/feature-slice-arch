@@ -3,7 +3,7 @@ import type { Translations } from "../types";
 export const ja: Translations = {
   // Common
   common: {
-    appName: "Todo App",
+    appName: "Cladex",
     loading: "読み込み中...",
     error: "エラー",
     save: "保存",
@@ -52,10 +52,14 @@ export const ja: Translations = {
     title: "タスク一覧",
     subtitle: "タスクの管理と進捗の追跡",
     createTask: "タスクを作成",
+    createTaskDescription:
+      "新しいタスクをTodoリストに追加します。以下の詳細を入力してください。",
+    creating: "作成中...",
     editTask: "タスクを編集",
     deleteTask: "タスクを削除",
     taskTitle: "タイトル",
     taskDescription: "説明",
+    descriptionOptional: "説明（任意）",
     status: "ステータス",
     all: "すべて",
     pending: "未着手",

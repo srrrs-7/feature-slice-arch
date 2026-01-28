@@ -3,7 +3,7 @@ import type { Translations } from "../types";
 export const en: Translations = {
   // Common
   common: {
-    appName: "Todo App",
+    appName: "Cladex",
     loading: "Loading...",
     error: "Error",
     save: "Save",
@@ -52,10 +52,14 @@ export const en: Translations = {
     title: "Task List",
     subtitle: "Manage tasks and track progress",
     createTask: "Create Task",
+    createTaskDescription:
+      "Add a new task to your todo list. Fill in the details below.",
+    creating: "Creating...",
     editTask: "Edit Task",
     deleteTask: "Delete Task",
     taskTitle: "Title",
     taskDescription: "Description",
+    descriptionOptional: "Description (Optional)",
     status: "Status",
     all: "All",
     pending: "Pending",

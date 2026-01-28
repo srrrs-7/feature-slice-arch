@@ -58,10 +58,13 @@ export interface Translations {
     title: string;
     subtitle: string;
     createTask: string;
+    createTaskDescription: string;
+    creating: string;
     editTask: string;
     deleteTask: string;
     taskTitle: string;
     taskDescription: string;
+    descriptionOptional: string;
     status: string;
     all: string;
     pending: string;

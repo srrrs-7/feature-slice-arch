@@ -16,6 +16,4 @@ export interface NavigationItem {
 export interface AppHeaderProps {
   /** Current route path for active highlighting */
   currentPath?: string;
-  /** Callback when mobile menu button is clicked */
-  onMenuClick?: () => void;
 }

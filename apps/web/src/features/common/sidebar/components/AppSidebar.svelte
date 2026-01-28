@@ -1,7 +1,7 @@
 <script lang="ts">
 import { quintOut } from "svelte/easing";
 import { fade, fly } from "svelte/transition";
-import LanguageSwitcher from "@/components/LanguageSwitcher.svelte";
+import AppLogo from "@/components/AppLogo.svelte";
 import { t } from "$lib/i18n";
 import type { AppSidebarProps } from "../types";
 import { navigationItems } from "./navigation-items";
@@ -69,17 +69,7 @@ function getNavLabel(
         href="/"
         class="flex items-center gap-2 text-lg font-semibold text-foreground hover:text-primary transition-colors"
       >
-        <svg
-          class="w-6 h-6 text-primary flex-shrink-0"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 5a1 1 0 112 0v4a1 1 0 11-2 0V5zm1 8a1 1 0 100 2 1 1 0 000-2z"
-            clip-rule="evenodd"
-          />
-        </svg>
+        <AppLogo size="md" />
         <span>{$t.common.appName}</span>
       </a>
     {/if}
@@ -125,17 +115,21 @@ function getNavLabel(
             ? 'bg-primary/10 text-primary'
             : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}"
         >
-          <svg
-            class="w-5 h-5 flex-shrink-0"
-            fill="currentColor"
-            viewBox={item.iconViewBox || "0 0 20 20"}
-          >
-            <path
-              fill-rule={item.iconFillRule || "evenodd"}
-              d={item.iconPath}
-              clip-rule="evenodd"
-            />
-          </svg>
+          {#if item.href === "/"}
+            <AppLogo size="sm" />
+          {:else}
+            <svg
+              class="w-5 h-5 flex-shrink-0"
+              fill="currentColor"
+              viewBox={item.iconViewBox || "0 0 20 20"}
+            >
+              <path
+                fill-rule={item.iconFillRule || "evenodd"}
+                d={item.iconPath}
+                clip-rule="evenodd"
+              />
+            </svg>
+          {/if}
           {#if !collapsed}
             <span>{getNavLabel(item.labelKey)}</span>
           {/if}
@@ -143,34 +137,6 @@ function getNavLabel(
       {/each}
     </div>
   </nav>
-
-  <!-- Footer with Language Switcher -->
-  <div class="border-t border-border {collapsed ? 'p-2' : 'p-4'}">
-    <!-- Language Switcher -->
-    {#if !collapsed}
-      <div class="mb-3">
-        <LanguageSwitcher class="w-full" />
-      </div>
-    {/if}
-
-    <!-- User Info -->
-    <div
-      class="flex items-center rounded-md hover:bg-accent transition-colors cursor-pointer
-             {collapsed ? 'justify-center p-2' : 'gap-3 px-4 py-3'}"
-    >
-      <div
-        class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm flex-shrink-0"
-      >
-        U
-      </div>
-      {#if !collapsed}
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-foreground truncate">User</p>
-          <p class="text-xs text-muted-foreground truncate">user@example.com</p>
-        </div>
-      {/if}
-    </div>
-  </div>
 </aside>
 
 <!-- Mobile Sidebar: Modal Drawer -->
@@ -204,17 +170,7 @@ function getNavLabel(
           href="/"
           class="flex items-center gap-2 text-lg font-semibold text-foreground"
         >
-          <svg
-            class="w-6 h-6 text-primary"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 5a1 1 0 112 0v4a1 1 0 11-2 0V5zm1 8a1 1 0 100 2 1 1 0 000-2z"
-              clip-rule="evenodd"
-            />
-          </svg>
+          <AppLogo size="md" />
           <span>{$t.common.appName}</span>
         </a>
         <button
@@ -267,31 +223,6 @@ function getNavLabel(
           {/each}
         </div>
       </nav>
-
-      <!-- Footer with Language Switcher -->
-      <div class="p-4 border-t border-border">
-        <!-- Language Switcher -->
-        <div class="mb-3">
-          <LanguageSwitcher class="w-full" />
-        </div>
-
-        <!-- User Info -->
-        <div
-          class="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-accent transition-colors cursor-pointer"
-        >
-          <div
-            class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm"
-          >
-            U
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-foreground truncate">User</p>
-            <p class="text-xs text-muted-foreground truncate">
-              user@example.com
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 {/if}

@@ -42,6 +42,18 @@ xl: 3rem   (48px)  - Page sections
 - **Surface**: Cards, dialogs, elevated surfaces
 - **On-Surface**: Text and icons on surfaces
 
+### Color Strategy (Best Practices)
+- **Palette Roles**: Define roles (primary, secondary, success, warning, error, info, surface, outline) instead of hardcoding colors in components.
+- **Token Hierarchy**: Use semantic tokens (`bg-primary`, `text-muted`) that map to raw values; avoid direct hex usage in UI code.
+- **Contrast First**: Validate WCAG AA contrast for all text and icons (4.5:1 normal, 3:1 large). Provide dark text on light surfaces and vice versa.
+- **State System**: Specify hover/active/disabled/focus states for each role; ensure focus rings are visible and consistent.
+- **Status Colors**: Keep success/warning/error distinct and never rely on color alone—pair with icon or label.
+- **Saturation Control**: Use muted tints for backgrounds and stronger hues for accents to reduce visual fatigue.
+- **Limited Accents**: Restrict accent colors to 1–2 per screen to preserve hierarchy and reduce noise.
+- **Theming Readiness**: Support light/dark or brand variants by swapping token values, not component styles.
+- **Data Viz**: For charts, use color-blind safe palettes and limit categorical colors (max 6–8).
+- **Documentation**: Maintain a single source of truth for tokens with usage examples and contrast notes.
+
 ## Responsive Design
 
 ### Breakpoints (Mobile-First)

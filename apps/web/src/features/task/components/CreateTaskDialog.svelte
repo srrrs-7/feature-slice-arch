@@ -6,6 +6,7 @@ import * as Dialog from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { t } from "$lib/i18n";
 import type { CreateTaskInput } from "../types";
 
 interface Props {
@@ -47,31 +48,31 @@ function handleOpenChange(isOpen: boolean) {
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
   <Dialog.Content>
     <Dialog.Header>
-      <Dialog.Title>Create New Task</Dialog.Title>
+      <Dialog.Title>{$t.tasks.createTask}</Dialog.Title>
       <Dialog.Description>
-        Add a new task to your todo list. Fill in the details below.
+        {$t.tasks.createTaskDescription}
       </Dialog.Description>
     </Dialog.Header>
 
     <form onsubmit={(e) => { e.preventDefault(); void handleSubmit(); }} class="space-y-4">
       <div class="space-y-2">
-        <Label for="title">Title</Label>
+        <Label for="title">{$t.tasks.taskTitle}</Label>
         <Input
           id="title"
           type="text"
           bind:value={title}
-          placeholder="Enter task title"
+          placeholder={$t.tasks.titlePlaceholder}
           required
           maxlength={200}
         />
       </div>
 
       <div class="space-y-2">
-        <Label for="description">Description (Optional)</Label>
+        <Label for="description">{$t.tasks.descriptionOptional}</Label>
         <Textarea
           id="description"
           bind:value={description}
-          placeholder="Enter task description"
+          placeholder={$t.tasks.descriptionPlaceholder}
           rows={3}
           maxlength={1000}
         />
@@ -79,10 +80,14 @@ function handleOpenChange(isOpen: boolean) {
 
       <Dialog.Footer>
         <Button type="button" variant="outline" onclick={() => handleOpenChange(false)}>
-          Cancel
+          {$t.common.cancel}
         </Button>
-        <Button type="submit" disabled={!title.trim() || isCreating}>
-          {isCreating ? "Creating..." : "Create Task"}
+        <Button
+          type="submit"
+          disabled={!title.trim() || isCreating}
+          class="bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500/40"
+        >
+          {isCreating ? $t.tasks.creating : $t.tasks.createTask}
         </Button>
       </Dialog.Footer>
     </form>
