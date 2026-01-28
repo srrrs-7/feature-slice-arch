@@ -99,6 +99,12 @@ variable "api_token_secret_arn" {
   type        = string
 }
 
+variable "s3_bucket_name" {
+  description = "S3 bucket name for file uploads"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)

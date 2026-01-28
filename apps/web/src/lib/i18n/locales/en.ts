@@ -26,6 +26,7 @@ export const en: Translations = {
     tasks: "Tasks",
     stamp: "Clock In/Out",
     attendance: "Attendance",
+    files: "Files",
     settings: "Settings",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -42,6 +43,7 @@ export const en: Translations = {
     viewTasks: "View Tasks",
     recordAttendance: "Clock In",
     viewAttendance: "View Attendance",
+    manageFiles: "Manage Files",
     recentActivity: "Recent Activity",
   },
 
@@ -197,5 +199,27 @@ export const en: Translations = {
     // Timeline
     timeline: "Timeline",
     workBreakdown: "Work Breakdown",
+  },
+
+  // Files
+  files: {
+    title: "Files",
+    subtitle: "Upload and manage files",
+    upload: "Upload",
+    dropzone: "Drag and drop files here",
+    dropzoneHint: "or click to select",
+    uploading: "Uploading...",
+    uploadComplete: "Upload complete",
+    uploadError: "Upload failed",
+    noFiles: "No files",
+    noFilesDescription: "Upload files to start managing them.",
+    fileName: "File name",
+    fileSize: "Size",
+    fileType: "Type",
+    uploadedAt: "Uploaded at",
+    preview: "Preview",
+    download: "Download",
+    allowedTypes: "Supported formats: JPEG, PNG, GIF, WebP, PDF, TXT, CSV",
+    invalidFileType: "This file type is not supported",
   },
 };

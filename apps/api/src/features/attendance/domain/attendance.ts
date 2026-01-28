@@ -3,6 +3,7 @@ import {
   Errors,
   type ValidationError,
 } from "@api/lib/error";
+import { dayjs } from "@api/lib/time";
 import type { Stamp } from "./stamp.ts";
 
 // Attendance record entity types (immutable)
@@ -200,8 +201,7 @@ export const calculateLateNightMinutes = (
 
   // 1分ごとにチェック（精度を確保）
   for (let time = startTime; time < endTime; time += 60 * 1000) {
-    const date = new Date(time);
-    const hour = date.getHours();
+    const hour = dayjs(time).hour();
 
     // 深夜時間帯かチェック（22:00-23:59 または 00:00-04:59）
     const isLateNight =

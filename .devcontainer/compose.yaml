@@ -16,6 +16,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      localstack:
+        condition: service_healthy
   db:
     image: postgres:15
     volumes:
@@ -26,6 +28,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - PERSISTENCE=1
+      - DEBUG=0
+    volumes:
+      - localstack-data:/var/lib/localstack
+      - ./localstack-init:/etc/localstack/init/ready.d
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   feature-slice-db-data:
+  localstack-data:

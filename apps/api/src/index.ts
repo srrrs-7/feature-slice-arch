@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { attendanceRoutes, stampRoutes } from "./features/attendance/index.ts";
+import { fileRoutes } from "./features/file/index.ts";
 import { taskRoutes } from "./features/tasks/index.ts";
 import { logger } from "./lib/logger/index.ts";
 import { bearerAuthMiddleware } from "./middleware/bearer.ts";
@@ -12,6 +13,7 @@ const app = new Hono()
   .route("/api/tasks", taskRoutes)
   .route("/api/stamps", stampRoutes)
   .route("/api/attendance", attendanceRoutes)
+  .route("/api/files", fileRoutes)
   .notFound((c) => c.json({ error: "Not Found" }, 404))
   .onError((err, c) => {
     logger.error({ err }, "Server error");

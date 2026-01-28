@@ -49,6 +49,7 @@ apps/api/src/
 ├── features/           # Feature modules
 │   ├── tasks/              # Simple feature (single handler)
 │   ├── master/             # Master data feature
+│   ├── file/               # File upload with S3 presigned URLs
 │   └── attendance/         # Complex feature (stamp + attendance)
 │       ├── index.ts        # Public API (exports types + routes)
 │       ├── domain/         # Domain types, entities, errors

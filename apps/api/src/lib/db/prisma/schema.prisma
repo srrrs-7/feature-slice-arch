@@ -42,3 +42,25 @@ model Stamp {
   @@unique([date])
   @@map("stamps")
 }
+
+enum FileStatus {
+  pending
+  uploaded
+  failed
+}
+
+model File {
+  id          String     @id @default(uuid())
+  fileName    String
+  contentType String
+  fileSize    Int?
+  s3Key       String     @unique
+  status      FileStatus @default(pending)
+  expiresAt   DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status])
+  @@index([expiresAt])
+  @@map("files")
+}

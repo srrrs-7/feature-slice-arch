@@ -10,6 +10,10 @@ dictionaryDefinitions: []
 dictionaries: []
 words:
   - addgroup
+  - fieldsets
+  - hotspots
+  - HSTS
+  - proddb
   - adduser
   - albls
   - anthropics
@@ -86,6 +90,7 @@ words:
   - Kenta
   - Mcpjson
   - Msal
+  - msdownload
   - msie
   - myapp
   - mydb
@@ -106,6 +111,7 @@ words:
   - pkey
   - pkill
   - popstate
+  - presign
   - POSTROUTING
   - psql
   - pycache

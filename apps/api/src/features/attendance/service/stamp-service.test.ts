@@ -1,3 +1,4 @@
+import { dayjs } from "@api/lib/time";
 import { errAsync, okAsync, type ResultAsync } from "neverthrow";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import {
@@ -12,16 +13,16 @@ import {
 
 // Mock helper to create a valid Stamp
 function createMockStamp(overrides: Partial<Stamp> = {}): Stamp {
-  const now = new Date();
+  const now = dayjs();
   return createStamp({
     id: createStampId("stamp-1"),
     date: "2025-01-24",
-    clockInAt: now,
+    clockInAt: now.toDate(),
     clockOutAt: null,
     breakStartAt: null,
     breakEndAt: null,
-    createdAt: now,
-    updatedAt: now,
+    createdAt: now.toDate(),
+    updatedAt: now.toDate(),
     ...overrides,
   });
 }
@@ -50,14 +51,17 @@ const mockRepository: {
   findByDate: vi.fn(() => okAsync(null)),
   create: vi.fn(() => okAsync(createMockStamp())),
   updateClockOut: vi.fn(() =>
-    okAsync(createMockStamp({ clockOutAt: new Date() })),
+    okAsync(createMockStamp({ clockOutAt: dayjs().toDate() })),
   ),
   updateBreakStart: vi.fn(() =>
-    okAsync(createMockStamp({ breakStartAt: new Date() })),
+    okAsync(createMockStamp({ breakStartAt: dayjs().toDate() })),
   ),
   updateBreakEnd: vi.fn(() =>
     okAsync(
-      createMockStamp({ breakStartAt: new Date(), breakEndAt: new Date() }),
+      createMockStamp({
+        breakStartAt: dayjs().toDate(),
+        breakEndAt: dayjs().toDate(),
+      }),
     ),
   ),
 };
@@ -102,7 +106,7 @@ describe("stampService.getStatus", () => {
 
   test("returns on_break when on break", async () => {
     const stamp = createMockStamp({
-      breakStartAt: new Date(),
+      breakStartAt: dayjs().toDate(),
       breakEndAt: null,
     });
     mockRepository.findByDate.mockReturnValue(okAsync(stamp));
@@ -117,7 +121,7 @@ describe("stampService.getStatus", () => {
 
   test("returns clocked_out when clocked out", async () => {
     const stamp = createMockStamp({
-      clockOutAt: new Date(),
+      clockOutAt: dayjs().toDate(),
     });
     mockRepository.findByDate.mockReturnValue(okAsync(stamp));
 
@@ -188,7 +192,7 @@ describe("stampService.clockIn", () => {
 describe("stampService.clockOut", () => {
   test("updates stamp with clock-out time", async () => {
     const existingStamp = createMockStamp();
-    const updatedStamp = createMockStamp({ clockOutAt: new Date() });
+    const updatedStamp = createMockStamp({ clockOutAt: dayjs().toDate() });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
     mockRepository.updateClockOut.mockReturnValue(okAsync(updatedStamp));
 
@@ -213,7 +217,7 @@ describe("stampService.clockOut", () => {
   });
 
   test("returns ALREADY_CLOCKED_OUT when already clocked out", async () => {
-    const existingStamp = createMockStamp({ clockOutAt: new Date() });
+    const existingStamp = createMockStamp({ clockOutAt: dayjs().toDate() });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
 
     const result = await stampService.clockOut();
@@ -226,7 +230,7 @@ describe("stampService.clockOut", () => {
 
   test("returns STILL_ON_BREAK when on break", async () => {
     const existingStamp = createMockStamp({
-      breakStartAt: new Date(),
+      breakStartAt: dayjs().toDate(),
       breakEndAt: null,
     });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
@@ -243,7 +247,7 @@ describe("stampService.clockOut", () => {
 describe("stampService.breakStart", () => {
   test("updates stamp with break-start time", async () => {
     const existingStamp = createMockStamp();
-    const updatedStamp = createMockStamp({ breakStartAt: new Date() });
+    const updatedStamp = createMockStamp({ breakStartAt: dayjs().toDate() });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
     mockRepository.updateBreakStart.mockReturnValue(okAsync(updatedStamp));
 
@@ -268,7 +272,7 @@ describe("stampService.breakStart", () => {
   });
 
   test("returns ALREADY_CLOCKED_OUT when already clocked out", async () => {
-    const existingStamp = createMockStamp({ clockOutAt: new Date() });
+    const existingStamp = createMockStamp({ clockOutAt: dayjs().toDate() });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
 
     const result = await stampService.breakStart();
@@ -281,7 +285,7 @@ describe("stampService.breakStart", () => {
 
   test("returns ALREADY_ON_BREAK when already on break", async () => {
     const existingStamp = createMockStamp({
-      breakStartAt: new Date(),
+      breakStartAt: dayjs().toDate(),
       breakEndAt: null,
     });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
@@ -295,12 +299,12 @@ describe("stampService.breakStart", () => {
   });
 
   test("allows starting break after previous break ended", async () => {
-    const now = new Date();
+    const now = dayjs();
     const existingStamp = createMockStamp({
-      breakStartAt: new Date(now.getTime() - 60 * 60 * 1000),
-      breakEndAt: new Date(now.getTime() - 30 * 60 * 1000),
+      breakStartAt: now.subtract(60, "minute").toDate(),
+      breakEndAt: now.subtract(30, "minute").toDate(),
     });
-    const updatedStamp = createMockStamp({ breakStartAt: now });
+    const updatedStamp = createMockStamp({ breakStartAt: now.toDate() });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
     mockRepository.updateBreakStart.mockReturnValue(okAsync(updatedStamp));
 
@@ -314,12 +318,12 @@ describe("stampService.breakStart", () => {
 describe("stampService.breakEnd", () => {
   test("updates stamp with break-end time", async () => {
     const existingStamp = createMockStamp({
-      breakStartAt: new Date(),
+      breakStartAt: dayjs().toDate(),
       breakEndAt: null,
     });
     const updatedStamp = createMockStamp({
-      breakStartAt: new Date(),
-      breakEndAt: new Date(),
+      breakStartAt: dayjs().toDate(),
+      breakEndAt: dayjs().toDate(),
     });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
     mockRepository.updateBreakEnd.mockReturnValue(okAsync(updatedStamp));
@@ -360,10 +364,10 @@ describe("stampService.breakEnd", () => {
   });
 
   test("returns NOT_ON_BREAK when break already ended", async () => {
-    const now = new Date();
+    const now = dayjs();
     const existingStamp = createMockStamp({
-      breakStartAt: new Date(now.getTime() - 60 * 60 * 1000),
-      breakEndAt: new Date(now.getTime() - 30 * 60 * 1000),
+      breakStartAt: now.subtract(60, "minute").toDate(),
+      breakEndAt: now.subtract(30, "minute").toDate(),
     });
     mockRepository.findByDate.mockReturnValue(okAsync(existingStamp));
 
@@ -388,7 +392,7 @@ describe("getWorkStatus helper", () => {
 
   test("returns on_break for stamp on break", () => {
     const stamp = createMockStamp({
-      breakStartAt: new Date(),
+      breakStartAt: dayjs().toDate(),
       breakEndAt: null,
     });
     expect(getWorkStatus(stamp)).toBe("on_break");
@@ -396,16 +400,16 @@ describe("getWorkStatus helper", () => {
 
   test("returns clocked_out for clocked out stamp", () => {
     const stamp = createMockStamp({
-      clockOutAt: new Date(),
+      clockOutAt: dayjs().toDate(),
     });
     expect(getWorkStatus(stamp)).toBe("clocked_out");
   });
 
   test("returns working for stamp with completed break", () => {
-    const now = new Date();
+    const now = dayjs();
     const stamp = createMockStamp({
-      breakStartAt: new Date(now.getTime() - 60 * 60 * 1000),
-      breakEndAt: new Date(now.getTime() - 30 * 60 * 1000),
+      breakStartAt: now.subtract(60, "minute").toDate(),
+      breakEndAt: now.subtract(30, "minute").toDate(),
     });
     expect(getWorkStatus(stamp)).toBe("working");
   });

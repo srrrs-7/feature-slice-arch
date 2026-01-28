@@ -1,3 +1,4 @@
+import { dayjs } from "@api/lib/time";
 import { okAsync, type ResultAsync } from "neverthrow";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import type { AttendanceRecord } from "../domain/attendance.ts";
@@ -10,21 +11,21 @@ import {
 
 // Mock helpers
 function createMockStamp(overrides: Partial<Stamp> = {}): Stamp {
-  const baseDate = new Date("2025-01-24T00:00:00Z");
-  const clockIn = new Date("2025-01-24T09:00:00Z");
-  const clockOut = new Date("2025-01-24T18:00:00Z");
-  const breakStart = new Date("2025-01-24T12:00:00Z");
-  const breakEnd = new Date("2025-01-24T13:00:00Z");
+  const baseDate = dayjs("2025-01-24T00:00:00Z");
+  const clockIn = dayjs("2025-01-24T09:00:00Z");
+  const clockOut = dayjs("2025-01-24T18:00:00Z");
+  const breakStart = dayjs("2025-01-24T12:00:00Z");
+  const breakEnd = dayjs("2025-01-24T13:00:00Z");
 
   return createStamp({
     id: createStampId("stamp-1"),
     date: "2025-01-24",
-    clockInAt: clockIn,
-    clockOutAt: clockOut,
-    breakStartAt: breakStart,
-    breakEndAt: breakEnd,
-    createdAt: baseDate,
-    updatedAt: baseDate,
+    clockInAt: clockIn.toDate(),
+    clockOutAt: clockOut.toDate(),
+    breakStartAt: breakStart.toDate(),
+    breakEndAt: breakEnd.toDate(),
+    createdAt: baseDate.toDate(),
+    updatedAt: baseDate.toDate(),
     ...overrides,
   });
 }
@@ -108,10 +109,10 @@ describe("attendanceService.getByDate", () => {
       name: "calculates overtime correctly for 10-hour work day",
       setup: () => {
         const stamp = createMockStamp({
-          clockInAt: new Date("2025-01-24T08:00:00Z"),
-          clockOutAt: new Date("2025-01-24T19:00:00Z"), // 11時間勤務
-          breakStartAt: new Date("2025-01-24T12:00:00Z"),
-          breakEndAt: new Date("2025-01-24T13:00:00Z"), // 1時間休憩
+          clockInAt: dayjs("2025-01-24T08:00:00Z").toDate(),
+          clockOutAt: dayjs("2025-01-24T19:00:00Z").toDate(), // 11時間勤務
+          breakStartAt: dayjs("2025-01-24T12:00:00Z").toDate(),
+          breakEndAt: dayjs("2025-01-24T13:00:00Z").toDate(), // 1時間休憩
         });
         mockStampRepository.findByDate.mockReturnValue(okAsync(stamp));
       },
@@ -129,8 +130,8 @@ describe("attendanceService.getByDate", () => {
       name: "calculates late night minutes correctly",
       setup: () => {
         const stamp = createMockStamp({
-          clockInAt: new Date("2025-01-24T20:00:00Z"), // 20:00開始
-          clockOutAt: new Date("2025-01-25T02:00:00Z"), // 翌02:00終了
+          clockInAt: dayjs("2025-01-24T20:00:00Z").toDate(), // 20:00開始
+          clockOutAt: dayjs("2025-01-25T02:00:00Z").toDate(), // 翌02:00終了
           breakStartAt: null,
           breakEndAt: null,
         });
@@ -270,18 +271,18 @@ describe("attendanceService.getByDateRange", () => {
         const stamps = [
           createMockStamp({
             date: "2025-01-24",
-            clockInAt: new Date("2025-01-24T09:00:00Z"),
-            clockOutAt: new Date("2025-01-24T18:00:00Z"),
-            breakStartAt: new Date("2025-01-24T12:00:00Z"),
-            breakEndAt: new Date("2025-01-24T13:00:00Z"),
+            clockInAt: dayjs("2025-01-24T09:00:00Z").toDate(),
+            clockOutAt: dayjs("2025-01-24T18:00:00Z").toDate(),
+            breakStartAt: dayjs("2025-01-24T12:00:00Z").toDate(),
+            breakEndAt: dayjs("2025-01-24T13:00:00Z").toDate(),
           }),
           createMockStamp({
             id: createStampId("stamp-2"),
             date: "2025-01-25",
-            clockInAt: new Date("2025-01-25T09:00:00Z"),
-            clockOutAt: new Date("2025-01-25T20:00:00Z"), // 11時間
-            breakStartAt: new Date("2025-01-25T12:00:00Z"),
-            breakEndAt: new Date("2025-01-25T13:00:00Z"), // 1時間休憩
+            clockInAt: dayjs("2025-01-25T09:00:00Z").toDate(),
+            clockOutAt: dayjs("2025-01-25T20:00:00Z").toDate(), // 11時間
+            breakStartAt: dayjs("2025-01-25T12:00:00Z").toDate(),
+            breakEndAt: dayjs("2025-01-25T13:00:00Z").toDate(), // 1時間休憩
           }),
         ];
         mockStampRepository.findByDateRange.mockReturnValue(

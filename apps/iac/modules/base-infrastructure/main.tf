@@ -55,6 +55,18 @@ module "secrets" {
 }
 
 #------------------------------------------------------------------------------
+# Module: S3 (File Uploads)
+#------------------------------------------------------------------------------
+module "s3" {
+  source = "../s3"
+
+  name_prefix            = local.name_prefix
+  account_id             = var.account_id
+  cors_allowed_origins   = var.s3_cors_allowed_origins
+  upload_expiration_days = var.s3_upload_expiration_days
+}
+
+#------------------------------------------------------------------------------
 # Module: IAM Roles
 #------------------------------------------------------------------------------
 module "iam" {
@@ -64,6 +76,7 @@ module "iam" {
   ecr_repository_arn       = module.ecr.repository_arn
   secrets_arns             = [module.secrets.db_password_secret_arn, module.secrets.api_token_secret_arn]
   cloudwatch_log_group_arn = local.ecs_log_group_arn
+  s3_uploads_bucket_arn    = module.s3.bucket_arn
 }
 
 #------------------------------------------------------------------------------
@@ -135,6 +148,7 @@ module "ecs" {
   max_capacity         = var.ecs_max_count
   container_port       = var.container_port
   log_group_name       = local.ecs_log_group_name
+  s3_bucket_name       = module.s3.bucket_name
 
   depends_on = [module.alb, module.rds, aws_cloudwatch_log_group.ecs]
 }

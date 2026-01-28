@@ -1,3 +1,4 @@
+import { dayjs } from "@api/lib/time";
 import { describe, expect, test } from "vitest";
 import {
   calculateAttendanceFromStamp,
@@ -15,11 +16,11 @@ import {
 import { createStamp, createStampId, type Stamp } from "./stamp.ts";
 
 // Helper to create dates
-const date = (str: string) => new Date(str);
+const date = (str: string) => dayjs(str).toDate();
 
 // Helper to create a mock stamp
 function createMockStamp(overrides: Partial<Stamp> = {}): Stamp {
-  const baseDate = new Date("2025-01-24T00:00:00Z");
+  const baseDate = dayjs("2025-01-24T00:00:00Z").toDate();
   return createStamp({
     id: createStampId("stamp-1"),
     date: "2025-01-24",

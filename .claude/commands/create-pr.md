@@ -14,11 +14,37 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 Create a GitHub Pull Request with comprehensive details including summary, related issues, test items, and deployment considerations. This command automates the PR creation process following best practices.
 
+## Required Context (MUST read)
+
+Read every file in:
+- /workspace/main/.claude/context
+- /workspace/main/.claude/rules
+
+Minimum set for this repo:
+- /workspace/main/.claude/context/dev.md
+- /workspace/main/.claude/rules/README.md
+- /workspace/main/.claude/rules/coding-rules.md
+- /workspace/main/.claude/rules/design-guide.md
+- /workspace/main/.claude/rules/github-pr.md
+- /workspace/main/.claude/rules/planning.md
+- /workspace/main/.claude/rules/security.md
+- /workspace/main/.claude/rules/testing.md
+
+## What This Command Does
+- Gathers branch state and change summary for a PR.
+- Generates a PR title/body template aligned with repo standards.
+- Suggests test plan and deployment notes.
+
+## Best Practices (from rules)
+- Follow `/workspace/main/.claude/rules/github-pr.md` for PR/branch conventions.
+- Use `/workspace/main/.claude/rules/testing.md` for test expectations.
+- Apply `/workspace/main/.claude/rules/coding-rules.md` for code quality checks.
+
 ## Prerequisites
 
 Before creating a PR, ensure you have read and understand:
 - **GitHub PR Rules**: `/workspace/main/.claude/rules/github-pr.md`
-- **Project Guidelines**: `/workspace/main/.claude/rules/guideline.md`
+- **Project Guidelines**: `/workspace/main/.claude/rules/README.md`
 - **Coding Standards**: `/workspace/main/.claude/rules/coding-rules.md`
 
 And verify:
@@ -31,10 +57,16 @@ And verify:
 **CRITICAL**: Read PR guidelines before proceeding.
 
 ```bash
-# Read PR rules and project guidelines in parallel
+# Read required context and rules in parallel
+Read /workspace/main/.claude/context/dev.md
+Read /workspace/main/.claude/rules/README.md
 Read /workspace/main/.claude/rules/github-pr.md
-Read /workspace/main/.claude/rules/guideline.md
+Read /workspace/main/.claude/rules/README.md
 Read /workspace/main/.claude/rules/coding-rules.md
+Read /workspace/main/.claude/rules/design-guide.md
+Read /workspace/main/.claude/rules/planning.md
+Read /workspace/main/.claude/rules/security.md
+Read /workspace/main/.claude/rules/testing.md
 ```
 
 **Parse and internalize:**

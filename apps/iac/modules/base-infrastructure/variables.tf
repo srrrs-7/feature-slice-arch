@@ -54,6 +54,21 @@ variable "ecr_image_retention_count" {
 }
 
 #------------------------------------------------------------------------------
+# S3 (File Uploads)
+#------------------------------------------------------------------------------
+variable "s3_cors_allowed_origins" {
+  description = "List of allowed origins for S3 CORS"
+  type        = list(string)
+  default     = ["*"]
+}
+
+variable "s3_upload_expiration_days" {
+  description = "Number of days to retain uploads before automatic deletion"
+  type        = number
+  default     = 7
+}
+
+#------------------------------------------------------------------------------
 # Database
 #------------------------------------------------------------------------------
 variable "db_name" {

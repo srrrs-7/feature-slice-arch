@@ -32,6 +32,14 @@ export const queryKeys = {
     detail: (date: string) =>
       [...queryKeys.attendance.details(), date] as const,
   },
+
+  // Files
+  files: {
+    all: () => ["files"] as const,
+    lists: () => [...queryKeys.files.all(), "list"] as const,
+    details: () => [...queryKeys.files.all(), "detail"] as const,
+    detail: (id: string) => [...queryKeys.files.details(), id] as const,
+  },
 } as const;
 
 export type QueryKeys = typeof queryKeys;

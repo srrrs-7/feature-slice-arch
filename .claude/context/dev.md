@@ -23,6 +23,18 @@ PORT=8080
 NODE_ENV=development
 LOG_LEVEL=debug
 TZ=Asia/Tokyo
+
+# Optional (if DATABASE_URL is not set)
+DB_HOST=localhost
+DB_PORT=5432
+DB_DBNAME=mydb
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+
+# Cognito (enables auth for /api/*)
+COGNITO_ISSUER=https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_XXXXXXXXX
+COGNITO_CLIENT_ID=your_client_id
+COGNITO_JWKS_URI=https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_XXXXXXXXX/.well-known/jwks.json
 ```
 
 Web: `apps/web/.env`

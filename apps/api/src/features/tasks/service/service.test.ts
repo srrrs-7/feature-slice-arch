@@ -1,3 +1,4 @@
+import { dayjs } from "@api/lib/time";
 import { errAsync, okAsync, type ResultAsync } from "neverthrow";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
 import {
@@ -10,14 +11,14 @@ import {
 } from "../domain/task.ts";
 
 function createMockTask(overrides = {}) {
-  const now = new Date();
+  const now = dayjs();
   return createTask({
     id: createTaskId("task-1"),
     title: "Test Task",
     description: "Test description",
     status: "pending",
-    createdAt: now,
-    updatedAt: now,
+    createdAt: now.toDate(),
+    updatedAt: now.toDate(),
     ...overrides,
   });
 }

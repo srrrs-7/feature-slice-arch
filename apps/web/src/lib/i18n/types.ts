@@ -32,6 +32,7 @@ export interface Translations {
     tasks: string;
     stamp: string;
     attendance: string;
+    files: string;
     settings: string;
     openMenu: string;
     closeMenu: string;
@@ -48,6 +49,7 @@ export interface Translations {
     viewTasks: string;
     recordAttendance: string;
     viewAttendance: string;
+    manageFiles: string;
     recentActivity: string;
   };
 
@@ -201,6 +203,28 @@ export interface Translations {
     // Timeline
     timeline: string;
     workBreakdown: string;
+  };
+
+  // Files
+  files: {
+    title: string;
+    subtitle: string;
+    upload: string;
+    dropzone: string;
+    dropzoneHint: string;
+    uploading: string;
+    uploadComplete: string;
+    uploadError: string;
+    noFiles: string;
+    noFilesDescription: string;
+    fileName: string;
+    fileSize: string;
+    fileType: string;
+    uploadedAt: string;
+    preview: string;
+    download: string;
+    allowedTypes: string;
+    invalidFileType: string;
   };
 }
 

@@ -16,6 +16,7 @@ import {
   initializeAuth,
   LoginPage,
 } from "./features/common/auth";
+import { FilePage } from "./features/file/pages";
 import HomePage from "./features/home/pages/HomePage.svelte";
 import StampPage from "./features/stamp/pages/StampPage.svelte";
 import { TaskDetailPage, TodoListPage } from "./features/task/pages";
@@ -27,6 +28,7 @@ type Route =
   | "stamp"
   | "attendance"
   | "attendance-detail"
+  | "files"
   | "login"
   | "auth-callback";
 
@@ -42,6 +44,7 @@ const routeTitle: Record<Route, () => string> = {
   stamp: () => $t.stamp.title,
   attendance: () => $t.attendance.title,
   "attendance-detail": () => $t.attendance.title,
+  files: () => $t.files.title,
   login: () => $t.auth.login,
   "auth-callback": () => $t.auth.callback.processing,
 };
@@ -75,6 +78,9 @@ function matchRoute(path: string): RouteMatch {
   }
   if (path === "/attendance") {
     return { route: "attendance", taskId: null, attendanceDate: null };
+  }
+  if (path === "/files") {
+    return { route: "files", taskId: null, attendanceDate: null };
   }
 
   const attendanceMatch = path.match(attendanceDetailPattern);
@@ -149,6 +155,8 @@ onMount(() => {
         <AttendancePage onNavigateToDetail={navigateToAttendanceDetail} />
       {:else if currentRoute === "attendance-detail" && attendanceDate}
         <AttendanceDetailPage date={attendanceDate} onBack={navigateToAttendance} />
+      {:else if currentRoute === "files"}
+        <FilePage />
       {:else}
         <div class="container mx-auto py-8 px-4">
           <p>Page not found</p>

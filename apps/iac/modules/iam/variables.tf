@@ -28,6 +28,12 @@ variable "enable_ecs_exec" {
   default     = false
 }
 
+variable "s3_uploads_bucket_arn" {
+  description = "S3 uploads bucket ARN for presigned URL access"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)

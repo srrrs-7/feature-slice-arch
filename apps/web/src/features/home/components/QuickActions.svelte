@@ -3,9 +3,9 @@ import { t } from "$lib/i18n";
 
 type QuickAction = {
   href: string;
-  titleKey: "viewTasks" | "recordAttendance" | "viewAttendance";
+  titleKey: "viewTasks" | "recordAttendance" | "viewAttendance" | "manageFiles";
   descriptionKey: "subtitle";
-  section: "tasks" | "stamp" | "attendance";
+  section: "tasks" | "stamp" | "attendance" | "files";
   icon: string;
   color: string;
 };
@@ -35,20 +35,30 @@ const actions: QuickAction[] = [
     icon: "M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z",
     color: "bg-purple-500/10 text-purple-600 hover:bg-purple-500/20",
   },
+  {
+    href: "/files",
+    titleKey: "manageFiles",
+    descriptionKey: "subtitle",
+    section: "files",
+    icon: "M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z",
+    color: "bg-orange-500/10 text-orange-600 hover:bg-orange-500/20",
+  },
 ];
 
 function getTitle(
-  key: "viewTasks" | "recordAttendance" | "viewAttendance",
+  key: "viewTasks" | "recordAttendance" | "viewAttendance" | "manageFiles",
 ): string {
   return $t.home[key];
 }
 
-function getDescription(section: "tasks" | "stamp" | "attendance"): string {
+function getDescription(
+  section: "tasks" | "stamp" | "attendance" | "files",
+): string {
   return $t[section].subtitle;
 }
 </script>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
   {#each actions as action (action.href)}
     <a
       href={action.href}

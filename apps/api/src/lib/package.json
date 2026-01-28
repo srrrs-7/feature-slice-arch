@@ -9,6 +9,8 @@
     "./error": "./error/index.ts",
     "./http": "./http/index.ts",
     "./logger": "./logger/index.ts",
+    "./s3": "./s3/index.ts",
+    "./s3/presign": "./s3/presign.ts",
     "./time": "./time/index.ts",
     "./types/result/db": "./types/result/db.ts"
   },

@@ -26,6 +26,7 @@ export const ja: Translations = {
     tasks: "タスク",
     stamp: "打刻",
     attendance: "出勤簿",
+    files: "ファイル",
     settings: "設定",
     openMenu: "メニューを開く",
     closeMenu: "メニューを閉じる",
@@ -42,6 +43,7 @@ export const ja: Translations = {
     viewTasks: "タスクを見る",
     recordAttendance: "出勤打刻",
     viewAttendance: "出勤簿を見る",
+    manageFiles: "ファイル管理",
     recentActivity: "最近のアクティビティ",
   },
 
@@ -198,5 +200,27 @@ export const ja: Translations = {
     // Timeline
     timeline: "出退勤タイムライン",
     workBreakdown: "勤務時間の内訳",
+  },
+
+  // Files
+  files: {
+    title: "ファイル",
+    subtitle: "ファイルのアップロードと管理",
+    upload: "アップロード",
+    dropzone: "ファイルをドラッグ＆ドロップ",
+    dropzoneHint: "または クリックして選択",
+    uploading: "アップロード中...",
+    uploadComplete: "アップロード完了",
+    uploadError: "アップロードに失敗しました",
+    noFiles: "ファイルがありません",
+    noFilesDescription: "ファイルをアップロードして管理しましょう。",
+    fileName: "ファイル名",
+    fileSize: "サイズ",
+    fileType: "種類",
+    uploadedAt: "アップロード日時",
+    preview: "プレビュー",
+    download: "ダウンロード",
+    allowedTypes: "対応形式: JPEG, PNG, GIF, WebP, PDF, TXT, CSV",
+    invalidFileType: "このファイル形式はサポートされていません",
   },
 };

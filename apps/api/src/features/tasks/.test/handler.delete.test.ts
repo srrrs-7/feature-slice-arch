@@ -1,7 +1,7 @@
 import { prisma } from "@api/lib/db";
 import { testClient } from "hono/testing";
 import { describe, expect, it } from "vitest";
-import taskRoutes from "../handler";
+import taskRoutes from "../handler/index.ts";
 import { TaskFactory } from "./setup";
 import "./setup"; // Import for afterEach cleanup
 

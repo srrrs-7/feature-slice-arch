@@ -58,7 +58,7 @@ resource "aws_ecs_task_definition" "api" {
         }
       ]
 
-      environment = [
+      environment = concat([
         {
           name  = "PORT"
           value = tostring(var.container_port)
@@ -75,7 +75,16 @@ resource "aws_ecs_task_definition" "api" {
           name  = "LOG_LEVEL"
           value = "info"
         }
-      ]
+        ], var.s3_bucket_name != "" ? [
+        {
+          name  = "S3_BUCKET"
+          value = var.s3_bucket_name
+        },
+        {
+          name  = "S3_REGION"
+          value = data.aws_region.current.name
+        }
+      ] : [])
 
       secrets = [
         {

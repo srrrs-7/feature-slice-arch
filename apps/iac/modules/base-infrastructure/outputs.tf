@@ -50,6 +50,19 @@ output "cloudfront_distribution_id" {
 }
 
 #------------------------------------------------------------------------------
+# S3 (File Uploads)
+#------------------------------------------------------------------------------
+output "s3_uploads_bucket_name" {
+  description = "S3 bucket name for file uploads"
+  value       = module.s3.bucket_name
+}
+
+output "s3_uploads_bucket_arn" {
+  description = "S3 bucket ARN for file uploads"
+  value       = module.s3.bucket_arn
+}
+
+#------------------------------------------------------------------------------
 # Secrets ARNs (for CI/CD)
 #------------------------------------------------------------------------------
 output "db_password_secret_arn" {
@@ -155,6 +168,10 @@ output "api_env_config" {
     COGNITO_ISSUER=${module.cognito.issuer}
     COGNITO_CLIENT_ID=${module.cognito.client_id}
     COGNITO_JWKS_URI=${module.cognito.jwks_uri}
+
+    # S3 (File Uploads)
+    S3_BUCKET=${module.s3.bucket_name}
+    S3_REGION=${var.aws_region}
 
     # CORS
     CORS_ALLOWED_ORIGINS=https://${module.cloudfront.distribution_domain_name}

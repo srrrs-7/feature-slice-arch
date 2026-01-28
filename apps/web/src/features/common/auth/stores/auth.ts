@@ -2,6 +2,7 @@
 // Auth Store
 // =============================================================================
 
+import dayjs from "dayjs";
 import { derived, get, writable } from "svelte/store";
 import type {
   AuthState,
@@ -99,7 +100,7 @@ function isTokenExpired(token: string, thresholdMs = 0): boolean {
   if (!payload?.exp) return true;
 
   const expiryTime = payload.exp * 1000;
-  return Date.now() + thresholdMs >= expiryTime;
+  return dayjs().valueOf() + thresholdMs >= expiryTime;
 }
 
 // =============================================================================

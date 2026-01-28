@@ -1,4 +1,4 @@
-import { formatInTimezone, nowUTC } from "@api/lib/time";
+import { dayjs, formatInTimezone, nowUTC } from "@api/lib/time";
 import { errAsync, type ResultAsync } from "neverthrow";
 import {
   type CurrentStatusResponse,
@@ -11,7 +11,7 @@ import { stampRepository } from "../repository/stamp-repository.ts";
 
 // Helper to get today's date string in Asia/Tokyo timezone
 const getTodayDateString = (): string =>
-  formatInTimezone(new Date(), "YYYY-MM-DD");
+  formatInTimezone(dayjs(), "YYYY-MM-DD");
 
 // Get current work status for today
 export const getStatus = (): ResultAsync<CurrentStatusResponse, StampError> => {

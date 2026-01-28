@@ -1,4 +1,6 @@
+import { dayjs } from "@api/lib/time";
 import {
+  defineFileFactory,
   defineStampFactory,
   defineTaskFactory,
   initialize,
@@ -37,11 +39,11 @@ export const TaskFactory = defineTaskFactory({
 // Stamp factory with default values
 export const StampFactory = defineStampFactory({
   defaultData: async ({ seq }) => {
-    const today = new Date();
-    const dateStr = today.toISOString().split("T")[0];
+    const today = dayjs();
+    const dateStr = today.format("YYYY-MM-DD");
     return {
       date: `${dateStr}-${seq}`, // Make unique for each test
-      clockInAt: today,
+      clockInAt: today.toDate(),
       clockOutAt: null,
       breakStartAt: null,
       breakEndAt: null,
@@ -58,28 +60,62 @@ export const StampFactory = defineStampFactory({
     onBreak: {
       data: async () => ({
         clockOutAt: null,
-        breakStartAt: new Date(),
+        breakStartAt: dayjs().toDate(),
         breakEndAt: null,
       }),
     },
     clockedOut: {
       data: async () => ({
-        clockOutAt: new Date(),
+        clockOutAt: dayjs().toDate(),
         breakStartAt: null,
         breakEndAt: null,
       }),
     },
     withBreak: {
       data: async () => {
-        const now = new Date();
-        const breakStart = new Date(now.getTime() - 60 * 60 * 1000); // 1 hour ago
-        const breakEnd = new Date(now.getTime() - 30 * 60 * 1000); // 30 min ago
+        const now = dayjs();
+        const breakStart = now.subtract(60, "minute").toDate(); // 1 hour ago
+        const breakEnd = now.subtract(30, "minute").toDate(); // 30 min ago
         return {
           clockOutAt: null,
           breakStartAt: breakStart,
           breakEndAt: breakEnd,
         };
       },
+    },
+  },
+});
+
+// File factory with default values
+export const FileFactory = defineFileFactory({
+  defaultData: async ({ seq }) => {
+    const expiresAt = dayjs().add(180, "second").toDate(); // 3 minutes from now
+    return {
+      fileName: `file-${seq}.png`,
+      contentType: "image/png",
+      fileSize: null,
+      s3Key: `uploads/test-${seq}/file-${seq}.png`,
+      status: "pending",
+      expiresAt,
+    };
+  },
+  traits: {
+    uploaded: {
+      data: {
+        status: "uploaded",
+        fileSize: 1024,
+      },
+    },
+    failed: {
+      data: {
+        status: "failed",
+      },
+    },
+    expired: {
+      data: async () => ({
+        status: "pending",
+        expiresAt: dayjs().subtract(1, "second").toDate(), // Already expired
+      }),
     },
   },
 });
