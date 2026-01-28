@@ -1,5 +1,5 @@
 import { dayjs } from "@api/lib/time";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   S3_BUCKET,
@@ -48,4 +48,22 @@ export const generatePresignedUploadUrl = async (
 export const generateS3Key = (fileId: string, fileName: string): string => {
   const sanitized = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
   return `uploads/${fileId}/${sanitized}`;
+};
+
+const DEFAULT_DOWNLOAD_EXPIRES_IN_SECONDS = 3600;
+
+export const generatePresignedDownloadUrl = async (
+  key: string,
+  expiresIn: number = DEFAULT_DOWNLOAD_EXPIRES_IN_SECONDS,
+): Promise<PresignedUrlResult> => {
+  const command = new GetObjectCommand({
+    Bucket: S3_BUCKET,
+    Key: key,
+  });
+
+  const internalUrl = await getSignedUrl(s3Client, command, { expiresIn });
+  const url = toPublicUrl(internalUrl);
+  const expiresAt = dayjs().add(expiresIn, "second").toDate();
+
+  return { url, expiresAt, expiresIn };
 };

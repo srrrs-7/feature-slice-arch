@@ -4,6 +4,7 @@ import type {
   File,
   PresignInput,
   PresignResult,
+  ViewUrlResponse,
 } from "../types";
 import { filesApi } from "./client";
 
@@ -19,6 +20,13 @@ export async function getFileById(id: string): Promise<{ file: File }> {
   if (!res.ok) throw new Error(`Failed to fetch file: ${res.statusText}`);
   const data = await res.json();
   return data as { file: File };
+}
+
+export async function getViewUrl(id: string): Promise<ViewUrlResponse> {
+  const res = await filesApi[":id"]["view-url"].$get({ param: { id } });
+  if (!res.ok) throw new Error(`Failed to get view URL: ${res.statusText}`);
+  const data = await res.json();
+  return data as ViewUrlResponse;
 }
 
 export async function presignFile(input: PresignInput): Promise<PresignResult> {

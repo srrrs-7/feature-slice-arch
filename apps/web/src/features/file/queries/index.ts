@@ -5,7 +5,7 @@ import {
 } from "@tanstack/svelte-query";
 import { queryKeys } from "$lib/query";
 import * as api from "../api";
-import type { CompleteFileResponse, File } from "../types";
+import type { CompleteFileResponse, File, ViewUrlResponse } from "../types";
 
 export function createFilesQuery() {
   return createQuery<File[]>(() => ({
@@ -25,6 +25,21 @@ export function createFileQuery(id: () => string) {
       return data.file;
     },
     enabled: !!id(),
+  }));
+}
+
+export function createViewUrlQuery(
+  id: () => string,
+  options?: { enabled?: () => boolean },
+) {
+  return createQuery<ViewUrlResponse>(() => ({
+    queryKey: queryKeys.files.previewUrl(id()),
+    queryFn: async () => {
+      return api.getViewUrl(id());
+    },
+    enabled: options?.enabled?.() ?? !!id(),
+    staleTime: 30 * 60 * 1000, // 30 minutes (URL is valid for 1 hour)
+    gcTime: 60 * 60 * 1000, // 1 hour
   }));
 }
 

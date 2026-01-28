@@ -1,23 +1,61 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
+import { createViewUrlQuery } from "../queries";
+
 interface Props {
+  fileId?: string;
   contentType: string;
   fileName: string;
   class?: string;
 }
 
-let { contentType, fileName, class: className = "" }: Props = $props();
+let { fileId, contentType, fileName, class: className = "" }: Props = $props();
 
 const isImage = $derived(contentType.startsWith("image/"));
 const isPdf = $derived(contentType === "application/pdf");
 const isText = $derived(contentType.startsWith("text/"));
+
+const viewUrlQuery = createViewUrlQuery(() => fileId ?? "", {
+  enabled: () => isImage && !!fileId,
+});
+
+let imageLoaded = $state(false);
+let imageError = $state(false);
+
+function handleImageLoad() {
+  imageLoaded = true;
+}
+
+function handleImageError() {
+  imageError = true;
+}
+
+const viewUrl = $derived(viewUrlQuery.data?.viewUrl);
+const isPending = $derived(viewUrlQuery.isPending);
 </script>
 
 <div
-  class="flex items-center justify-center bg-muted rounded-md overflow-hidden {className}"
+  class="relative flex items-center justify-center bg-muted rounded-md overflow-hidden {className}"
 >
-  {#if isImage}
+  {#if isImage && fileId && viewUrl && !imageError}
+    {#if !imageLoaded}
+      <div class="absolute inset-0 animate-pulse bg-muted"></div>
+    {/if}
+    <img
+      src={viewUrl}
+      alt={fileName}
+      class="w-full h-full object-cover"
+      class:opacity-0={!imageLoaded}
+      class:opacity-100={imageLoaded}
+      class:transition-opacity={true}
+      class:duration-200={true}
+      onload={handleImageLoad}
+      onerror={handleImageError}
+    />
+  {:else if isImage && fileId && isPending}
+    <div class="animate-pulse bg-muted w-full h-full"></div>
+  {:else if isImage}
     <svg
       class="h-8 w-8 text-green-600"
       fill="none"

@@ -1,4 +1,5 @@
 import {
+  generatePresignedDownloadUrl,
   generatePresignedUploadUrl,
   generateS3Key,
   type PresignedUrlResult,
@@ -142,9 +143,39 @@ export const getById = (id: string): ResultAsyncType<File, FileError> =>
 export const getAll = (): ResultAsyncType<File[], FileError> =>
   fileRepository.findAll();
 
+const VIEW_URL_EXPIRY_SECONDS = 3600;
+
+export interface ViewUrlResult {
+  readonly viewUrl: string;
+  readonly expiresIn: number;
+  readonly contentType: string;
+}
+
+export const getViewUrl = (
+  id: string,
+): ResultAsyncType<ViewUrlResult, FileError> =>
+  liftAsync(parseWith(fileIdSchema, id))
+    .andThen(fileRepository.findById)
+    .andThen((file) => {
+      if (file.status !== "uploaded") {
+        return errAsync(FileErrors.notFound(file.id));
+      }
+      return ResultAsync.fromPromise(
+        generatePresignedDownloadUrl(file.s3Key, VIEW_URL_EXPIRY_SECONDS),
+        (e) => FileErrors.s3(e),
+      ).map(
+        (result): ViewUrlResult => ({
+          viewUrl: result.url,
+          expiresIn: result.expiresIn,
+          contentType: file.contentType,
+        }),
+      );
+    });
+
 export const fileService = {
   presign,
   complete,
   getById,
   getAll,
+  getViewUrl,
 } as const;

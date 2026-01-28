@@ -2,20 +2,15 @@ import {
   responseBadRequest,
   responseCreated,
   responseDBAccessError,
+  validateJson,
 } from "@api/lib/http";
-import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { fileService } from "../service/index.ts";
 import { presignSchema } from "../validator/index.ts";
 
 export const presignHandler = new Hono().post(
   "/",
-  zValidator("json", presignSchema, (result, c) => {
-    if (!result.success) {
-      return responseBadRequest(c, result.error.issues);
-    }
-    return;
-  }),
+  validateJson(presignSchema),
   async (c) => {
     const input = c.req.valid("json");
 

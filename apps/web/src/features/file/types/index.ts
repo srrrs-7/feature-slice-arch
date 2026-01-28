@@ -48,3 +48,9 @@ export interface UploadProgress {
   total: number;
   percentage: number;
 }
+
+export interface ViewUrlResponse {
+  readonly viewUrl: string;
+  readonly expiresIn: number;
+  readonly contentType: string;
+}

@@ -39,6 +39,8 @@ export const queryKeys = {
     lists: () => [...queryKeys.files.all(), "list"] as const,
     details: () => [...queryKeys.files.all(), "detail"] as const,
     detail: (id: string) => [...queryKeys.files.details(), id] as const,
+    previewUrls: () => [...queryKeys.files.all(), "previewUrl"] as const,
+    previewUrl: (id: string) => [...queryKeys.files.previewUrls(), id] as const,
   },
 } as const;
 

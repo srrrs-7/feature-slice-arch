@@ -1,1 +1,5 @@
-export { fileService, type PresignResult } from "./file-service.ts";
+export {
+  fileService,
+  type PresignResult,
+  type ViewUrlResult,
+} from "./file-service.ts";

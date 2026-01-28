@@ -3,42 +3,35 @@ import {
   responseDBAccessError,
   responseNotFound,
   responseOk,
-  validateJson,
   validateParam,
 } from "@api/lib/http";
 import { Hono } from "hono";
 import { fileService } from "../service/index.ts";
-import { completeSchema, idParamSchema } from "../validator/index.ts";
+import { idParamSchema } from "../validator/index.ts";
 
-export const completeHandler = new Hono().put(
-  "/:id/complete",
+export const viewUrlHandler = new Hono().get(
+  "/:id/view-url",
   validateParam(idParamSchema),
-  validateJson(completeSchema),
   async (c) => {
     const { id } = c.req.valid("param");
-    const { fileSize } = c.req.valid("json");
 
-    return fileService.complete(id, fileSize).match(
-      (file) =>
+    return fileService.getViewUrl(id).match(
+      (result) =>
         responseOk(c, {
-          file: {
-            id: file.id,
-            fileName: file.fileName,
-            contentType: file.contentType,
-            fileSize: file.fileSize,
-            status: file.status,
-          },
+          viewUrl: result.viewUrl,
+          expiresIn: result.expiresIn,
+          contentType: result.contentType,
         }),
       (error) => {
         switch (error.type) {
           case "FILE_NOT_FOUND":
             return responseNotFound(c, { message: "File not found" });
-          case "FILE_EXPIRED":
-            return responseBadRequest(c, "File upload has expired");
-          case "FILE_ALREADY_COMPLETED":
-            return responseBadRequest(c, "File upload already completed");
           case "VALIDATION_ERROR":
             return responseBadRequest(c, error.message);
+          case "S3_ERROR":
+            return responseDBAccessError(c, {
+              message: "Failed to generate view URL",
+            });
           case "DATABASE_ERROR":
             return responseDBAccessError(c);
           default:

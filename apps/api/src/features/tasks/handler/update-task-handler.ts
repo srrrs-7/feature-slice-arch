@@ -1,5 +1,4 @@
-import { responseBadRequest, responseOk } from "@api/lib/http";
-import { zValidator } from "@hono/zod-validator";
+import { responseOk, validateJson, validateParam } from "@api/lib/http";
 import { Hono } from "hono";
 import { taskService } from "../service/service.ts";
 import { idParamSchema, updateTaskSchema } from "../validator/validator.ts";
@@ -7,18 +6,8 @@ import { handleTaskError } from "./handle-task-error.ts";
 
 export default new Hono().put(
   "/:id",
-  zValidator("param", idParamSchema, (result, c) => {
-    if (!result.success) {
-      return responseBadRequest(c, result.error.issues);
-    }
-    return;
-  }),
-  zValidator("json", updateTaskSchema, (result, c) => {
-    if (!result.success) {
-      return responseBadRequest(c, result.error.issues);
-    }
-    return;
-  }),
+  validateParam(idParamSchema),
+  validateJson(updateTaskSchema),
   async (c) => {
     const { id } = c.req.valid("param");
     const input = c.req.valid("json");

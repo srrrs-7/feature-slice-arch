@@ -3,8 +3,9 @@ import {
   responseDBAccessError,
   responseNotFound,
   responseOk,
+  validateParam,
+  validateQuery,
 } from "@api/lib/http";
-import { zValidator } from "@hono/zod-validator";
 import type { Context } from "hono";
 import { Hono } from "hono";
 import type { AttendanceError } from "../domain/attendance.ts";
@@ -36,12 +37,10 @@ export default new Hono()
   // GET /api/attendance - Get attendance records for date range
   .get(
     "/",
-    zValidator("query", dateRangeQuerySchema, (result, c) => {
-      if (!result.success) {
-        const message =
-          result.error.issues[0]?.message ?? "Invalid date range parameters";
-        return responseBadRequest(c, message);
-      }
+    validateQuery(dateRangeQuerySchema, (result, c) => {
+      const message =
+        result.error.issues[0]?.message ?? "Invalid date range parameters";
+      return responseBadRequest(c, message);
     }),
     async (c) => {
       const { from, to } = c.req.valid("query");
@@ -56,12 +55,9 @@ export default new Hono()
   // GET /api/attendance/:date - Get attendance record for specific date
   .get(
     "/:date",
-    zValidator("param", dateParamSchema, (result, c) => {
-      if (!result.success) {
-        const message =
-          result.error.issues[0]?.message ?? "Invalid date format";
-        return responseBadRequest(c, message);
-      }
+    validateParam(dateParamSchema, (result, c) => {
+      const message = result.error.issues[0]?.message ?? "Invalid date format";
+      return responseBadRequest(c, message);
     }),
     async (c) => {
       const { date } = c.req.valid("param");

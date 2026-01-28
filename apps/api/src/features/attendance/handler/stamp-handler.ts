@@ -2,8 +2,8 @@ import {
   responseBadRequest,
   responseDBAccessError,
   responseOk,
+  validateJson,
 } from "@api/lib/http";
-import { zValidator } from "@hono/zod-validator";
 import type { Context } from "hono";
 import { Hono } from "hono";
 import type { StampError } from "../domain/stamp.ts";
@@ -51,12 +51,9 @@ export default new Hono()
   // POST /api/stamps - Record a stamp action
   .post(
     "/",
-    zValidator("json", stampActionSchema, (result, c) => {
-      if (!result.success) {
-        const message =
-          result.error.issues[0]?.message ?? "Invalid action type";
-        return responseBadRequest(c, message);
-      }
+    validateJson(stampActionSchema, (result, c) => {
+      const message = result.error.issues[0]?.message ?? "Invalid action type";
+      return responseBadRequest(c, message);
     }),
     async (c) => {
       const { action } = c.req.valid("json");

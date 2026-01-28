@@ -3,36 +3,23 @@ import {
   responseDBAccessError,
   responseNotFound,
   responseOk,
+  validateParam,
 } from "@api/lib/http";
-import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { fileService } from "../service/index.ts";
 import { idParamSchema } from "../validator/index.ts";
+import { toFileResponse } from "./file-response.ts";
 
 export const getHandler = new Hono().get(
   "/:id",
-  zValidator("param", idParamSchema, (result, c) => {
-    if (!result.success) {
-      return responseBadRequest(c, result.error.issues);
-    }
-    return;
-  }),
+  validateParam(idParamSchema),
   async (c) => {
     const { id } = c.req.valid("param");
 
     return fileService.getById(id).match(
       (file) =>
         responseOk(c, {
-          file: {
-            id: file.id,
-            fileName: file.fileName,
-            contentType: file.contentType,
-            fileSize: file.fileSize,
-            status: file.status,
-            expiresAt: file.expiresAt.toISOString(),
-            createdAt: file.createdAt.toISOString(),
-            updatedAt: file.updatedAt.toISOString(),
-          },
+          file: toFileResponse(file),
         }),
       (error) => {
         switch (error.type) {

@@ -10,10 +10,6 @@ dictionaryDefinitions: []
 dictionaries: []
 words:
   - addgroup
-  - fieldsets
-  - hotspots
-  - HSTS
-  - proddb
   - adduser
   - albls
   - anthropics
@@ -25,6 +21,7 @@ words:
   - Avant
   - Avenir
   - awsdns
+  - awslocal
   - bierner
   - biomejs
   - Bluch
@@ -58,6 +55,7 @@ words:
   - Fabbrica
   - fdisk
   - fgrep
+  - fieldsets
   - gdisk
   - ghal
   - ghas
@@ -78,6 +76,8 @@ words:
   - gstp
   - hono
   - hostnames
+  - hotspots
+  - HSTS
   - ichiro
   - Ichiro
   - initialised
@@ -88,6 +88,7 @@ words:
   - Kato
   - kenta
   - Kenta
+  - localstack
   - Mcpjson
   - Msal
   - msdownload
@@ -111,8 +112,9 @@ words:
   - pkey
   - pkill
   - popstate
-  - presign
   - POSTROUTING
+  - presign
+  - proddb
   - psql
   - pycache
   - quramy

@@ -2,11 +2,12 @@
 
 <script lang="ts">
 import { Badge } from "@/components/ui/badge";
-import * as Card from "@/components/ui/card";
 import { t } from "$lib/i18n";
 import { formatDateCompact } from "$lib/utils/date";
 import type { File } from "../types";
+import { formatFileSize, getContentTypeLabel } from "../utils";
 import FilePreview from "./FilePreview.svelte";
+import FilePreviewDialog from "./FilePreviewDialog.svelte";
 
 interface Props {
   file: File;
@@ -14,53 +15,66 @@ interface Props {
 
 let { file }: Props = $props();
 
-function formatFileSize(bytes: number | null): string {
-  if (bytes === null) return "-";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+const isImage = $derived(file.contentType.startsWith("image/"));
+
+let isPreviewOpen = $state(false);
+
+function openPreview() {
+  isPreviewOpen = true;
 }
 
-function getContentTypeLabel(contentType: string): string {
-  const typeMap: Record<string, string> = {
-    "image/jpeg": "JPEG",
-    "image/png": "PNG",
-    "image/gif": "GIF",
-    "image/webp": "WebP",
-    "application/pdf": "PDF",
-    "text/plain": "TXT",
-    "text/csv": "CSV",
-  };
-  return typeMap[contentType] ?? contentType;
+function closePreview() {
+  isPreviewOpen = false;
 }
 </script>
 
-<Card.Root class="overflow-hidden hover:shadow-md transition-shadow">
-  <Card.Header class="p-4">
-    <div class="flex items-start gap-3">
+<!-- Unified card layout for all file types -->
+<button
+  type="button"
+  class="relative w-full aspect-[4/3] bg-card rounded-lg border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+  onclick={openPreview}
+>
+  <!-- Preview area -->
+  <div class="absolute inset-0">
+    {#if isImage}
       <FilePreview
+        fileId={file.id}
         contentType={file.contentType}
         fileName={file.fileName}
-        class="w-12 h-12 flex-shrink-0"
+        class="w-full h-full"
       />
-      <div class="flex-1 min-w-0">
-        <Card.Title class="text-sm font-medium line-clamp-1" title={file.fileName}>
-          {file.fileName}
-        </Card.Title>
-        <div class="flex items-center gap-2 mt-1">
-          <Badge variant="secondary" class="text-xs">
-            {getContentTypeLabel(file.contentType)}
-          </Badge>
-          <span class="text-xs text-muted-foreground">
-            {formatFileSize(file.fileSize)}
-          </span>
-        </div>
+    {:else}
+      <!-- Non-image: centered large icon -->
+      <div class="w-full h-full flex items-center justify-center bg-muted/50">
+        <FilePreview
+          contentType={file.contentType}
+          fileName={file.fileName}
+          class="w-20 h-20"
+        />
       </div>
+    {/if}
+  </div>
+
+  <!-- Overlay metadata (gradient from bottom) -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent pointer-events-none">
+    <div class="absolute bottom-0 left-0 right-0 p-3 text-left">
+      <h3 class="text-sm font-semibold text-white line-clamp-1 drop-shadow-md" title={file.fileName}>
+        {file.fileName}
+      </h3>
+      <div class="flex items-center gap-2 mt-1.5">
+        <Badge variant="secondary" class="text-xs bg-white/20 text-white border-none">
+          {getContentTypeLabel(file.contentType)}
+        </Badge>
+        <span class="text-xs text-white/90 drop-shadow-sm">
+          {formatFileSize(file.fileSize)}
+        </span>
+      </div>
+      <p class="text-xs text-white/80 mt-1 drop-shadow-sm">
+        {$t.files.uploadedAt}: {formatDateCompact(file.createdAt)}
+      </p>
     </div>
-  </Card.Header>
-  <Card.Footer class="p-4 pt-0">
-    <span class="text-xs text-muted-foreground">
-      {$t.files.uploadedAt}: {formatDateCompact(file.createdAt)}
-    </span>
-  </Card.Footer>
-</Card.Root>
+  </div>
+</button>
+
+<!-- File Preview Modal -->
+<FilePreviewDialog open={isPreviewOpen} {file} onClose={closePreview} />
