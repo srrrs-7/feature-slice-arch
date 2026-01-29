@@ -24,6 +24,10 @@ Minimum set for this repo:
   - Purpose: Generate a complete PR summary, checklist, and test plan for the current branch.
   - Best practices: Follow `.claude/rules/github-pr.md` for PR structure, `.claude/rules/testing.md` for test expectations, and `.claude/rules/coding-rules.md` for coding standards.
 
+- `/git-commit`
+  - Purpose: Create a git commit following Conventional Commits format with proper validation and safety checks.
+  - Best practices: Follow `.claude/rules/github-pr.md` for commit conventions, `.claude/rules/security.md` to avoid committing secrets.
+
 - `/design`
   - Purpose: Produce a short design note before UI work (problem statement, states, data deps, risks).
   - Best practices: Apply `.claude/rules/design-guide.md` for UX guidance and `.claude/rules/coding-rules.md` for performance‑aware implementation considerations.
